@@ -97,14 +97,20 @@ const ticketSearch = async (keyword, writer) =>
       });
       item._embedded.venues.forEach((venue) =>{ 
         let venueName = venue.name; 
-        let date = item.dates.start.dateTime;
+        if (item.dates.start.dateTime) {
+          let date = item.dates.start.dateTime;
+        }
+        if (item.dates.start.timeTBA || item.dates.start.noSpecificTime) {
+          let date = item.dates.start.localDate;
+        }
+        
         // Logger.log(`venue: ${venueName}`);
         eventsArr[date] = { 
           "name": item.name,
           "acts": attractions,
           "venue": venueName , 
           "city": venue.city.name, 
-          "date": item.dates.start.dateTime, 
+          "date": date, 
           "url": url, 
           "image": item.images[image[0][0]].url
         }
@@ -115,9 +121,8 @@ const ticketSearch = async (keyword, writer) =>
     }
 
     for (const key of Object.keys(eventsArr)) { 
-      let actsArr = eventArr[key].acts;
       // eventsArr[key].name.match(keyword) || 
-      if (actsArr.contains(keyword)) {
+      if (eventsArr[key].acts.includes(keyword)) {
         writeEvent({ 
           date: eventsArr[key].date,
           name: eventsArr[key].name,
