@@ -62,6 +62,7 @@ const artistsList = () => {
   let artistRows = artistSheet.getLastRow()-1;
   if (artistRows==0) artistRows=1;
   let artistsArr = artistSheet.getRange(2,1,artistRows,1).getValues();
+  return artistsArr;
 }
 
 const writeArrayToColumn = (array, sheet, col) => {

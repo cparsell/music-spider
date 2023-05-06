@@ -63,7 +63,7 @@ const buildEventsArr = () =>
 
 const ticketSearch = async (keyword, writer) => 
 {
-  // keyword = "Yeah Yeah Yeahs"
+  // keyword = "Madlib"
   // const writer = new WriteLogger();
   let artist = artistSheet.getRange(2,1);
   let data = await tmSearch(keyword, writer);
@@ -96,10 +96,11 @@ const ticketSearch = async (keyword, writer) =>
       // if other artists in my list are in this event, move them to front of list
       let artistsArr = artistsList();
       for (i=0;i<artistsArr;i++){
-        Logger.log(artistsArr[i]);
-        if (attractions.includes(artistsArr[i]) && artistsArr[i] != keyword) {
+        let artist = artistsArr[i][0];
+        Logger.log(artist);
+        if (attractions.includes(artist) && artist != keyword) {
           Logger.log("Match on artist list");
-          attractions = attractions.sort(function(x,y){ return x == keyword ? -1 : y == keyword ? 1 : 0; });
+          attractions = attractions.sort(function(x,y){ return x == artist ? -1 : y == artist ? 1 : 0; });
         }
       }
       // then move keyword to front of list of acts
