@@ -112,12 +112,10 @@ const ticketSearch = async (keyword, writer) =>
     });
 
     for (const key of Object.keys(eventsArr)) { 
-      // Logger.log(key + ": "); 
-      // Logger.log(eventsArr[key]); 
-      if (key.match(keyword)) {
-        writeEvent({
-          name: eventsArr[key].name, 
+      if (eventsArr[key].name.match(keyword)) {
+        writeEvent({ 
           date: eventsArr[key].date,
+          name: eventsArr[key].name,
           city: eventsArr[key].city,
           venue: eventsArr[key].venue, 
           url: eventsArr[key].url, 
@@ -130,20 +128,20 @@ const ticketSearch = async (keyword, writer) =>
   }
 }
 
-const writeEvent = ({name = eventName, date = eventDate, city = eventCity, venue = eventVenue, url = eventUrl, image = eventImg, acts = eventActs}={}) => 
+const writeEvent = ({name, date, city, venue, url, image, acts}) => 
 {
-  let newData = new Array;
-  newData[0] = [eventName, eventVenue, eventCity,eventDate];
+  // let newData = new Array;
+  // newData[0] = [eventName, eventVenue, eventCity,eventDate];
 
   let lastRow = eventSheet.getLastRow();
   // eventSheet.getRange(lastRow+1,1,1,4).setValues(newData);
-  SetByHeader(eventSheet, "Event Name", lastRow+1, eventName);
-  SetByHeader(eventSheet, "City", lastRow+1, eventCity);
-  SetByHeader(eventSheet, "Venue", lastRow+1, eventVenue);
-  SetByHeader(eventSheet, "Date", lastRow+1, eventDate);
-  SetByHeader(eventSheet, "URL", lastRow+1, eventUrl);
-  SetByHeader(eventSheet, "Image", lastRow+1, eventImg);
-  
+  SetByHeader(eventSheet, "Event Name", lastRow+1, name);
+  SetByHeader(eventSheet, "City", lastRow+1, city);
+  SetByHeader(eventSheet, "Venue", lastRow+1, venue);
+  SetByHeader(eventSheet, "Date", lastRow+1, date);
+  SetByHeader(eventSheet, "URL", lastRow+1, url);
+  SetByHeader(eventSheet, "Image", lastRow+1, image);
+  SetByHeader(eventSheet, "Acts", lastRow+1, acts);
 }
 const tmSearch = async (keyword, writer) => 
 {

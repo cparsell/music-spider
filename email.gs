@@ -98,7 +98,7 @@ class CreateMessage
 
     // debugLog("ordered", ordered);
     for (const [index, [key]] of Object.entries(Object.entries(this.events))) {
-      const {date, city, venue, url, image, eName} = this.events[key];
+      const {date, city, venue, url, image, eName, acts} = this.events[key];
       let eDate = new Date(key);
       // Logger.log(eDate);
       let eventDate = eDate.toLocaleDateString();
@@ -116,11 +116,18 @@ class CreateMessage
       message += `<div class="" style=""><a href='${url}'>`;
       message += `<img src='${image}' class="" style="width:90%;float:center;width:350px;height:200px;object-fit:cover;"/></div>`;
       message += `<span style="font-family:georgia,times,times new roman,serif;">`;
-      message += `<a href='${url}' style="text-decoration:none;"><span style="color:#44494c;font-size:20px;"><strong>${eName}</strong></span></a><br>`;
-      message += `<span style="color:#696969;font-size:12px;">at ${venue}, ${city}<br> `;
+      message += `<a href='${url}' style="text-decoration:none;"><span style="color:#44494c;font-size:20px;"><strong>${eName}</strong></span></a><br/>`;
+      if (!eName.contains(acts[0])) {
+        message += ``
+        acts.forEach((act) => {
+          if (!eName.contains(act)) message += `${act}, `
+        })
+        message += `<br/>`
+      }
+      message += `<span style="color:#696969;font-size:12px;">at ${venue}, ${city}<br/> `;
       message += `<strong>${dayNames[eventDay]}, ${monthNames[eventMonth]} ${eventDayNum} ${eventYear}</strong> ${eventTime}</span></span></div>`;
       message += `<br/></td>`;
-      if (!isEven(index)) message += `</tr><br>`;
+      if (!isEven(index)) message += `</tr><br/>`;
     };
     message += `<p></p></tbody></table>`; 
     message += `</td></tr></tbody></table>`;
