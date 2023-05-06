@@ -103,7 +103,7 @@ class CreateMessage
       // Logger.log(eDate);
       let eventDate = eDate.toLocaleDateString();
       let eventDay = eDate.getDay();
-      let eventDayNum = eDate.getUTCDay();
+      let eventDayNum = eDate.getDate();
       let eventMonth = eDate.getMonth();
       let eventYear = eDate.getFullYear();
       // Logger.log(eventDate);
