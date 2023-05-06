@@ -65,7 +65,7 @@ const buildEventsArr = () =>
 
 const ticketSearch = async (keyword, writer) => 
 {
-  // keyword = "Pixies"
+  // keyword = "Yeah Yeah Yeahs"
   // const writer = new WriteLogger();
   let artist = artistSheet.getRange(2,1);
   let data = await tmSearch(keyword, writer);
@@ -115,20 +115,18 @@ const ticketSearch = async (keyword, writer) =>
       // Logger.log(key + ": "); 
       // Logger.log(eventsArr[key]); 
       if (key.match(keyword)) {
-        writeEvent(key,eventsArr[key].date,eventsArr[key].city,eventsArr[key].venue, eventsArr[key].url, eventsArr[key].image);
+        writeEvent({
+          name: eventsArr[key].name, 
+          date: eventsArr[key].date,
+          city: eventsArr[key].city,
+          venue: eventsArr[key].venue, 
+          url: eventsArr[key].url, 
+          image: eventsArr[key].image,
+          acts: eventsArr[key].acts,
+        });
       } 
     };
     if (Object.keys(eventsArr)==0) writer.Info(`No events found for ${keyword}`);
-    
-    // lastRow = eventSheet.getLastRow();
-    // Logger.log("Events Array");
-    // Logger.log(eventsArr);
-
-    // Logger.log(`Events Array length: ${eventsArr.length}`);
-    // writer.Info("Events Array");
-    // writer.Info(eventsArr);
-    // writer.Info(`Events Array length: ${eventsArr.length}`);
-    // writeArrayToColumn(eventsArr, sheet, 1);
   }
 }
 
