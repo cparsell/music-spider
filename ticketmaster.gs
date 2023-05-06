@@ -93,7 +93,7 @@ const ticketSearch = async (keyword, writer) =>
       }
       var attractions = new Array;
       item._embedded.attractions.forEach((attraction) => {
-        attractions.push(attraction);
+        attractions.push(attraction.name);
       });
       item._embedded.venues.forEach((venue) =>{ 
         let venueName = venue.name; 
@@ -101,7 +101,7 @@ const ticketSearch = async (keyword, writer) =>
         // Logger.log(`venue: ${venueName}`);
         eventsArr[date] = { 
           "name": item.name,
-          "acts": item.attractions,
+          "acts": attractions,
           "venue": venueName , 
           "city": venue.city.name, 
           "date": item.dates.start.dateTime, 
