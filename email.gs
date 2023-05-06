@@ -124,8 +124,8 @@ class CreateMessage
       if (actsArr.length > 1 || !eName.match(actsArr[0])) {
         message += `with `
         actsArr.forEach((act, index) => {
-          if (!eName.match(act) && index < 5) message += (index == actsArr.length-1) ?  `${act}` : `${act}, `;
-          if (index == 5) message += `...`
+          if (!eName.match(act) && index < 6) message += (index == actsArr.length-1) ?  `${act}` : `${act}, `;
+          if (index == 6) message += `...`
         })
         message += `<br/>`
       }
