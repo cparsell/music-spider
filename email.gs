@@ -103,7 +103,9 @@ class CreateMessage
       // Logger.log(eDate);
       let eventDate = eDate.toLocaleDateString();
       let eventDay = eDate.getDay();
+      let eventDayNum = eDate.getUTCDay();
       let eventMonth = eDate.getMonth();
+      let eventYear = eDate.getFullYear();
       // Logger.log(eventDate);
       let eventTime = Utilities.formatDate(eDate, "PST", "h a");
 
@@ -116,7 +118,7 @@ class CreateMessage
       message += `<span style="font-family:georgia,times,times new roman,serif;">`;
       message += `<a href='${url}' style="text-decoration:none;"><span style="color:#44494c;font-size:20px;"><strong>${eName}</strong></span></a><br>`;
       message += `<span style="color:#696969;font-size:12px;">at ${venue}, ${city}<br> `;
-      message += `<strong>${eventDate}</strong> ${eventTime}</span></span></div>`;
+      message += `<strong>${eventMonth} ${eventDay} ${eventYear}</strong> ${eventTime}</span></span></div>`;
       message += `<br/></td>`;
       if (!isEven(index)) message += `</tr><br>`;
     };
