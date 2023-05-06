@@ -83,30 +83,7 @@ class CreateMessage
       .tg .tg-0lax{
         text-align:center;
         vertical-align:top
-      }
-      .fill {
-        display: block;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
-
-      }
-      a:link {
-        text-decoration: none;
-      }
-      
-      a:visited {
-        text-decoration: none;
-      }
-      
-      a:hover {
-        text-decoration: none;
-      }
-      
-      a:active {
-        text-decoration: none;
-      }
-      
+      }      
     </style>`;
     message += `<table class="tg"><thead>`
     message += `<tr><td colspan=2><div style="text-align: center;">`
