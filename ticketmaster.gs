@@ -91,12 +91,17 @@ const ticketSearch = async (keyword, writer) =>
             image[0][1]=imgBytes
           }
       }
-
-      item._embedded.venues.forEach((venue) =>
-      { 
+      var attractions = new Array;
+      item._embedded.attractions.forEach((attraction) => {
+        attractions.push(attraction);
+      });
+      item._embedded.venues.forEach((venue) =>{ 
         let venueName = venue.name; 
+        let date = item.dates.start.dateTime;
         // Logger.log(`venue: ${venueName}`);
-        eventsArr[item.name] = { 
+        eventsArr[date] = { 
+          "name": item.name,
+          "acts": item.attractions,
           "venue": venueName , 
           "city": venue.city.name, 
           "date": item.dates.start.dateTime, 
@@ -127,7 +132,7 @@ const ticketSearch = async (keyword, writer) =>
   }
 }
 
-const writeEvent = (eventName, eventDate, eventCity, eventVenue, eventUrl, eventImg) => 
+const writeEvent = ({name = eventName, date = eventDate, city = eventCity, venue = eventVenue, url = eventUrl, image = eventImg, acts = eventActs}={}) => 
 {
   let newData = new Array;
   newData[0] = [eventName, eventVenue, eventCity,eventDate];
