@@ -233,3 +233,21 @@ const SetByHeader = (sheet, columnName, row, val) => {
     return 1;
   }
 };
+
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * Return a dictionary of values from a whole row on a given sheet
+ * @param {sheet} sheet
+ * @param {number} row
+ */
+const SetRowData = (sheet, row, rowData) => {
+  if(typeof sheet != `object`) return 1;
+  let dict = {};
+  try {
+    let headers = sheet.getRange(1, 1, 1, sheet.getMaxColumns()).getValues()[0];
+
+  } catch (err) {
+    console.error(`${err} : SetRowData failed - Sheet: ${sheet} Row: ${row}`);
+    return 1;
+  }
+}
