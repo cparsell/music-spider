@@ -79,7 +79,18 @@ const ticketSearch = async (keyword, writer) =>
     {
       // const { name, _embedded } = item;
       let url = item.url;
-      var image = "";
+      var image = [[0,0]];
+      // Loop through image URLs in JSON response. Find the one with the largest filesize
+      for (i=0;i<item.images.length;i++){
+          // let img = new Images();
+          let img = UrlFetchApp.fetch(item.images[i].url).getBlob();
+          let imgBytes = img.getBytes().length;
+          
+          if (imgBytes>image[0][1]) {
+            image[0][0]=i
+            image[0][1]=imgBytes
+          }
+      }
 
       item._embedded.venues.forEach((venue) =>
       { 
@@ -90,7 +101,7 @@ const ticketSearch = async (keyword, writer) =>
           "city": venue.city.name, 
           "date": item.dates.start.dateTime, 
           "url": url, 
-          "image": item.images[0].url
+          "image": item.images[image[0][0]].url
         }
       });
     });
