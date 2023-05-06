@@ -1,14 +1,22 @@
-
-const config = {
-  // Spotify
-    'clientId': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-    'clientSecret': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-    'getArtistsFromPlaylist': true,
-    'getTopArtists': true,
-    'playlistId': 'xxxxxxxxxxxxxxxxxxxxxxx',
-    // Email(s) to send newsletter to
-    'email': 'somebody@somewhere.com',
-    'debug': false,
+const spotifyConfig = {
+  // Spotify API keys
+  'clientIdSpotify': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+  'clientSecretSpotify': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx',  
+  // Ticketmaster API keys
+  'key': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+  // 'secret': 'xxxxxxxxxxxxxxxxx',
+  // Ticketmaster search params
+  'latlong': '34.052235,-118.243683',  // get your latlong from a website like https://www.latlong.net/
+  'radius': 40,
+  'unit': 'miles',
+  // Spotify preferances
+  'getTopArtists': true,
+  'getArtistsFromPlaylist': true,
+  'playlistId': 'xxxxxxxxxxxxxxxxxxxxxxx',
+  // Email(s) to send newsletter to
+  'email': 'somebody@somewhere.com',
+    // enable debug for verbose logging in Apps Script Executions log
+  'debug': false,
 };
 
 const ticketmasterConfig = {

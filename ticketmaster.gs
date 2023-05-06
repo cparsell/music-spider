@@ -149,12 +149,12 @@ const tmSearch = async (keyword, writer) =>
       "async": true,
       "contentType": "application/json",
   };
-  var params = `?apikey=${ticketmasterConfig.key}`;
+  var params = `?apikey=${config.keyTM}`;
   // params += `&postalCode=`;  
   // params += `&city=Los+Angeles`;
-  params += `&latlong=${ticketmasterConfig.latlong}` 
-  params += `&radius=${ticketmasterConfig.radius}`; // radius only seems to work with latlong
-  params += `&unit=${ticketmasterConfig.unit}`;
+  params += `&latlong=${config.latlong}` 
+  params += `&radius=${config.radius}`; // radius only seems to work with latlong
+  params += `&unit=${config.unit}`;
   params += `&keyword=${encodeURIComponent(keyword)}`;
   Logger.log(`Searching Ticketmaster for ${keyword}`);
   writer.Info(`Searching Ticketmaster for ${keyword}`);

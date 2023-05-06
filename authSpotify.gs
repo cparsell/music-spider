@@ -31,7 +31,7 @@ const generateAuthUrl = () =>
     // Generate URL for requesting authorization
     // Using Authorization Code Flow
     var url = ScriptApp.getService().getUrl();
-    var params = "?response_type=code&client_id=" + config.clientId
+    var params = "?response_type=code&client_id=" + config.clientIdSpotify
         + "&scope=" + scope + "&redirect_uri=" + url;
 
     return authUrl + encodeURI(params);
@@ -46,8 +46,8 @@ const getFreshAuth = (code) =>
         "grant_type": "authorization_code",
         "code": code,
         "redirect_uri": ScriptApp.getService().getUrl(),
-        "client_id": config.clientId,
-        "client_secret": config.clientSecret,
+        "client_id": config.clientIdSpotify,
+        "client_secret": config.clientSecretSpotify,
     };
 
     var options = {
@@ -79,8 +79,8 @@ const refreshAuth = (refreshToken) =>
     var payload = {
         "grant_type": "refresh_token",
         "refresh_token": refreshToken,
-        "client_id": config.clientId,
-        "client_secret": config.clientSecret,
+        "client_id": config.clientIdSpotify,
+        "client_secret": config.clientSecretSpotify,
     };
 
     var options = {
