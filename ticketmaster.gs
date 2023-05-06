@@ -153,10 +153,10 @@ const matchValByHeader = (sheet, columnName, val) => {
     let data = sheet.getDataRange().getValues();
     let lastRow = sheet.getLastRow();
     let col = data[0].indexOf(columnName);
-    let range = sheet.getRange(2,col,lastRow,1).getValues();
+    let range = sheet.getRange(2,col+1,lastRow,1).getValues();
     if (col != -1) {
       var isSearchStringInRange = range.some( function(row){
-        return row[0] === searchString
+        return row[0] === val
       });
       return isSearchStringInRange;
     }
