@@ -81,7 +81,7 @@ class CreateMessage
         word-break:normal;
       }
       .tg .tg-0lax{
-        text-align:center;
+        text-align:left;
         vertical-align:top
       }      
     </style>`;
@@ -108,15 +108,15 @@ class CreateMessage
       if (isEven(index)) {
         message += `<tr>`;
       }
-      message += `<td class="tg-0lax"><div style="text-align: center;">`;
+      message += `<td class="tg-0lax"><div style="text-align: left;">`;
       message += `<div class="" style=""><a href='${url}'>`;
       message += `<img src='${image}' class="" style="width:90%;float:center;width:350px;height:200px;object-fit:cover;"/></div>`;
-      message += `<span style="font-family:georgia,times,times new roman,serif">`;
+      message += `<span style="font-family:georgia,times,times new roman,serif;">`;
       message += `<a href='${url}' style="text-decoration:none;"><span style="color:#44494c;font-size:20px;"><strong>${eName}</strong></span></a><br>`;
       message += `<span style="color:#696969;font-size:12px;">at ${venue}, ${city}<br> `;
       message += `<strong>${eventDate}</strong> ${eventTime}</span></span></div>`;
       message += `<br/></td>`;
-      if (!isEven(index)) message += `</tr>`;
+      if (!isEven(index)) message += `</tr><br>`;
     };
     message += `<p></p></tbody></table>`; 
     message += `</td></tr></tbody></table>`;
