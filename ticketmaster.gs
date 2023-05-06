@@ -110,6 +110,9 @@ const ticketSearch = async (keyword, writer) =>
         }
       });
     });
+    for (const key of Object.keys(eventsArr)) { 
+      Logger.log(eventsArr[key].name);
+    }
 
     for (const key of Object.keys(eventsArr)) { 
       if (eventsArr[key].name.match(keyword) || eventsArr[key].acts.contains(keyword)) {
@@ -124,7 +127,7 @@ const ticketSearch = async (keyword, writer) =>
         });
       } 
     };
-    if (Object.keys(eventsArr)==0) writer.Info(`No events found for ${keyword}`);
+    if (Object.keys(eventsArr)==0) Logger.log(`No events found for ${keyword}`);
   }
 }
 
@@ -158,7 +161,6 @@ const tmSearch = async (keyword, writer) =>
   params += `&unit=${config.unit}`;
   params += `&keyword=${encodeURIComponent(keyword)}`;
   Logger.log(`Searching Ticketmaster for ${keyword}`);
-  writer.Info(`Searching Ticketmaster for ${keyword}`);
   var firstPage = UrlFetchApp.fetch(ticketmasterUrl+params, options).getContentText();
 
   return firstPage;
