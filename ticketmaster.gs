@@ -95,13 +95,15 @@ const ticketSearch = async (keyword, writer) =>
       item._embedded.attractions.forEach((attraction) => {
         attractions.push(attraction.name);
       });
+      attractions = attractions.sort(function(x,y){ return x == keyword ? -1 : y == keyword ? 1 : 0; });
       item._embedded.venues.forEach((venue) =>{ 
         let venueName = venue.name; 
+        let date;
         if (item.dates.start.dateTime) {
-          let date = item.dates.start.dateTime;
+          date = item.dates.start.dateTime;
         }
         if (item.dates.start.timeTBA || item.dates.start.noSpecificTime) {
-          let date = item.dates.start.localDate;
+          date = item.dates.start.localDate;
         }
         
         // Logger.log(`venue: ${venueName}`);
