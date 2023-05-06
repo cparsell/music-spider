@@ -85,6 +85,8 @@ class CreateMessage
         vertical-align:top
       }      
     </style>`;
+    message += `<table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;border-spacing:0px;padding:0;margin:0;width:100%;background-repeat:repeat;background-position:center top; background-color:#ffffff;"`;
+    message += `<tbody><tr style="border-collapse: collapse;"><td valign="top" style="padding: 0;Margin: 0;">`
     message += `<table class="tg"><thead>`
     message += `<tr><td colspan=2><div style="text-align: center;">`
     message += `<a href="https://github.com/cparsell/music-spider">`
@@ -116,7 +118,8 @@ class CreateMessage
       message += `<br/></td>`;
       if (!isEven(index)) message += `</tr>`;
     };
-      message += `<p></p></tbody></table>`; 
+    message += `<p></p></tbody></table>`; 
+    message += `</td></tr></tbody></table>`;
     return message; 
   }
 }
