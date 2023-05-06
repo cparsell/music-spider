@@ -125,22 +125,48 @@ const ticketSearch = async (keyword, writer) =>
         }
       });
     });
-
+    if (Object.keys(eventsArr)==0) Logger.log(`No events found for ${keyword}`);
     for (const key of Object.keys(eventsArr)) { 
       // eventsArr[key].name.match(keyword) || 
       if (eventsArr[key].acts.includes(keyword)) {
-        writeEvent({ 
-          date: eventsArr[key].date,
-          name: eventsArr[key].name,
-          city: eventsArr[key].city,
-          venue: eventsArr[key].venue, 
-          url: eventsArr[key].url, 
-          image: eventsArr[key].image,
-          acts: eventsArr[key].acts,
-        });
+        let doesItExist = matchValByHeader(eventSheet, "URL", eventsArr[key].url);
+        if (!doesItExist) {
+          writeEvent({ 
+            date: eventsArr[key].date,
+            name: eventsArr[key].name,
+            city: eventsArr[key].city,
+            venue: eventsArr[key].venue, 
+            url: eventsArr[key].url, 
+            image: eventsArr[key].image,
+            acts: eventsArr[key].acts,
+          });
+        }
       } 
     };
-    if (Object.keys(eventsArr)==0) Logger.log(`No events found for ${keyword}`);
+
+  }
+}
+
+const matchValByHeader = (sheet, columnName, val) => {
+  if(typeof sheet != `object`) return false;
+  try {
+    let data = sheet.getDataRange().getValues();
+    let lastRow = sheet.getLastRow();
+    let col = data[0].indexOf(columnName);
+    let range = sheet.getRange(2,col,lastRow,1);
+    if (col != -1) {
+      var isSearchStringInRange = range.some( function(row){
+        return row[0] === searchString
+      });
+      return isSearchStringInRange;
+    }
+    else {
+      console.error(`Matching data by header fucking failed...`);
+      return false;
+    }
+  } catch (err) {
+    console.error(`${err} : matchValByHeader failed - Sheet: ${sheet} Col Name specified: ${columnName} value: ${val}`);
+    return false;
   }
 }
 
