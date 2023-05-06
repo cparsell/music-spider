@@ -115,7 +115,9 @@ const ticketSearch = async (keyword, writer) =>
     }
 
     for (const key of Object.keys(eventsArr)) { 
-      if (eventsArr[key].name.match(keyword) || eventsArr[key].acts.contains(keyword)) {
+      let actsArr = eventArr[key].acts;
+      // eventsArr[key].name.match(keyword) || 
+      if (actsArr.contains(keyword)) {
         writeEvent({ 
           date: eventsArr[key].date,
           name: eventsArr[key].name,
