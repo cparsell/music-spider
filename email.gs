@@ -87,7 +87,8 @@ class CreateMessage
     </style>`;
     message += `<table class="tg"><thead>`
     message += `<tr><td colspan=2><div style="text-align: center;">`
-    message += `<img src="https://imgur.com/7ewDM0v.png" height="25%" width="25%"/><br>`;
+    message += `<a href="https://github.com/cparsell/music-spider">`
+    message += `<img src="https://imgur.com/7ewDM0v.png" height="25%" width="25%"/></a><br>`;
     message += `<span style="font-family:georgia,times,times new roman,serif;font-size:28px;color:#000000;">`;
     message += `<strong>${SERVICE_NAME}</strong><br><br></span></div></td></tr></thead>`;
     message += `<tbody>`
