@@ -96,8 +96,9 @@ const ticketSearch = async (keyword, writer) =>
       // if other artists in my list are in this event, move them to front of list
       let artistsArr = artistsList();
       for (i=0;i<artistsArr;i++){
+        Logger.log(artistsArr[i]);
         if (attractions.includes(artistsArr[i]) && artistsArr[i] != keyword) {
-          Logger.log(artistsArr[i]);
+          Logger.log("Match on artist list");
           attractions = attractions.sort(function(x,y){ return x == keyword ? -1 : y == keyword ? 1 : 0; });
         }
       }
