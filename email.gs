@@ -87,7 +87,7 @@ class CreateMessage
     </style>`;
     message += `<table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;border-spacing:0px;padding:0;margin:0;width:100%;background-repeat:repeat;background-position:center top; background-color:#f8f8f8;"`;
     message += `<tbody><tr style="border-collapse: collapse;"><td valign="top" style="padding: 0;Margin: 0;">`
-    message += `<table class="tg" align="center" style="border-collapse: collapse;border-spacing: 0px;background-color: #ffffff;width: 650px;"><thead>`
+    message += `<table class="tg" align="center" style="border-collapse: collapse;border-spacing: 0px;background-color: #ffffff;width: 725px;"><thead>`
     message += `<tr><td colspan=2><div style="text-align: center;">`
     message += `<a href="https://github.com/cparsell/music-spider">`
     message += `<img src="https://imgur.com/7ewDM0v.png" height="25%" width="25%"/></a><br>`;
@@ -110,7 +110,7 @@ class CreateMessage
       }
       message += `<td class="tg-0lax"><div style="text-align: center;">`;
       message += `<div class="" style=""><a href='${url}'>`;
-      message += `<img src='${image}' class="" style="width:90%;float:center;width:300px;height:200px;object-fit:cover;"/></div>`;
+      message += `<img src='${image}' class="" style="width:90%;float:center;width:350px;height:200px;object-fit:cover;"/></div>`;
       message += `<span style="font-family:georgia,times,times new roman,serif">`;
       message += `<a href='${url}' style="text-decoration:none;"><span style="color:#44494c;font-size:20px;"><strong>${eName}</strong></span></a><br>`;
       message += `<span style="color:#696969;font-size:12px;">at ${venue}, ${city}<br> `;
