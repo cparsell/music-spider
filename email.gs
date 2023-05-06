@@ -99,8 +99,8 @@ class CreateMessage
     // debugLog("ordered", ordered);
     for (const [index, [key]] of Object.entries(Object.entries(this.events))) {
       const {date, city, venue, url, image, eName, acts} = this.events[key];
-      Logger.log(this.events[key]);
-      Logger.log(acts);
+      // Logger.log(this.events[key]);
+      // Logger.log(acts);
       var actsArr = new Array;
       if (acts != undefined) actsArr = acts.split(',');
       let eDate = new Date(key);
@@ -126,7 +126,7 @@ class CreateMessage
         message += ``
         actsArr.forEach((act, index) => {
           // if (!eName.contains(act)) 
-          message += (index == actsArr.length) ?  `${act}` : `${act}, `;
+          message += (index == actsArr.length-1) ?  `${act}` : `${act}, `;
         })
         message += `<br/>`
       }
