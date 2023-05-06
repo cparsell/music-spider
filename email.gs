@@ -99,6 +99,9 @@ class CreateMessage
     // debugLog("ordered", ordered);
     for (const [index, [key]] of Object.entries(Object.entries(this.events))) {
       const {date, city, venue, url, image, eName, acts} = this.events[key];
+      Logger.log(acts);
+      var actsArr = new Array;
+      if (acts != undefined) actsArr = acts.split(',');
       let eDate = new Date(key);
       // Logger.log(eDate);
       let eventDate = eDate.toLocaleDateString();
@@ -117,10 +120,11 @@ class CreateMessage
       message += `<img src='${image}' class="" style="width:90%;float:center;width:350px;height:200px;object-fit:cover;"/></div>`;
       message += `<span style="font-family:georgia,times,times new roman,serif;">`;
       message += `<a href='${url}' style="text-decoration:none;"><span style="color:#44494c;font-size:20px;"><strong>${eName}</strong></span></a><br/>`;
-      if (!eName.contains(acts[0])) {
+      if (!eName.contains(actsArr[0])) {
         message += ``
-        acts.forEach((act) => {
-          if (!eName.contains(act)) message += `${act}, `
+        actsArr.forEach((act) => {
+          // if (!eName.contains(act)) 
+          message += `${act}, `
         })
         message += `<br/>`
       }
