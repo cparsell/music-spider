@@ -114,8 +114,8 @@ class CreateMessage
         message += `<tr>`;
       }
       message += `<td class="tg-0lax"><div style="text-align: center;">`;
-      message += `<div class="fill" style=""><center><a href='${url}'>`;
-      message += `<img src='${image}' class="img" style="width:90%"/></a></center></div><br>`;
+      message += `<div class="fill" style=""><a href='${url}'>`;
+      message += `<img src='${image}' class="" style="width:90%;float:center;width:225px;height:400px;object-fit:cover;"/></a></div><br>`;
       message += `<span style="font-family:georgia,times,times new roman,serif">`;
       message += `<span style="color:#44494c;font-size:20px;"><strong>${eName}</strong></span><br>`;
       message += `<span style="color:#696969;font-size:12px;">at ${venue}, ${city}<br> `;
