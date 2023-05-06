@@ -124,9 +124,9 @@ class CreateMessage
       if (actsArr.length > 1 || !eName.match(actsArr[0])) {
         Logger.log("Listing acts")
         message += ``
-        actsArr.forEach((act) => {
+        actsArr.forEach((act, index) => {
           // if (!eName.contains(act)) 
-          message += `${act}, `
+          message += (index == actsArr.length) ?  `${act}` : `${act}, `;
         })
         message += `<br/>`
       }
