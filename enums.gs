@@ -36,6 +36,7 @@ const HEADERNAMES = {
   date : `Date`,	
   url : `URL`,	
   image : `Image`,	
+	acts: "Acts",
   
 }
 const RESPONSECODES = {
