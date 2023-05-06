@@ -102,6 +102,8 @@ class CreateMessage
       let eDate = new Date(key);
       // Logger.log(eDate);
       let eventDate = eDate.toLocaleDateString();
+      let eventDay = eDate.getDay();
+      let eventMonth = eDate.getMonth();
       // Logger.log(eventDate);
       let eventTime = Utilities.formatDate(eDate, "PST", "h a");
 
