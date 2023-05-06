@@ -19,9 +19,11 @@ const savedShowsUrl = baseUrl + "/me/shows";
 const savedEpisodesUrl = baseUrl + "/me/episodes";
 const topArtistsUrl = baseUrl + "/me/top/artists";
 
-const monthNames = ["January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
+const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June",
+  "July", "Aug", "Sept", "Oct", "Nov", "Dec"
 ];
+const dayNames = ["Mon", "Tues", "Wed", "Thur", "Fri", "Sat",
+  "Sun"];
 
 // Playlist URLs
 const playlistsUrl = baseUrl + "/me/playlists";
