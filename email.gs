@@ -112,9 +112,9 @@ class CreateMessage
       if (isEven(index)) {
         message += `<tr>`;
       }
-      message += `<td class="tg-0lax"><div style="text-align: left;">`;
+      message += `<td class="tg-0lax"><div style="text-align: left;margin-left: 10px;">`;
       message += `<div class="" style=""><a href='${url}'>`;
-      message += `<img src='${image}' class="" style="margin-left: 10px;width:90%;float:center;width:350px;height:200px;object-fit:cover;"/></div>`;
+      message += `<img src='${image}' class="" style="width:90%;float:center;width:350px;height:200px;object-fit:cover;"/></div>`;
       message += `<span style="font-family:georgia,times,times new roman,serif;">`;
       message += `<a href='${url}' style="text-decoration:none;"><span style="color:#44494c;font-size:20px;"><strong>${eName}</strong></span></a><br>`;
       message += `<span style="color:#696969;font-size:12px;">at ${venue}, ${city}<br> `;
