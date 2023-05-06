@@ -112,7 +112,7 @@ const ticketSearch = async (keyword, writer) =>
     });
 
     for (const key of Object.keys(eventsArr)) { 
-      if (eventsArr[key].name.match(keyword)) {
+      if (eventsArr[key].name.match(keyword) || eventsArr[key].acts.contains(keyword)) {
         writeEvent({ 
           date: eventsArr[key].date,
           name: eventsArr[key].name,
