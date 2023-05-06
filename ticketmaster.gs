@@ -141,7 +141,7 @@ const writeEvent = ({name, date, city, venue, url, image, acts}) =>
   SetByHeader(eventSheet, "Date", lastRow+1, date);
   SetByHeader(eventSheet, "URL", lastRow+1, url);
   SetByHeader(eventSheet, "Image", lastRow+1, image);
-  SetByHeader(eventSheet, "Acts", lastRow+1, acts);
+  SetByHeader(eventSheet, "Acts", lastRow+1, acts.toString());
 }
 const tmSearch = async (keyword, writer) => 
 {
