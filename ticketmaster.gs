@@ -95,11 +95,9 @@ const ticketSearch = async (keyword, writer) =>
       });
       // if other artists in my list are in this event, move them to front of list
       let artistsArr = artistsList();
-      for (i=0;i<artistsArr;i++){
+      for (i=0;i<artistsArr.length;i++){
         let artist = artistsArr[i][0];
-        Logger.log(artist);
         if (attractions.includes(artist) && artist != keyword) {
-          Logger.log("Match on artist list");
           attractions = attractions.sort(function(x,y){ return x == artist ? -1 : y == artist ? 1 : 0; });
         }
       }
@@ -111,10 +109,10 @@ const ticketSearch = async (keyword, writer) =>
         if (item.dates.start.dateTime) {
           date = item.dates.start.dateTime;
         }
+        // some list timeTBA = true, or noSpecificTime = true. if so, use localDate value
         if (item.dates.start.timeTBA || item.dates.start.noSpecificTime) {
           date = item.dates.start.localDate;
         }
-        
         // Logger.log(`venue: ${venueName}`);
         eventsArr[date] = { 
           "name": item.name,
