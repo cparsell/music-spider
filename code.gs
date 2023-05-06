@@ -58,6 +58,12 @@ const addArrayToSheet = (sheet, column, values) =>
   sheet.getRange(range).setValues(values.map(fn));
 }
 
+const artistsList = () => {
+  let artistRows = artistSheet.getLastRow()-1;
+  if (artistRows==0) artistRows=1;
+  let artistsArr = artistSheet.getRange(2,1,artistRows,1).getValues();
+}
+
 const writeArrayToColumn = (array, sheet, col) => {
   let outerArray = [],
   tempArray = [],

@@ -14,10 +14,8 @@ const refreshEvents = async () => {
   // clearColumn(eventSheet,1, 2,lastRow);
   
   //get list of artists from sheet
+  let artistsArr = artistsList();
   //search each artist
-  let artistRows = artistSheet.getLastRow()-1;
-  if (artistRows==0) artistRows=1;
-  let artistsArr = artistSheet.getRange(2,1,artistRows,1).getValues();
   for (i=0;i<artistsArr.length; i++){
     // Logger.log(artistsArr[i][0]);
     ticketSearch(artistsArr[i][0], writer);
@@ -95,6 +93,15 @@ const ticketSearch = async (keyword, writer) =>
       item._embedded.attractions.forEach((attraction) => {
         attractions.push(attraction.name);
       });
+      // if other artists in my list are in this event, move them to front of list
+      let artistsArr = artistsList();
+      for (i=0;i<artistsArr;i++){
+        if (attractions.includes(artistsArr[i]) && artistsArr[i] != keyword) {
+          Logger.log(artistsArr[i]);
+          attractions = attractions.sort(function(x,y){ return x == keyword ? -1 : y == keyword ? 1 : 0; });
+        }
+      }
+      // then move keyword to front of list of acts
       attractions = attractions.sort(function(x,y){ return x == keyword ? -1 : y == keyword ? 1 : 0; });
       item._embedded.venues.forEach((venue) =>{ 
         let venueName = venue.name; 
@@ -118,9 +125,6 @@ const ticketSearch = async (keyword, writer) =>
         }
       });
     });
-    for (const key of Object.keys(eventsArr)) { 
-      Logger.log(eventsArr[key].name);
-    }
 
     for (const key of Object.keys(eventsArr)) { 
       // eventsArr[key].name.match(keyword) || 

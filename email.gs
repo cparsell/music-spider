@@ -99,18 +99,14 @@ class CreateMessage
     // debugLog("ordered", ordered);
     for (const [index, [key]] of Object.entries(Object.entries(this.events))) {
       const {date, city, venue, url, image, eName, acts} = this.events[key];
-      // Logger.log(this.events[key]);
-      // Logger.log(acts);
       var actsArr = new Array;
       if (acts != undefined) actsArr = acts.split(',');
       let eDate = new Date(key);
-      // Logger.log(eDate);
       let eventDate = eDate.toLocaleDateString();
       let eventDay = eDate.getDay();
       let eventDayNum = eDate.getDate();
       let eventMonth = eDate.getMonth();
       let eventYear = eDate.getFullYear();
-      // Logger.log(eventDate);
       let eventTime = Utilities.formatDate(eDate, "PST", "h a");
 
       if (isEven(index)) {
@@ -124,8 +120,10 @@ class CreateMessage
       if (actsArr.length > 1 || !eName.match(actsArr[0])) {
         message += `with `
         actsArr.forEach((act, index) => {
-          if (!eName.match(act) && index < 6) message += (index == actsArr.length-1) ?  `${act}` : `${act}, `;
-          if (index == 6) message += `...`
+          if (!eName.match(act) && index < 6) {
+            message += (index == actsArr.length-1) ?  `${act}` : `${act}, `;
+          }
+          if (index == 6) message += `...` // truncate list if longer than 5
         })
         message += `<br/>`
       }
