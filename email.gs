@@ -89,9 +89,9 @@ class CreateMessage
     </style>`;
     // top of email
     message += `<table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;border-spacing:0px;padding:0;margin:0;width:100%;background-repeat:repeat;background-position:center top; background-color:#f8f8f8;"`;
-    message += `<tbody><tr style="border-collapse: collapse;"><td valign="top" style="padding: 0;Margin: 0;"><br/><br/>`
+    message += `<tbody><tr style="border-collapse: collapse;"><td valign="top" style="padding: 0;Margin: 0;">`
     message += `<table class="tg" align="center" style="border-collapse: collapse;border-spacing: 0px;background-color: #ffffff;width: 750px;"><thead>`
-    message += `<tr><td colspan=2><div style="text-align: center;">`
+    message += `<tr><td colspan=2><div style="text-align: center;"><br/><br/>`
     message += `<a href="https://github.com/cparsell/music-spider">`
     message += `<img src="https://imgur.com/7ewDM0v.png" height="22%" width="22%"/></a><br>`;
     message += `<span style="font-family:trebuchet, sans-serif;font-size:28px;color:#e6e6e6;">`;
