@@ -118,9 +118,10 @@ class CreateMessage
       message += `<span style="font-family:georgia,times,times new roman,serif;">`;
       message += `<a href='${url}' style="text-decoration:none;"><span style="color:#44494c;font-size:20px;"><strong>${eName}</strong></span></a><br/>`;
       if (actsArr.length > 1 || !eName.match(actsArr[0])) {
-        message += `with `
+        
         actsArr.forEach((act, index) => {
           if (!eName.match(act) && index < 6) {
+            if (index == 0) message += `with `;
             message += (index == actsArr.length-1) ?  `${act}` : `${act}, `;
           }
           if (index == 6) message += `...` // truncate list if longer than 5
