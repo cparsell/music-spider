@@ -128,7 +128,7 @@ class CreateMessage
         })
         message += `<br/>`
       }
-      message += `<span style="color:#696969;font-size:12px;">at ${venue}, ${city}<br/> `;
+      message += `<span style="color:#696969;font-size:12px;font-family:georgia,times,times new roman,serif;">at ${venue}, ${city}<br/> `;
       message += `<strong>${dayNames[eventDay]}, ${monthNames[eventMonth]} ${eventDayNum} ${eventYear}</strong> ${eventTime}</span></span></div>`;
       message += `<br/></td>`;
       if (!isEven(index)) message += `</tr><br/>`;
