@@ -26,7 +26,7 @@ const refreshEvents = async () => {
 const sendEmail = () => {
   var eventsArr = buildEventsArr();
   let msgSubjRaw = [];
-  let msgSubj = SERVICE_NAME;
+  let msgSubj = `${SERVICE_NAME} - `;
   for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
     msgSubjRaw.push(eventsArr[key].eName);
   }
