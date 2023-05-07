@@ -2,7 +2,7 @@ const baseAuthUrl = "https://accounts.spotify.com";
 const authUrl = baseAuthUrl + "/authorize";
 const refreshUrl = baseAuthUrl + "/api/token";
 
-const scope = "user-library-read playlist-read-private playlist-read-collaborative user-top-read";
+const scope = "user-library-read playlist-read-private playlist-read-collaborative user-top-read user-follow-read";
 
 const doGet = (e) => 
 {

@@ -83,7 +83,7 @@ const getSavedTracksArtists = async (writer) =>
   }
 }
 
-const getFollowedArtists = async () =>
+const getFollowedArtists = async (writer) =>
 {
   // Retrieve auth
   var accessToken = await retrieveAuth();
