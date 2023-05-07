@@ -25,9 +25,10 @@ const refreshArtists = async () =>
     debugLog("followedArtists", followedArtists);
   }
   // Combine both arrays
-  let combined = topArtists.concat(playlistArtists);
+  topArtists.concat(playlistArtists);
+  topArtists.concat(followedArtists);
   // Remove duplicates
-  let artistsArr = arrUnique(combined);
+  let artistsArr = arrUnique(topArtists);
   Logger.log(`${artistsArr.length} artists total`);
   if (artistsArr.length > 0) {
     writeArrayToColumn(artistsArr, artistSheet, 1);
