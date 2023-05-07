@@ -79,6 +79,42 @@ const getSavedTracksArtists = async (writer) =>
   }
 }
 
+function getArtistsFollowing()
+{
+  // Retrieve auth
+  var accessToken = retrieveAuth();
+
+  // Retrieve data
+  var params = "?type=artist&limit=50";
+  var data = getData(accessToken, followUrl + params, true);
+
+  // Fold array of responses into single structure
+  data = common.collateArrays("artists.items", data);
+
+  // Sort artists by name
+  data.sort((first, second) =>
+  {
+    if (first.name < second.name)
+    {
+      return -1;
+    }
+    if (first.name > second.name)
+    {
+      return 1;
+    }
+    // names must be equal
+    return 0;
+  });
+  let artistsArr = new Array;
+  data.forEach(artist =>
+  {
+    artistsArr.push(JSON.stringify(artist.name));
+  });
+  Logger.log(artistsArr);
+  return artistsArr;
+}
+
+
 /**
  * ----------------------------------------------------------------------------------------------------------------
  * Returns an array of artists from a Playlist
