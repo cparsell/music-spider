@@ -25,7 +25,7 @@ const refreshArtists = async () =>
   let combined = topArtists.concat(playlistArtists).concat(followedArtists);
   debugLog(`combined`, combined);
   // Remove duplicates
-  let artistsArr = arrUnique(topArtists);
+  let artistsArr = arrUnique(combined);
   Logger.log(`${artistsArr.length} artists total added`);
   if (artistsArr.length > 0) {
     // Clear previous artist list
