@@ -26,10 +26,12 @@ const refreshEvents = async () => {
 const sendEmail = () => {
   var eventsArr = buildEventsArr();
   let msgSubjRaw = [];
+  let msgSubj = SERVICE_NAME;
   for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
     msgSubjRaw.push(eventsArr[key].eName);
   }
-  let msgSubj = arrUnique(msgSubj).join(', ');
+  msgSubj += arrUnique(msgSubj).join(', ');
+  
   // msgSubj += `${eventsArr[key].eName},`;
   var message = new CreateMessage({events: eventsArr});
   new Emailer({
