@@ -9,9 +9,11 @@ class Emailer
   constructor({ 
     email : email = `Unknown Email`, 
     message : message = ``,
+    subject: subject = `Music Update`,
   }) {
     this.email = email;
     this.message = message;
+    this.subject = subject;
     this.SendEmail();
   }
 

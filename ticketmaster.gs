@@ -26,10 +26,15 @@ const refreshEvents = async () => {
 const sendEmail = () => {
   var eventsArr = buildEventsArr();
   // Logger.log(eventsArr);
+  let msgSubj = "";
+  for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
+    msgSubj += `${eventsArr[key]},`;
+  }
   var message = new CreateMessage({events: eventsArr});
   new Emailer({
     message: message,
-    email: config.email
+    email: config.email,
+    subject: msgSubj,
   });
 }
 
