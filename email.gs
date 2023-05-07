@@ -93,9 +93,9 @@ class CreateMessage
     message += `<table class="tg" align="center" style="border-collapse: collapse;border-spacing: 0px;background-color: #ffffff;width: 750px;"><thead>`
     message += `<tr><td colspan=2><div style="text-align: center;">`
     message += `<a href="https://github.com/cparsell/music-spider">`
-    message += `<img src="https://imgur.com/7ewDM0v.png" height="25%" width="25%"/></a><br>`;
-    message += `<span style="font-family:georgia,times,times new roman,serif;font-size:28px;color:#ffffff;text-shadow: 2px 2px black;">`;
-    message += `<strong>${SERVICE_NAME}</strong><br><br></span></div></td></tr></thead>`;
+    message += `<img src="https://imgur.com/7ewDM0v.png" height="22%" width="22%"/></a><br>`;
+    message += `<span style="font-family:georgia,times,times new roman,serif;font-size:28px;color:#e6e6e6;">`;
+    message += `<strong>${SERVICE_NAME.toLowerCase()}</strong><br><br></span></div></td></tr></thead>`;
     message += `<tbody>`
     // for (const key of Object.keys(this.events)) { 
 
