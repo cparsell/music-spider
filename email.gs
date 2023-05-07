@@ -115,7 +115,7 @@ class CreateMessage
       message += `<td class="tg-0lax"><div style="text-align: left;margin-left: 10px;">`;
       message += `<div class="" style=""><a href='${url}'>`;
       message += `<img src='${image}' class="" style="width:90%;float:center;width:350px;height:200px;object-fit:cover;"/></div>`;
-      message += `<span style="font-family:georgia,times,times new roman,serif;">`;
+      message += `<span style="font-family: Averta,Helvetica Neue,Helvetica,Arial,sans-serif;">`;
       message += `<a href='${url}' style="text-decoration:none;"><span style="color:#44494c;font-size:20px;"><strong>${eName}</strong></span></a><br/>`;
       if (actsArr.length > 1 || !eName.match(actsArr[0])) {
         
