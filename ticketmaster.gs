@@ -30,7 +30,7 @@ const sendEmail = () => {
   for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
     msgSubjRaw.push(eventsArr[key].eName);
   }
-  msgSubj += arrUnique(msgSubj).join(', ');
+  msgSubj += arrUnique(msgSubjRaw).join(', ');
   
   // msgSubj += `${eventsArr[key].eName},`;
   var message = new CreateMessage({events: eventsArr});
