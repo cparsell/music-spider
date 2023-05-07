@@ -25,7 +25,6 @@ const refreshEvents = async () => {
 
 const sendEmail = () => {
   var eventsArr = buildEventsArr();
-  // Logger.log(eventsArr);
   let msgSubj = "";
   for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
     msgSubj += `${eventsArr[key]},`;

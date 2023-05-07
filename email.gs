@@ -9,7 +9,7 @@ class Emailer
   constructor({ 
     email : email = `Unknown Email`, 
     message : message = ``,
-    subject: subject = `Music Update`,
+    subject: subject = `${SERVICE_NAME} : Event Update`,
   }) {
     this.email = email;
     this.message = message;
@@ -20,7 +20,7 @@ class Emailer
   SendEmail () {
     // const staff = BuildStaff();
     console.info(`Sending  email to ${this.email}.`);
-    GmailApp.sendEmail(this.email, `${SERVICE_NAME} : Event Update`, "", {
+    GmailApp.sendEmail(this.email, this.subject, "", {
       htmlBody: this.message.defaultMessage,
       from: SUPPORT_ALIAS,
       // cc: this.designspecialistemail,
