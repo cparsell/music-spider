@@ -7,18 +7,22 @@ const refreshArtists = async () =>
   clearColumn(artistSheet, 1, 2);
   var topArtists = new Array;
   var playlistArtists = new Array;
-
+  var followedArtists = new Array;
   if (config.getTopArtists) {
     // Get Top Artists from Spotify ()
     topArtists = await getTopArtists(writer);
     Logger.log(`${topArtists.length} Top Artists`);
     debugLog(`Top Artists`, topArtists);
   }
-  
   if (config.getArtistsFromPlaylist) {
     playlistArtists = await getPlaylistArtists(writer);
     Logger.log(`${playlistArtists.length} Playlist Artists`);
     debugLog("plastlistArtists", playlistArtists);
+  }
+  if (config.getFollowing) {
+    followedArtists = await getFollowedArtists(writer);
+    Logger.log(`${playlistArtists.length} Followed Artists`);
+    debugLog("followedArtists", followedArtists);
   }
   // Combine both arrays
   let combined = topArtists.concat(playlistArtists);
@@ -79,14 +83,14 @@ const getSavedTracksArtists = async (writer) =>
   }
 }
 
-function getArtistsFollowing()
+const getFollowedArtists = async () =>
 {
   // Retrieve auth
-  var accessToken = retrieveAuth();
+  var accessToken = await retrieveAuth();
 
   // Retrieve data
   var params = "?type=artist&limit=50";
-  var data = getData(accessToken, followUrl + params, true);
+  var data = await getData(accessToken, followUrl + params, true);
 
   // Fold array of responses into single structure
   data = common.collateArrays("artists.items", data);
