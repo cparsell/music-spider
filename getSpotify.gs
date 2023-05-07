@@ -19,7 +19,7 @@ const refreshArtists = async () =>
     Logger.log(`${playlistArtists.length} Playlist Artists`);
     debugLog("plastlistArtists", playlistArtists);
   }
-  if (config.getFollowing) {
+  if (config.getFollowing) { 
     followedArtists = await getFollowedArtists(writer);
     Logger.log(`${playlistArtists.length} Followed Artists`);
     debugLog("followedArtists", followedArtists);
