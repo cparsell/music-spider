@@ -2,9 +2,6 @@ const refreshArtists = async () =>
 {
   // Logs to 'Logger' sheet
   const writer = new WriteLogger();
-
-  // Clear previous artist list
-  clearColumn(artistSheet, 1, 2);
   var topArtists = new Array;
   var playlistArtists = new Array;
   var followedArtists = new Array;
@@ -21,16 +18,19 @@ const refreshArtists = async () =>
   }
   if (config.getFollowing) { 
     followedArtists = await getFollowedArtists(writer);
-    Logger.log(`${playlistArtists.length} Followed Artists`);
+    Logger.log(`${followedArtists.length} Followed Artists`);
     debugLog("followedArtists", followedArtists);
   }
   // Combine both arrays
-  topArtists.concat(playlistArtists);
-  topArtists.concat(followedArtists);
+  let combined = topArtists.concat(playlistArtists).concat(followedArtists);
+  debugLog(`combined`, combined);
   // Remove duplicates
   let artistsArr = arrUnique(topArtists);
-  Logger.log(`${artistsArr.length} artists total`);
+  Logger.log(`${artistsArr.length} artists total added`);
   if (artistsArr.length > 0) {
+    // Clear previous artist list
+    clearColumn(artistSheet, 1, 2);
+    // Write new artists to sheet
     writeArrayToColumn(artistsArr, artistSheet, 1);
     debugLog("Total Artists", artistsArr);
   } else {
@@ -113,7 +113,9 @@ const getFollowedArtists = async (writer) =>
   let artistsArr = new Array;
   data.forEach(artist =>
   {
-    artistsArr.push(JSON.stringify(artist.name));
+    if (artistsToIgnore.includes(artist.name)) Logger.log(`Ignoring ${artist.name}`)
+    if (!artistsToIgnore.includes(artist.name)) artistsArr.push(artist.name);  
+    // artistsArr.push(JSON.stringify(artist.name));
   });
   Logger.log(artistsArr);
   return artistsArr;
