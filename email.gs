@@ -13,7 +13,7 @@ class Emailer
   }) {
     this.email = email;
     this.message = message;
-    this.subject = subject;
+    this.subject = subject.substring(0,249);
     this.SendEmail();
   }
 

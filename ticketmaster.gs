@@ -35,9 +35,11 @@ const sendEmail = () => {
   let msgSubjRaw = [];
   let msgSubj = `${SERVICE_NAME} - `;
   for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
-    msgSubj += `${eventsArr[key].eName},`;
-    // msgSubjRaw.push(eventsArr[key].eName);
+    msgSubjRaw.push(eventsArr[key].eName);
   }
+  // Logger.log(msgSubjRaw);
+  let uniq = [...new Set(msgSubjRaw)];
+  msgSubj += uniq.join(', ');
   // msgSubj += arrUnique(msgSubjRaw).join(', ');
   var message = new CreateMessage({events: eventsArr});
   new Emailer({
