@@ -87,6 +87,7 @@ class CreateMessage
         vertical-align:top
       }      
     </style>`;
+    // top of email
     message += `<table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;border-spacing:0px;padding:0;margin:0;width:100%;background-repeat:repeat;background-position:center top; background-color:#f8f8f8;"`;
     message += `<tbody><tr style="border-collapse: collapse;"><td valign="top" style="padding: 0;Margin: 0;">`
     message += `<table class="tg" align="center" style="border-collapse: collapse;border-spacing: 0px;background-color: #ffffff;width: 750px;"><thead>`
@@ -98,7 +99,7 @@ class CreateMessage
     message += `<tbody>`
     // for (const key of Object.keys(this.events)) { 
 
-    // debugLog("ordered", ordered);
+    // iterate through list of events
     for (const [index, [key]] of Object.entries(Object.entries(this.events))) {
       const {date, city, venue, url, image, eName, acts} = this.events[key];
       var actsArr = new Array;

@@ -25,10 +25,17 @@ const refreshEvents = async () => {
 
 const sendEmail = () => {
   var eventsArr = buildEventsArr();
+  let ordered = Object.keys(events).sort().reduce(
+    (obj, key) => { 
+      obj[key] = eventsArr[key]; 
+      return obj;
+    }, 
+    {}
+  );
   let msgSubjRaw = [];
   let msgSubj = `${SERVICE_NAME} - `;
-  for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
-    msgSubjRaw.push(eventsArr[key].eName);
+  for (const [index, [key]] of Object.entries(Object.entries(ordered))) {
+    msgSubjRaw.push(ordered[key].eName);
   }
   msgSubj += arrUnique(msgSubjRaw).join(', ');
   
