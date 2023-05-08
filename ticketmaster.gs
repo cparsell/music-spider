@@ -64,6 +64,10 @@ const ticketSearch = async (keyword, writer) =>
 {
   // keyword = "Madlib" // for debugging, I uncomment this, specify something that returns a result, and run the function from Apps Script to see the Execution Log
   // writer = new WriteLogger();  // and uncomment this
+  if (keyword == undefined) {
+    Logger.log("No keyword provided");
+    return;
+  }
   let artist = artistSheet.getRange(2,1);
   // returns JSON response
   let data = await tmSearch(keyword, writer);
