@@ -16,25 +16,6 @@ const refreshEvents = async () => {
     // }
     Utilities.sleep(1000);
   }
-  //Clear events list
-  clearData(eventSheet);
-  Logger.log(`eventsArr`);
-  Logger.log(eventsArr);
-  //write to sheet
-  for (const [[key]] of Object.entries(Object.entries(eventsArr))) {
-    let exists = searchColForValue(eventSheet, "URL", eventsArr[key].url);
-    if (!exists) {
-      writeEvent({ 
-        date: eventsArr[key].date,
-        name: eventsArr[key].name,
-        city: eventsArr[key].city,
-        venue: eventsArr[key].venue, 
-        url: eventsArr[key].url, 
-        image: eventsArr[key].image,
-        acts: eventsArr[key].acts,
-      });
-    }
-  }
 }
 
 const writeEventsToSheet = (eventsArr) => {
