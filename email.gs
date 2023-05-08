@@ -104,10 +104,12 @@ class CreateMessage
       const {date, city, venue, url, image, eName, acts} = this.events[key];
       var actsArr = new Array;
       let actsB;
-      for (let i=0;i<acts.length;i++) {
-        if (eName.match(acts[i])) actsB = acts.splice(i, 1);
-      }    
       if (acts != undefined) actsArr = actsB.split(',');
+      Logger.log(acts);
+      for (let i=0;i<actsArr.length;i++) {
+        if (eName.match(actsArr[i])) actsB = actsArr.splice(i, 1);
+      }
+      Logger.log(`event name: ${eName}, acts: ${actsArr}`)
       let eDate = new Date(key);
       let eventDate = eDate.toLocaleDateString();
       let eventDay = eDate.getDay();
