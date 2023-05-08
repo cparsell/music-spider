@@ -114,7 +114,8 @@ class CreateMessage
           actsB.push(actsArr[i]);
         }
       }
-      Logger.log(`event name: ${eName}, acts: ${actsB}`)
+      Logger.log(`event name: ${eName}, acts: ${actsB}`);
+      let eDate = new Date(key);
       let eventDate = eDate.toLocaleDateString();
       let eventDay = eDate.getDay();
       let eventDayNum = eDate.getDate();
