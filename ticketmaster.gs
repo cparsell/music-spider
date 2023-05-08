@@ -9,26 +9,28 @@ const refreshEvents = async () => {
   for (i=0;i<artistsArr.length; i++){
     // Logger.log(artistsArr[i][0]);
     let eventResults = ticketSearch(artistsArr[i][0], writer);
-    for (const [index, [key]] of Object.entries(Object.entries(this.events))) {
+    for (const [index, [key]] of Object.entries(Object.entries(eventResults))) {
       //check for dupes first
-      let exists = searchColForValue(eventSheet, "URL", eventResults[key].url);
-      if (!exists) eventsArr[key] = eventResults[key];
+      eventsArr[key] = eventResults[key];
     }
   }
   //Clear events list
   clearData(eventSheet);
 
   //write to sheet
-  for (const [[key]] of Object.entries(Object.entries(this.events))) {
-    writeEvent({ 
-      date: eventsArr[key].date,
-      name: eventsArr[key].name,
-      city: eventsArr[key].city,
-      venue: eventsArr[key].venue, 
-      url: eventsArr[key].url, 
-      image: eventsArr[key].image,
-      acts: eventsArr[key].acts,
-    });
+  for (const [[key]] of Object.entries(Object.entries(eventsArr))) {
+    let exists = searchColForValue(eventSheet, "URL", eventResults[key].url);
+    if (!exists) {
+      writeEvent({ 
+        date: eventsArr[key].date,
+        name: eventsArr[key].name,
+        city: eventsArr[key].city,
+        venue: eventsArr[key].venue, 
+        url: eventsArr[key].url, 
+        image: eventsArr[key].image,
+        acts: eventsArr[key].acts,
+      });
+    }
   }
 }
 
