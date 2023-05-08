@@ -8,7 +8,7 @@ const refreshEvents = async () => {
   let eventsArr = {};
   for (i=0;i<artistsArr.length; i++){
     // Logger.log(artistsArr[i][0]);
-    let eventResults = ticketSearch(artistsArr[i][0], writer);
+    let eventResults = await ticketSearch(artistsArr[i][0], writer);
     for (const [index, [key]] of Object.entries(Object.entries(eventResults))) {
       //check for dupes first
       eventsArr[key] = eventResults[key];
@@ -73,9 +73,8 @@ const ticketSearch = async (keyword, writer) =>
   let artist = artistSheet.getRange(2,1);
   // returns JSON response
   let data = await tmSearch(keyword, writer);
-
-  if (data) {
-    var pdata = JSON.parse(data);
+  
+  if (data.page.totalElements != 0) {
     var parsedData = pdata._embedded.events;
     // writer.Info(data);  // uncomment this to write raw JSON response to 'Logger' sheet
     let eventsArr = {};
@@ -138,24 +137,9 @@ const ticketSearch = async (keyword, writer) =>
     }
     Logger.log(eventsArr);
     return eventsArr;
-
-    // for (const key of Object.keys(eventsArr)) { 
-    //   // eventsArr[key].name.match(keyword) || 
-    //   if (eventsArr[key].acts.includes(keyword)) {
-    //     let doesItExist = searchColumnForValue(eventSheet, "URL", eventsArr[key].url);
-    //     if (!doesItExist) {
-    //       writeEvent({ 
-    //         date: eventsArr[key].date,
-    //         name: eventsArr[key].name,
-    //         city: eventsArr[key].city,
-    //         venue: eventsArr[key].venue, 
-    //         url: eventsArr[key].url, 
-    //         image: eventsArr[key].image,
-    //         acts: eventsArr[key].acts,
-    //       });
-    //     }
-    //   } 
-    // };
+  } else {
+    Logger.log(`No results for ${keyword}`)
+    return false;
   }
 }
 
@@ -191,9 +175,15 @@ const tmSearch = async (keyword, writer) =>
   params += `&unit=${config.unit}`;
   params += `&keyword=${encodeURIComponent(keyword)}`;
   Logger.log(`Searching Ticketmaster for ${keyword}`);
-  var firstPage = UrlFetchApp.fetch(ticketmasterUrl+params, options).getContentText();
-
-  return firstPage;
+  var response = UrlFetchApp.fetch(ticketmasterUrl+params, options).getContentText();
+  let responseCode = response.getResponseCode();
+  if (responseCode == 200 || responseCode == 201) {
+    let content = JSON.parse(response.getContentText());
+    return content;
+  } else {
+    writer.Error('Failed to search Ticketmaster');
+    return false;
+  }
 }
 
 
