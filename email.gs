@@ -106,7 +106,7 @@ class CreateMessage
       let actsB;
       for (let i=0;i<acts.length;i++) {
         if (eName.match(acts[i])) actsB = acts.splice(i, 1);
-      })      
+      }    
       if (acts != undefined) actsArr = actsB.split(',');
       let eDate = new Date(key);
       let eventDate = eDate.toLocaleDateString();
