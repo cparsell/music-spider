@@ -11,6 +11,9 @@ const refreshEvents = async () => {
   }
   //Clear events list
   clearData(eventSheet);
+
+  //write to sheet
+  // check for dupes
 }
 
 const buildEventsArr = () => 
@@ -95,13 +98,6 @@ const ticketSearch = async (keyword, writer) =>
         }
         // Logger.log(`venue: ${venueName}`);
         if (attractions.includes(keyword)) {
-          let sdf = false;
-          for(var i in eventsArr){
-            if(eventsArr[i].url == url){
-                sdf = true;
-                break; // If you want to break out of the loop once you've found a match
-            }
-          }
           eventsArr[date] = { 
             "name": item.name,
             "acts": attractions,
@@ -118,6 +114,8 @@ const ticketSearch = async (keyword, writer) =>
       Logger.log(`No events found for ${keyword}`);
       return;
     }
+    Logger.log(eventsArr);
+    return eventsArr;
 
     // for (const key of Object.keys(eventsArr)) { 
     //   // eventsArr[key].name.match(keyword) || 
