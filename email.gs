@@ -105,6 +105,7 @@ class CreateMessage
       var actsArr = new Array;
       let actsB = new Array;
       if (acts != undefined) actsArr = acts.split(',');
+      // look for acts' names in event name - if name is in event name, dont list it again
       for (var i=0;i<actsArr.length;i++) {
         Logger.log(`Looking for ${actsArr[i]}`)
         if (!eName.match(actsArr[i])) {
