@@ -213,7 +213,7 @@ const GetRowData = (sheet, row) => {
  * @param {number} row
  * @param {any} val
  */
-const SetByHeader = async (sheet, columnName, row, val) => {
+const SetByHeader = (sheet, columnName, row, val) => {
   // if(typeof sheet != `object`) return 1;
   let data;
   let col;
