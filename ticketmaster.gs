@@ -1,52 +1,16 @@
 const refreshEvents = async () => {
   const writer = new WriteLogger();
   //Clear events list
-  let startRow = 2;
-  let numCols = eventSheet.getLastColumn();
-  let numRows = eventSheet.getLastRow() - startRow + 1; // The number of row to clear
-  if (numRows == 0) numRows = 1;
-  let range = eventSheet.getRange(startRow, 1, numRows,numCols);
-  range.clear();
-
-  // clearColumn(eventSheet,1, 2,lastRow);
-  // clearColumn(eventSheet,1, 2,lastRow);
-  // clearColumn(eventSheet,1, 2,lastRow);
-  // clearColumn(eventSheet,1, 2,lastRow);
+  clearData(eventSheet);
   
   //get list of artists from sheet
   let artistsArr = artistsList();
+
   //search each artist
   for (i=0;i<artistsArr.length; i++){
     // Logger.log(artistsArr[i][0]);
     ticketSearch(artistsArr[i][0], writer);
   }
-
-}
-
-const sendEmail = () => {
-  var eventsArr = buildEventsArr();
-  // let ordered = Object.keys(eventsArr).sort().reduce(
-  //   (obj, key) => { 
-  //     obj[key] = eventsArr[key]; 
-  //     return obj;
-  //   }, 
-  //   {}
-  // );
-  let msgSubjRaw = [];
-  let msgSubj = `${SERVICE_NAME} - `;
-  for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
-    msgSubjRaw.push(eventsArr[key].eName);
-  }
-  // Logger.log(msgSubjRaw);
-  let uniq = [...new Set(msgSubjRaw)];
-  msgSubj += uniq.join(', ');
-  // msgSubj += arrUnique(msgSubjRaw).join(', ');
-  var message = new CreateMessage({events: eventsArr});
-  new Emailer({
-    message: message,
-    email: config.email,
-    subject: msgSubj,
-  });
 }
 
 const buildEventsArr = () => 
@@ -79,19 +43,19 @@ const buildEventsArr = () =>
 
 const ticketSearch = async (keyword, writer) => 
 {
-  // keyword = "Madlib"
-  // const writer = new WriteLogger();
+  // keyword = "Madlib" // for debugging, I uncomment this, specify something that returns a result, and run the function from Apps Script to see the Execution Log
+  // writer = new WriteLogger();  // and uncomment this
   let artist = artistSheet.getRange(2,1);
+  // returns JSON response
   let data = await tmSearch(keyword, writer);
 
   if (data) {
     var pdata = JSON.parse(data);
     var parsedData = pdata._embedded.events;
-    // writer.Info(data);
+    // writer.Info(data);  // uncomment this to write raw JSON response to 'Logger' sheet
     let eventsArr = {};
     parsedData.forEach((item) =>
     {
-      // const { name, _embedded } = item;
       let url = item.url;
       var image = [[0,0]];
       // Loop through image URLs in JSON response. Find the one with the largest filesize
@@ -145,7 +109,7 @@ const ticketSearch = async (keyword, writer) =>
     for (const key of Object.keys(eventsArr)) { 
       // eventsArr[key].name.match(keyword) || 
       if (eventsArr[key].acts.includes(keyword)) {
-        let doesItExist = matchValByHeader(eventSheet, "URL", eventsArr[key].url);
+        let doesItExist = searchForValue(eventSheet, "URL", eventsArr[key].url);
         if (!doesItExist) {
           writeEvent({ 
             date: eventsArr[key].date,
@@ -159,11 +123,10 @@ const ticketSearch = async (keyword, writer) =>
         }
       } 
     };
-
   }
 }
 
-const matchValByHeader = (sheet, columnName, val) => {
+const searchForValue = (sheet, columnName, val) => {
   if(typeof sheet != `object`) return false;
   try {
     let data = sheet.getDataRange().getValues();
@@ -177,11 +140,11 @@ const matchValByHeader = (sheet, columnName, val) => {
       return isSearchStringInRange;
     }
     else {
-      console.error(`Matching data by header fucking failed...`);
+      console.error(`Matching data by header failed...`);
       return false;
     }
   } catch (err) {
-    console.error(`${err} : matchValByHeader failed - Sheet: ${sheet} Col Name specified: ${columnName} value: ${val}`);
+    console.error(`${err} : searchForValue failed - Sheet: ${sheet} Col Name specified: ${columnName} value: ${val}`);
     return false;
   }
 }

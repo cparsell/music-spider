@@ -29,7 +29,7 @@ const refreshArtists = async () =>
   Logger.log(`${artistsArr.length} artists total added`);
   if (artistsArr.length > 0) {
     // Clear previous artist list
-    clearColumn(artistSheet, 1, 2);
+    clearData(artistSheet);
     // Write new artists to sheet
     writeArrayToColumn(artistsArr, artistSheet, 1);
     debugLog("Total Artists", artistsArr);

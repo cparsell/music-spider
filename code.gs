@@ -45,8 +45,8 @@ const BarMenu = () => {
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
- * Trigger 1 - On Submission
- * Reserved word: onFormSubmit() cannot be used here because it's reserved for simple triggers.
+ * 
+ * 
  * @param {Event} e
  */
 const addArrayToSheet = (sheet, column, values) => 

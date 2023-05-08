@@ -94,25 +94,6 @@ const common = {
   },
 };
 
-// const compare = (artistName) =>
-// {
-//   var sh=artistSheet;
-//   var lastRow=sh.getLastRow();
-//   var rg=sh.getRange(2, 1, lastRow, 1);
-//   var vA=rg.getValues();
-//   var theseRowsEqualTheValueInTheLastRowA=[];
-//   for(var i=0;i<lastRow-1;i++)
-//   {
-//     if(vA[i][0]==artistName)
-//     {
-//       Logger.log(`${artistName} exists already`)
-//       return true;
-//     }
-//   }
-//   Logger.log(`${artistName} doesn't exist already`)
-//   return false;
-// }
-
 /**
  * ----------------------------------------------------------------------------------------------------------------
  * Remove duplictes from an array
@@ -131,17 +112,28 @@ const arrUnique = (array) => {
   return outArray;
 }
 
-const clearColumn = (sheet, colNumber, startRow) => 
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * Clear a range of values
+ * @param {sheet} sheet 
+ * @param {number} startRow header title
+ */
+const clearData = (sheet, startRow = 2) => 
 {
-  //colNumber is the numeric value of the colum
-  //startRow is the number of the starting row
-
-  var numRows = sheet.getLastRow() - startRow + 1; // The number of row to clear
+  if(typeof sheet != `object`) return 1;
+  let numCols = sheet.getLastColumn();
+  let numRows = sheet.getLastRow() - startRow + 1; // The number of row to clear
   if (numRows == 0) numRows = 1;
-  var range = sheet.getRange(startRow, colNumber, numRows);
+  let range = sheet.getRange(startRow, 1, numRows,numCols);
   range.clear();
 }
 
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * Log a value to Execution Log if config.debug = true
+ * @param {string} valueName "variable"
+ * @param {variable} value the variable itself
+ */
 const debugLog = (valueName, value) => 
 {
   if (config.debug) 
@@ -151,6 +143,11 @@ const debugLog = (valueName, value) =>
   }
 }
 
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * Return TRUE if number is even, FALSE if it is odd
+ * @param {number} n
+ */
 const isEven = (n) => {
    return n % 2 == 0;
 }

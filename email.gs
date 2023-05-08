@@ -1,3 +1,23 @@
+const sendEmail = () => {
+  var eventsArr = buildEventsArr();
+  let msgSubjRaw = [];
+  let msgSubj = `${SERVICE_NAME} - `;
+  for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
+    msgSubjRaw.push(eventsArr[key].eName);
+  }
+  // remove duplicates from list of acts
+  let uniq = [...new Set(msgSubjRaw)];
+  msgSubj += uniq.join(', ');
+
+  var message = new CreateMessage({events: eventsArr});
+  new Emailer({
+    message: message,
+    email: config.email,
+    subject: msgSubj,
+  });
+}
+
+
 /**
  * -----------------------------------------------------------------------------------------------------------------
  * Send an Email
