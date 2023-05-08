@@ -103,7 +103,11 @@ class CreateMessage
     for (const [index, [key]] of Object.entries(Object.entries(this.events))) {
       const {date, city, venue, url, image, eName, acts} = this.events[key];
       var actsArr = new Array;
-      if (acts != undefined) actsArr = acts.split(',');
+      let actsB;
+      for (act of acts) {
+        if eName.match(act) actsB = acts.splice(acts.indexOf(act), 1);
+      }
+      if (acts != undefined) actsArr = actsB.split(',');
       let eDate = new Date(key);
       let eventDate = eDate.toLocaleDateString();
       let eventDay = eDate.getDay();
