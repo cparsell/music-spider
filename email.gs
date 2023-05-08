@@ -105,7 +105,7 @@ class CreateMessage
       var actsArr = new Array;
       let actsB;
       for (act of acts) {
-        if eName.match(act) actsB = acts.splice(acts.indexOf(act), 1);
+        if (eName.match(act)) actsB = acts.splice(acts.indexOf(act), 1);
       }
       if (acts != undefined) actsArr = actsB.split(',');
       let eDate = new Date(key);
