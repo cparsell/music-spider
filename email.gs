@@ -103,14 +103,18 @@ class CreateMessage
     for (const [index, [key]] of Object.entries(Object.entries(this.events))) {
       const {date, city, venue, url, image, eName, acts} = this.events[key];
       var actsArr = new Array;
-      let actsB;
-      if (acts != undefined) actsArr = actsB.split(',');
-      Logger.log(acts);
-      for (let i=0;i<actsArr.length;i++) {
-        if (eName.match(actsArr[i])) actsB = actsArr.splice(i, 1);
+      let actsB = new Array;
+      if (acts != undefined) actsArr = acts.split(',');
+      Logger.log(" . ");
+      Logger.log(actsArr);
+      for (var i=0;i<actsArr.length+1;i++) {
+        Logger.log(`Looking for ${actsArr[i]}`)
+        if (!eName.match(actsArr[i])) {
+          Logger.log(`Match for ${eName}. Remove ${actsArr[i]}. index ${i}`);
+          actsB.push(actsArr[i]);
+        }
       }
-      Logger.log(`event name: ${eName}, acts: ${actsArr}`)
-      let eDate = new Date(key);
+      Logger.log(`event name: ${eName}, acts: ${actsB}`)
       let eventDate = eDate.toLocaleDateString();
       let eventDay = eDate.getDay();
       let eventDayNum = eDate.getDate();
@@ -126,12 +130,12 @@ class CreateMessage
       message += `<img src='${image}' class="" style="width:90%;float:center;width:350px;height:200px;object-fit:cover;"/></div>`;
       message += `<span style="font-family: Averta,Helvetica Neue,Helvetica,Arial,sans-serif;">`;
       message += `<a href='${url}' style="text-decoration:none;"><span style="color:#44494c;font-size:20px;"><strong>${eName}</strong></span></a><br/>`;
-      if (actsArr.length > 1 || !eName.match(actsArr[0])) {
+      if (actsB.length > 1 || !eName.match(actsB[0])) {
         
-        actsArr.forEach((act, index) => {
+        actsB.forEach((act, index) => {
           if (index == 0) message += `with `;
           if (!eName.match(act) && index < 6) {
-            message += (index == actsArr.length-1) ?  `${act}` : `${act}, `;
+            message += (index == actsB.length-1) ?  `${act}` : `${act}, `;
           }
           if (index == 6) message += `...` // truncate list if longer than 5
         })
