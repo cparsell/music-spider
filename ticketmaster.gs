@@ -75,7 +75,7 @@ const ticketSearch = async (keyword, writer) =>
   let data = await tmSearch(keyword, writer);
   
   if (data.page.totalElements != 0) {
-    var parsedData = pdata._embedded.events;
+    var parsedData = data._embedded.events;
     // writer.Info(data);  // uncomment this to write raw JSON response to 'Logger' sheet
     let eventsArr = {};
     parsedData.forEach((item) =>
@@ -175,7 +175,7 @@ const tmSearch = async (keyword, writer) =>
   params += `&unit=${config.unit}`;
   params += `&keyword=${encodeURIComponent(keyword)}`;
   Logger.log(`Searching Ticketmaster for ${keyword}`);
-  var response = UrlFetchApp.fetch(ticketmasterUrl+params, options).getContentText();
+  let response = UrlFetchApp.fetch(ticketmasterUrl+params, options);
   let responseCode = response.getResponseCode();
   if (responseCode == 200 || responseCode == 201) {
     let content = JSON.parse(response.getContentText());
