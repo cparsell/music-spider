@@ -94,7 +94,7 @@ class CreateMessage
     message += `<tr><td colspan=2><div style="text-align: center;"><br/><br/>`
     message += `<a href="https://github.com/cparsell/music-spider">`
     message += `<img src="https://imgur.com/7ewDM0v.png" height="22%" width="22%"/></a><br>`;
-    message += `<span style="font-family:helvetica, sans-serif;font-size:30px;color:#e3e3e3;">`;
+    message += `<span style="font-family:helvetica, sans-serif;font-size:30px;color:#e9e9e9;">`;
     message += `<strong>${SERVICE_NAME.toLowerCase()}</strong><br><br></span></div></td></tr></thead>`;
     message += `<tbody>`
     // for (const key of Object.keys(this.events)) { 
@@ -104,22 +104,21 @@ class CreateMessage
       const {date, city, venue, url, image, eName, acts} = this.events[key];
       var actsArr = new Array;
       let actsB = new Array;
+      //turn text into array
       if (acts != undefined) actsArr = acts.split(',');
       // look for acts' names in event name - if name is in event name, dont list it again
       for (var i=0;i<actsArr.length;i++) {
-        Logger.log(`Looking for ${actsArr[i]}`)
         if (!eName.match(actsArr[i])) {
           actsB.push(actsArr[i]);
         }
       }
       let eDate = new Date(key);
-      let eventDate = eDate.toLocaleDateString();
       let eventDay = eDate.getDay();
       let eventDayNum = eDate.getDate();
       let eventMonth = eDate.getMonth();
       let eventYear = eDate.getFullYear();
       let eventTime = Utilities.formatDate(eDate, "PST", "h a");
-
+      // Start a new table row every even event
       if (isEven(index)) {
         message += `<tr>`;
       }
@@ -129,7 +128,6 @@ class CreateMessage
       message += `<span style="font-family: Averta,Helvetica Neue,Helvetica,Arial,sans-serif;">`;
       message += `<a href='${url}' style="text-decoration:none;"><span style="color:#44494c;font-size:20px;"><strong>${eName}</strong></span></a><br/>`;
       if (actsB.length > 1 || !eName.match(actsB[0])) {
-        
         actsB.forEach((act, index) => {
           if (index == 0) message += `with `;
           if (!eName.match(act) && index < 6) {
@@ -142,7 +140,7 @@ class CreateMessage
       message += `<span style="color:#696969;font-size:12px;font-family:georgia,times,times new roman,serif;">at ${venue}, ${city}<br/> `;
       message += `<strong>${dayNames[eventDay]}, ${monthNames[eventMonth]} ${eventDayNum} ${eventYear}</strong> ${eventTime}</span></span></div>`;
       message += `<br/></td>`;
-      if (!isEven(index)) message += `</tr><br/>`;
+      if (!isEven(index)) message += `</tr><br/>`; // End table row every odd event
     };
     message += `<br/></tbody></table>`; 
     message += `</td></tr></tbody></table>`;
