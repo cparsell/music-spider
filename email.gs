@@ -104,8 +104,8 @@ class CreateMessage
       const {date, city, venue, url, image, eName, acts} = this.events[key];
       var actsArr = new Array;
       let actsB;
-      acts.forEach(function (item, index) {
-        if (eName.match(item)) actsB = acts.splice(index, 1);
+      for (let i=0;i<acts.length;i++) {
+        if (eName.match(acts[i])) actsB = acts.splice(i, 1);
       })      
       if (acts != undefined) actsArr = actsB.split(',');
       let eDate = new Date(key);
