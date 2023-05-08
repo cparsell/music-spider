@@ -104,9 +104,9 @@ class CreateMessage
       const {date, city, venue, url, image, eName, acts} = this.events[key];
       var actsArr = new Array;
       let actsB;
-      for (act of acts) {
-        if (eName.match(act)) actsB = acts.splice(acts.indexOf(act), 1);
-      }
+      acts.forEach(function (item, index) {
+        if (eName.match(item)) actsB = acts.splice(index, 1);
+      })      
       if (acts != undefined) actsArr = actsB.split(',');
       let eDate = new Date(key);
       let eventDate = eDate.toLocaleDateString();
@@ -140,7 +140,7 @@ class CreateMessage
       message += `<br/></td>`;
       if (!isEven(index)) message += `</tr><br/>`;
     };
-    message += `<p></p></tbody></table>`; 
+    message += `<br/></tbody></table>`; 
     message += `</td></tr></tbody></table>`;
     return message; 
   }
