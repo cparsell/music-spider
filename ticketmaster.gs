@@ -8,21 +8,16 @@ const refreshEvents = async () => {
   //search each artist
   let eventsArr = {};
   for (i=0;i<artistsArr.length; i++){
-    // Logger.log(artistsArr[i][0]);
-    let eventResults = await ticketSearch(artistsArr[i][0], writer);
-    // for (const [index, [key]] of Object.entries(Object.entries(eventResults))) {
-    //   //check for dupes first
-    //   eventsArr[key] = eventResults[key];
-    // }
-    Utilities.sleep(1000);
+    let eventResults = ticketSearch(artistsArr[i][0], writer);
+    Utilities.sleep(10);
   }
 }
 
-const writeEventsToSheet = (eventsArr) => {
+const writeEventsToSheet = async (eventsArr) => {
   for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
     let exists = searchColForValue(eventSheet, "URL", eventsArr[key].url);
     if (!exists) {
-      writeEvent({ 
+      await writeEvent({ 
         date: eventsArr[key].date,
         name: eventsArr[key].name,
         city: eventsArr[key].city,
@@ -137,7 +132,7 @@ const ticketSearch = async (keyword, writer) =>
       return;
     }
     Logger.log(eventsArr);
-    writeEventsToSheet(eventResults);
+    writeEventsToSheet(eventsArr);
   } else {
     Logger.log(`No results for ${keyword}`)
     return false;
@@ -146,7 +141,7 @@ const ticketSearch = async (keyword, writer) =>
 
 
 
-const writeEvent = ({name, date, city, venue, url, image, acts}) => 
+const writeEvent = async ({name, date, city, venue, url, image, acts}) => 
 {
   // let newData = new Array;
   // newData[0] = [eventName, eventVenue, eventCity,eventDate];
@@ -176,7 +171,7 @@ const tmSearch = async (keyword, writer) =>
   params += `&unit=${config.unit}`;
   params += `&keyword=${encodeURIComponent(keyword)}`;
   Logger.log(`Searching Ticketmaster for ${keyword}`);
-  let response = UrlFetchApp.fetch(ticketmasterUrl+params, options);
+  let response = await UrlFetchApp.fetch(ticketmasterUrl+params, options);
   let responseCode = response.getResponseCode();
   if (responseCode == 200 || responseCode == 201) {
     let content = JSON.parse(response.getContentText());
