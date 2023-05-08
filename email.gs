@@ -107,7 +107,7 @@ class CreateMessage
       if (acts != undefined) actsArr = acts.split(',');
       Logger.log(" . ");
       Logger.log(actsArr);
-      for (var i=0;i<actsArr.length+1;i++) {
+      for (var i=0;i<actsArr.length;i++) {
         Logger.log(`Looking for ${actsArr[i]}`)
         if (!eName.match(actsArr[i])) {
           Logger.log(`Match for ${eName}. Remove ${actsArr[i]}. index ${i}`);
