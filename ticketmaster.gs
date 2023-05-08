@@ -132,7 +132,7 @@ const ticketSearch = async (keyword, writer) =>
       return;
     }
     Logger.log(eventsArr);
-    writeEventsToSheet(eventsArr);
+    await writeEventsToSheet(eventsArr);
   } else {
     Logger.log(`No results for ${keyword}`)
     return false;
