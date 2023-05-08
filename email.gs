@@ -105,16 +105,12 @@ class CreateMessage
       var actsArr = new Array;
       let actsB = new Array;
       if (acts != undefined) actsArr = acts.split(',');
-      Logger.log(" . ");
-      Logger.log(actsArr);
       for (var i=0;i<actsArr.length;i++) {
         Logger.log(`Looking for ${actsArr[i]}`)
         if (!eName.match(actsArr[i])) {
-          Logger.log(`Match for ${eName}. Remove ${actsArr[i]}. index ${i}`);
           actsB.push(actsArr[i]);
         }
       }
-      Logger.log(`event name: ${eName}, acts: ${actsB}`);
       let eDate = new Date(key);
       let eventDate = eDate.toLocaleDateString();
       let eventDay = eDate.getDay();
