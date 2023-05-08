@@ -1,7 +1,5 @@
 const refreshEvents = async () => {
   const writer = new WriteLogger();
-  //Clear events list
-  clearData(eventSheet);
   
   //get list of artists from sheet
   let artistsArr = artistsList();
@@ -11,6 +9,8 @@ const refreshEvents = async () => {
     // Logger.log(artistsArr[i][0]);
     ticketSearch(artistsArr[i][0], writer);
   }
+  //Clear events list
+  clearData(eventSheet);
 }
 
 const buildEventsArr = () => 
@@ -94,60 +94,52 @@ const ticketSearch = async (keyword, writer) =>
           date = item.dates.start.localDate;
         }
         // Logger.log(`venue: ${venueName}`);
-        eventsArr[date] = { 
-          "name": item.name,
-          "acts": attractions,
-          "venue": venueName , 
-          "city": venue.city.name, 
-          "date": date, 
-          "url": url, 
-          "image": item.images[image[0][0]].url
+        if (attractions.includes(keyword)) {
+          let sdf = false;
+          for(var i in eventsArr){
+            if(eventsArr[i].url == url){
+                sdf = true;
+                break; // If you want to break out of the loop once you've found a match
+            }
+          }
+          eventsArr[date] = { 
+            "name": item.name,
+            "acts": attractions,
+            "venue": venueName , 
+            "city": venue.city.name, 
+            "date": date, 
+            "url": url, 
+            "image": item.images[image[0][0]].url
+          }
         }
       });
     });
-    if (Object.keys(eventsArr)==0) Logger.log(`No events found for ${keyword}`);
-    for (const key of Object.keys(eventsArr)) { 
-      // eventsArr[key].name.match(keyword) || 
-      if (eventsArr[key].acts.includes(keyword)) {
-        let doesItExist = searchForValue(eventSheet, "URL", eventsArr[key].url);
-        if (!doesItExist) {
-          writeEvent({ 
-            date: eventsArr[key].date,
-            name: eventsArr[key].name,
-            city: eventsArr[key].city,
-            venue: eventsArr[key].venue, 
-            url: eventsArr[key].url, 
-            image: eventsArr[key].image,
-            acts: eventsArr[key].acts,
-          });
-        }
-      } 
-    };
+    if (Object.keys(eventsArr)==0) {
+      Logger.log(`No events found for ${keyword}`);
+      return;
+    }
+
+    // for (const key of Object.keys(eventsArr)) { 
+    //   // eventsArr[key].name.match(keyword) || 
+    //   if (eventsArr[key].acts.includes(keyword)) {
+    //     let doesItExist = searchColumnForValue(eventSheet, "URL", eventsArr[key].url);
+    //     if (!doesItExist) {
+    //       writeEvent({ 
+    //         date: eventsArr[key].date,
+    //         name: eventsArr[key].name,
+    //         city: eventsArr[key].city,
+    //         venue: eventsArr[key].venue, 
+    //         url: eventsArr[key].url, 
+    //         image: eventsArr[key].image,
+    //         acts: eventsArr[key].acts,
+    //       });
+    //     }
+    //   } 
+    // };
   }
 }
 
-const searchForValue = (sheet, columnName, val) => {
-  if(typeof sheet != `object`) return false;
-  try {
-    let data = sheet.getDataRange().getValues();
-    let lastRow = sheet.getLastRow();
-    let col = data[0].indexOf(columnName);
-    let range = sheet.getRange(2,col+1,lastRow,1).getValues();
-    if (col != -1) {
-      var isSearchStringInRange = range.some( function(row){
-        return row[0] === val
-      });
-      return isSearchStringInRange;
-    }
-    else {
-      console.error(`Matching data by header failed...`);
-      return false;
-    }
-  } catch (err) {
-    console.error(`${err} : searchForValue failed - Sheet: ${sheet} Col Name specified: ${columnName} value: ${val}`);
-    return false;
-  }
-}
+
 
 const writeEvent = ({name, date, city, venue, url, image, acts}) => 
 {

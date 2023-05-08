@@ -248,3 +248,26 @@ const SetRowData = (sheet, row, rowData) => {
     return 1;
   }
 }
+
+const searchColForValue = (sheet, columnName, val) => {
+  if(typeof sheet != `object`) return false;
+  try {
+    let data = sheet.getDataRange().getValues();
+    let lastRow = sheet.getLastRow();
+    let col = data[0].indexOf(columnName);
+    let range = sheet.getRange(2,col+1,lastRow,1).getValues();
+    if (col != -1) {
+      var isSearchStringInRange = range.some( function(row){
+        return row[0] === val
+      });
+      return isSearchStringInRange;
+    }
+    else {
+      console.error(`Matching data by header failed...`);
+      return false;
+    }
+  } catch (err) {
+    console.error(`${err} : searchForValue failed - Sheet: ${sheet} Col Name specified: ${columnName} value: ${val}`);
+    return false;
+  }
+}
