@@ -9,17 +9,36 @@ const refreshEvents = async () => {
   for (i=0;i<artistsArr.length; i++){
     // Logger.log(artistsArr[i][0]);
     let eventResults = await ticketSearch(artistsArr[i][0], writer);
-    for (const [index, [key]] of Object.entries(Object.entries(eventResults))) {
-      //check for dupes first
-      eventsArr[key] = eventResults[key];
-    }
+    // for (const [index, [key]] of Object.entries(Object.entries(eventResults))) {
+    //   //check for dupes first
+    //   eventsArr[key] = eventResults[key];
+    // }
+    Utilities.sleep(1000);
   }
   //Clear events list
   clearData(eventSheet);
-
+  Logger.log(`eventsArr`);
+  Logger.log(eventsArr);
   //write to sheet
   for (const [[key]] of Object.entries(Object.entries(eventsArr))) {
-    let exists = searchColForValue(eventSheet, "URL", eventResults[key].url);
+    let exists = searchColForValue(eventSheet, "URL", eventsArr[key].url);
+    if (!exists) {
+      writeEvent({ 
+        date: eventsArr[key].date,
+        name: eventsArr[key].name,
+        city: eventsArr[key].city,
+        venue: eventsArr[key].venue, 
+        url: eventsArr[key].url, 
+        image: eventsArr[key].image,
+        acts: eventsArr[key].acts,
+      });
+    }
+  }
+}
+
+const writeEventsToSheet = (eventsArr) => {
+  for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
+    let exists = searchColForValue(eventSheet, "URL", eventsArr[key].url);
     if (!exists) {
       writeEvent({ 
         date: eventsArr[key].date,
@@ -136,7 +155,7 @@ const ticketSearch = async (keyword, writer) =>
       return;
     }
     Logger.log(eventsArr);
-    return eventsArr;
+    writeEventsToSheet(eventResults);
   } else {
     Logger.log(`No results for ${keyword}`)
     return false;
