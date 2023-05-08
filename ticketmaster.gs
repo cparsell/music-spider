@@ -10,8 +10,13 @@ const refreshEvents = async () => {
   //search each artist
   let eventsArr = {};
   for (i=0;i<artistsArr.length; i++){
-    let eventResults = ticketSearch(artistsArr[i][0], writer);
-    Utilities.sleep(200);
+    try {
+      ticketSearch(artistsArr[i][0], writer);
+      Utilities.sleep(200);
+    }catch (e) { 
+      Logger.log(e);
+      continue;
+    }
   }
 }
 
