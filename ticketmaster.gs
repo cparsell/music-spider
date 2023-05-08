@@ -5,9 +5,10 @@ const refreshEvents = async () => {
   let artistsArr = artistsList();
 
   //search each artist
+  let eventsArr = {};
   for (i=0;i<artistsArr.length; i++){
     // Logger.log(artistsArr[i][0]);
-    ticketSearch(artistsArr[i][0], writer);
+    let event = ticketSearch(artistsArr[i][0], writer);
   }
   //Clear events list
   clearData(eventSheet);
