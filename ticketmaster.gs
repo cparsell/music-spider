@@ -3,7 +3,8 @@ const refreshEvents = async () => {
   
   //get list of artists from sheet
   let artistsArr = artistsList();
-
+  //Clear events list
+  clearData(eventSheet);
   //search each artist
   let eventsArr = {};
   for (i=0;i<artistsArr.length; i++){
