@@ -148,13 +148,13 @@ const writeEvent = async ({name, date, city, venue, url, image, acts}) =>
 
   let lastRow = eventSheet.getLastRow();
   // eventSheet.getRange(lastRow+1,1,1,4).setValues(newData);
-  SetByHeader(eventSheet, "Event Name", lastRow+1, name);
-  SetByHeader(eventSheet, "City", lastRow+1, city);
-  SetByHeader(eventSheet, "Venue", lastRow+1, venue);
-  SetByHeader(eventSheet, "Date", lastRow+1, date);
-  SetByHeader(eventSheet, "URL", lastRow+1, url);
-  SetByHeader(eventSheet, "Image", lastRow+1, image);
-  SetByHeader(eventSheet, "Acts", lastRow+1, acts.toString());
+  await SetByHeader(eventSheet, "Event Name", lastRow+1, name);
+  await SetByHeader(eventSheet, "City", lastRow+1, city);
+  await SetByHeader(eventSheet, "Venue", lastRow+1, venue);
+  await SetByHeader(eventSheet, "Date", lastRow+1, date);
+  await SetByHeader(eventSheet, "URL", lastRow+1, url);
+  await SetByHeader(eventSheet, "Image", lastRow+1, image);
+  await SetByHeader(eventSheet, "Acts", lastRow+1, acts.toString());
 }
 const tmSearch = async (keyword, writer) => 
 {
