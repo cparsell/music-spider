@@ -1,5 +1,42 @@
 /**
  * ----------------------------------------------------------------------------------------------------------------
+ * Removes any row of data if the Date value is before today
+ * @param {sheet} sheet
+ * @param {string} dateHeaderName default is "Date"
+ */
+const removeExpiredEntries = (sheet,dateHeaderName="Date") => {
+  // sheet = eventSheet; // for debugging
+  if(typeof sheet != `object`) return 1;
+  try {
+    let today = new Date();
+    let data = sheet.getDataRange().getValues();
+    let lastRow = sheet.getLastRow()-1; //subtract header
+    if (lastRow < 1) return 1;
+    let col = data[0].indexOf(dateHeaderName);
+    let range = sheet.getRange(2,col+1,lastRow,1).getValues();
+    if (col == -1) {
+      console.error(`Matching data by header failed...`);
+      return false;
+    }
+    let rowsToDel = [];
+    for (let i=0;i<range.length;i++){
+      let date = new Date(range[i][0]);
+      if (date <= today) {
+        rowsToDel.push(i+2);
+      }
+    }
+    for (let i=0;i<rowsToDel.length;i++){
+      Logger.log(`Removing expired event: ${data[i+1][0]}, Date: ${range[rowsToDel[i]-2]}`);
+      sheet.deleteRow(rowsToDel[i]);
+    }
+  } catch (err) {
+    console.error(`${err} : removeExpiredEntry failed - Sheet: ${sheet} Col Name specified: ${dateHeaderName}`);
+    return false;
+  }
+}
+
+/**
+ * ----------------------------------------------------------------------------------------------------------------
  * Return the value of a cell by column name and row number
  * @param {sheet} sheet
  * @param {string} colName
@@ -48,6 +85,30 @@ const GetRowData = (sheet, row) => {
   } catch (err) {
     console.error(`${err} : GetRowData failed - Sheet: ${sheet} Row: ${row}`);
     return 1;
+  }
+}
+
+const searchColForValue = (sheet, columnName, val) => {
+  if(typeof sheet != `object`) return false;
+  try {
+    let data = sheet.getDataRange().getValues();
+    let lastRow = sheet.getLastRow();
+    let col = data[0].indexOf(columnName);
+    let range = sheet.getRange(2,col+1,lastRow,1).getValues();
+    // Logger.log(range);
+    if (col != -1) {
+      let isSearchStringInRange = range.some( function(row){
+        return row[0] === val
+      });
+      return isSearchStringInRange;
+    }
+    else {
+      console.error(`Matching data by header failed...`);
+      return false;
+    }
+  } catch (err) {
+    console.error(`${err} : searchForValue failed - Sheet: ${sheet} Col Name specified: ${columnName} value: ${val}`);
+    return false;
   }
 }
 
