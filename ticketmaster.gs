@@ -13,7 +13,7 @@ const refreshEvents = async () => {
   let i = 0;
   
   try {
-    Logger.log(`arrray length ${artistsArr.length}`);
+    // Logger.log(`arrray length ${artistsArr.length}`);
     // for (i=0;i<artistsArr.length; i++){
     while (i<artistsArr.length){
       await ticketSearch(artistsArr[i][0], writer).then(data => {
@@ -43,16 +43,7 @@ const writeEventsToSheet = async (eventsArr) => {
   for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
     let exists = searchColForValue(eventSheet, "URL", eventsArr[key].url);
     if (!exists) {
-      SetRowData(eventSheet, eventsArr);
-      // await writeEvent({ 
-      //   date: eventsArr[key].date,
-      //   name: eventsArr[key].name,
-      //   city: eventsArr[key].city,
-      //   venue: eventsArr[key].venue, 
-      //   url: eventsArr[key].url, 
-      //   image: eventsArr[key].image,
-      //   acts: eventsArr[key].acts,
-      // });
+      SetRowData(eventSheet, eventsArr[key]);
     }
   }
 }
@@ -87,7 +78,7 @@ const buildEventsArr = () =>
 
 const ticketSearch = async (keyword, writer) => 
 {
-  // keyword = "Madlib" // for debugging, I uncomment this, specify something that returns a result, and run the function from Apps Script to see the Execution Log
+  // keyword = "Clark" // for debugging, I uncomment this, specify something that returns a result, and run the function from Apps Script to see the Execution Log
   // writer = new WriteLogger();  // and uncomment this
   if (keyword == undefined) {
     Logger.log("No keyword provided");
@@ -103,7 +94,7 @@ const ticketSearch = async (keyword, writer) =>
         Logger.log(`No results for ${keyword}`)
         return false;
       }
-      // writer.Info(data);  // uncomment this to write raw JSON response to 'Logger' sheet
+      
       
       data?._embedded?.events?.forEach((item) =>
       {
@@ -145,7 +136,7 @@ const ticketSearch = async (keyword, writer) =>
             date = item.dates.start.localDate;
           }
           // Logger.log(`venue: ${venueName}`);
-          if (attractions.includes(keyword)) {
+          if (attractions.includes(keyword) || item.name == keyword) {
             eventsArr[date] = { 
               "eName": item.name,
               "acts": attractions,
@@ -162,9 +153,7 @@ const ticketSearch = async (keyword, writer) =>
         Logger.log(`No events found for ${keyword}`);
         return;
       }
-      Logger.log(eventsArr);
-      
-    
+      debugLog(`eventsArr`,eventsArr);
   });
   return await eventsArr;
 }
@@ -203,8 +192,10 @@ const tmSearch = async (keyword, writer) =>
   let response = await UrlFetchApp.fetch(ticketmasterUrl+params, options);
   let responseCode = response.getResponseCode();
   if (responseCode == 200 || responseCode == 201) {
-    let content = await JSON.parse(response.getContentText());
-    return await content;
+    let content = await response.getContentText();
+    // writer.Info(content);  // uncomment this to write raw JSON response to 'Logger' sheet
+    let parsed = JSON.parse(content);
+    return parsed;
   } else {
     writer.Error('Failed to search Ticketmaster');
     return false;

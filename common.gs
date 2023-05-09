@@ -239,17 +239,18 @@ const SetByHeader = (sheet, columnName, row, val) => {
  * @returns {dict} {header, value}
  */
 const SetRowData = (sheet,data) => {
+  Logger.log(data);
   if(typeof sheet != `object`) return 1;
   try {
     let sheetHeaderNames = Object.values(GetRowData(sheet, 1));
     let values = [];
-    for (const [index, [key]] of Object.entries(Object.entries(data))) {
-      Object.entries(data[key]).forEach(pair => {
+    // for (const [index, [key]] of Object.entries(Object.entries(data))) {
+      Object.entries(data).forEach(pair => {
         let headername = HEADERNAMES[pair[0]];
         let index = sheetHeaderNames.indexOf(headername);
         values[index] = pair[1];
       })
-    };
+    // };
     // console.info(values);
     sheet.appendRow(values);
   } catch (err) {
@@ -265,10 +266,14 @@ const searchColForValue = (sheet, columnName, val) => {
     let lastRow = sheet.getLastRow();
     let col = data[0].indexOf(columnName);
     let range = sheet.getRange(2,col+1,lastRow,1).getValues();
+    // Logger.log(range);
     if (col != -1) {
       let isSearchStringInRange = range.some( function(row){
+        Logger.log(row[0]);
+        Logger.log(val);
         return row[0] === val
       });
+      Logger.log(isSearchStringInRange);
       return isSearchStringInRange;
     }
     else {
