@@ -239,7 +239,6 @@ const SetByHeader = (sheet, columnName, row, val) => {
  * @returns {dict} {header, value}
  */
 const SetRowData = (sheet,data) => {
-  Logger.log(data);
   if(typeof sheet != `object`) return 1;
   try {
     let sheetHeaderNames = Object.values(GetRowData(sheet, 1));
@@ -269,11 +268,8 @@ const searchColForValue = (sheet, columnName, val) => {
     // Logger.log(range);
     if (col != -1) {
       let isSearchStringInRange = range.some( function(row){
-        Logger.log(row[0]);
-        Logger.log(val);
         return row[0] === val
       });
-      Logger.log(isSearchStringInRange);
       return isSearchStringInRange;
     }
     else {
