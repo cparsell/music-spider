@@ -15,8 +15,11 @@ const config = {
   'playlistId': 'xxxxxxxxxxxxxxxxxxxxxxx',
   // Email(s) to send newsletter to
   'email': 'somebody@somewhere.com',
-    // enable debug for verbose logging in Apps Script Executions log
+  'createCalendarEvents': true,
+  'calendarId': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx@group.calendar.google.com',
+  // enable debug for verbose logging in Apps Script Executions log
   'debug': false,
+
 };
 
 // const ticketmasterConfig = {
