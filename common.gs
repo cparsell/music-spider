@@ -232,27 +232,26 @@ const SetByHeader = (sheet, columnName, row, val) => {
 };
 
 /**
- * ----------------------------------------------------------------------------------------------------------------
- * Adds 
+ * ------------------------------------------------------------------------------------------------------
+ * Writes a row of data to a sheet. Input event data and it writes each value to the sheet with matching header name
  * @param {sheet} sheet
- * @param {JSON} data
+ * @param {dict} data 
  * @returns {dict} {header, value}
  */
-const SetRowData = (sheet, data) => {
+const SetRowData = (sheet,data) => {
   if(typeof sheet != `object`) return 1;
-  let dict = {};
   try {
     let sheetHeaderNames = Object.values(GetRowData(sheet, 1));
     let values = [];
-    // Object.entries(data).forEach(pair => {
     for (const [index, [key]] of Object.entries(Object.entries(data))) {
-      let headername = HEADERNAMES[pair[0]];
-      let index = sheetHeaderNames.indexOf(headername);
-      values[index] = pair[1];
+      Object.entries(data[key]).forEach(pair => {
+        let headername = HEADERNAMES[pair[0]];
+        let index = sheetHeaderNames.indexOf(headername);
+        values[index] = pair[1];
+      })
     };
-    console.info(values);
+    // console.info(values);
     sheet.appendRow(values);
-
   } catch (err) {
     console.error(`${err} : SetRowData failed - Sheet: ${sheet}`);
     return 1;

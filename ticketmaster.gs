@@ -22,12 +22,12 @@ const refreshEvents = async () => {
         for (const [index, [key]] of Object.entries(Object.entries(data))) {
           eventsArr[key] = {
             date: data[key].date,
-            name: data[key].name,
+            eName: data[key].eName,
             city: data[key].city,
             venue: data[key].venue, 
             url: data[key].url, 
             image: data[key].image,
-            acts: data[key].acts,
+            acts: data[key].acts.toString(),
           }
         }
         Utilities.sleep(200);
@@ -43,15 +43,16 @@ const writeEventsToSheet = async (eventsArr) => {
   for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
     let exists = searchColForValue(eventSheet, "URL", eventsArr[key].url);
     if (!exists) {
-      await writeEvent({ 
-        date: eventsArr[key].date,
-        name: eventsArr[key].name,
-        city: eventsArr[key].city,
-        venue: eventsArr[key].venue, 
-        url: eventsArr[key].url, 
-        image: eventsArr[key].image,
-        acts: eventsArr[key].acts,
-      });
+      SetRowData(eventSheet, eventsArr);
+      // await writeEvent({ 
+      //   date: eventsArr[key].date,
+      //   name: eventsArr[key].name,
+      //   city: eventsArr[key].city,
+      //   venue: eventsArr[key].venue, 
+      //   url: eventsArr[key].url, 
+      //   image: eventsArr[key].image,
+      //   acts: eventsArr[key].acts,
+      // });
     }
   }
 }
@@ -146,7 +147,7 @@ const ticketSearch = async (keyword, writer) =>
           // Logger.log(`venue: ${venueName}`);
           if (attractions.includes(keyword)) {
             eventsArr[date] = { 
-              "name": item.name,
+              "eName": item.name,
               "acts": attractions,
               "venue": venueName , 
               "city": venue.city.name, 
