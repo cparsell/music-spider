@@ -233,18 +233,28 @@ const SetByHeader = (sheet, columnName, row, val) => {
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
- * Return a dictionary of values from a whole row on a given sheet
+ * Adds 
  * @param {sheet} sheet
- * @param {number} row
+ * @param {JSON} data
+ * @returns {dict} {header, value}
  */
-const SetRowData = (sheet, row, rowData) => {
+const SetRowData = (sheet, data) => {
   if(typeof sheet != `object`) return 1;
   let dict = {};
   try {
-    let headers = sheet.getRange(1, 1, 1, sheet.getMaxColumns()).getValues()[0];
+    let sheetHeaderNames = Object.values(GetRowData(sheet, 1));
+    let values = [];
+    // Object.entries(data).forEach(pair => {
+    for (const [index, [key]] of Object.entries(Object.entries(data))) {
+      let headername = HEADERNAMES[pair[0]];
+      let index = sheetHeaderNames.indexOf(headername);
+      values[index] = pair[1];
+    };
+    console.info(values);
+    sheet.appendRow(values);
 
   } catch (err) {
-    console.error(`${err} : SetRowData failed - Sheet: ${sheet} Row: ${row}`);
+    console.error(`${err} : SetRowData failed - Sheet: ${sheet}`);
     return 1;
   }
 }

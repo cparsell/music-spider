@@ -9,15 +9,34 @@ const refreshEvents = async () => {
 
   //search each artist
   let eventsArr = {};
-  for (i=0;i<artistsArr.length; i++){
-    try {
-      ticketSearch(artistsArr[i][0], writer);
-      Utilities.sleep(200);
-    }catch (e) { 
-      Logger.log(e);
-      continue;
-    }
+  
+  let i = 0;
+  
+  try {
+    Logger.log(`arrray length ${artistsArr.length}`);
+    // for (i=0;i<artistsArr.length; i++){
+    while (i<artistsArr.length){
+      await ticketSearch(artistsArr[i][0], writer).then(data => {
+        i++;
+        // Logger.log(data);
+        for (const [index, [key]] of Object.entries(Object.entries(data))) {
+          eventsArr[key] = {
+            date: data[key].date,
+            name: data[key].name,
+            city: data[key].city,
+            venue: data[key].venue, 
+            url: data[key].url, 
+            image: data[key].image,
+            acts: data[key].acts,
+          }
+        }
+        Utilities.sleep(200);
+        });
   }
+  }catch (e) { 
+      Logger.log(e);
+  }
+  writeEventsToSheet(eventsArr);
 }
 
 const writeEventsToSheet = async (eventsArr) => {
@@ -74,6 +93,7 @@ const ticketSearch = async (keyword, writer) =>
     return;
   }
   let artist = artistSheet.getRange(2,1);
+  let eventsArr = {};
 
   // returns JSON response
   await tmSearch(keyword, writer)
@@ -82,10 +102,9 @@ const ticketSearch = async (keyword, writer) =>
         Logger.log(`No results for ${keyword}`)
         return false;
       }
-      let parsedData = data?._embedded?.events;
       // writer.Info(data);  // uncomment this to write raw JSON response to 'Logger' sheet
-      let eventsArr = {};
-      parsedData.forEach((item) =>
+      
+      data?._embedded?.events?.forEach((item) =>
       {
         let url = item.url;
         let image = [[0,0]];
@@ -101,7 +120,7 @@ const ticketSearch = async (keyword, writer) =>
             }
         }
         let attractions = new Array;
-        item._embedded.attractions.forEach((attraction) => {
+        item?._embedded?.attractions?.forEach((attraction) => {
           attractions.push(attraction.name);
         });
         // if other artists in my list are in this event, move them to front of list
@@ -114,7 +133,7 @@ const ticketSearch = async (keyword, writer) =>
         }
         // then move keyword to front of list of acts
         attractions = attractions.sort(function(x,y){ return x == keyword ? -1 : y == keyword ? 1 : 0; });
-        item._embedded.venues.forEach((venue) =>{ 
+        item?._embedded?.venues?.forEach((venue) =>{ 
           let venueName = venue.name; 
           let date;
           if (item.dates.start.dateTime) {
@@ -143,10 +162,10 @@ const ticketSearch = async (keyword, writer) =>
         return;
       }
       Logger.log(eventsArr);
-      writeEventsToSheet(eventsArr);
+      
     
   });
-  
+  return await eventsArr;
 }
 
 
@@ -184,7 +203,7 @@ const tmSearch = async (keyword, writer) =>
   let responseCode = response.getResponseCode();
   if (responseCode == 200 || responseCode == 201) {
     let content = await JSON.parse(response.getContentText());
-    return content;
+    return await content;
   } else {
     writer.Error('Failed to search Ticketmaster');
     return false;
