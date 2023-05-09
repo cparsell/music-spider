@@ -40,8 +40,8 @@ const writeEventsToSheet = async (eventsArr) => {
 const buildEventsArr = () => 
 {
   let lastRow = eventSheet.getLastRow();
-  var events = {};
-  var ordered = {};
+  let events = {};
+  let ordered = {};
   if (lastRow>1) {
     for (i=1; i<lastRow;i++)
     {
@@ -82,13 +82,13 @@ const ticketSearch = async (keyword, writer) =>
         Logger.log(`No results for ${keyword}`)
         return false;
       }
-      var parsedData = data?._embedded?.events;
+      let parsedData = data?._embedded?.events;
       // writer.Info(data);  // uncomment this to write raw JSON response to 'Logger' sheet
       let eventsArr = {};
       parsedData.forEach((item) =>
       {
         let url = item.url;
-        var image = [[0,0]];
+        let image = [[0,0]];
         // Loop through image URLs in JSON response. Find the one with the largest filesize
         for (i=0;i<item.images.length;i++){
             // let img = new Images();
@@ -100,7 +100,7 @@ const ticketSearch = async (keyword, writer) =>
               image[0][1]=imgBytes
             }
         }
-        var attractions = new Array;
+        let attractions = new Array;
         item._embedded.attractions.forEach((attraction) => {
           attractions.push(attraction.name);
         });
@@ -167,12 +167,12 @@ const writeEvent = ({name, date, city, venue, url, image, acts}) =>
 }
 const tmSearch = async (keyword, writer) => 
 {
-  var options = {
+  let options = {
       "method": "GET",
       "async": true,
       "contentType": "application/json",
   };
-  var params = `?apikey=${config.keyTM}`;
+  let params = `?apikey=${config.keyTM}`;
   // params += `&postalCode=`;  
   // params += `&city=Los+Angeles`;
   params += `&latlong=${config.latlong}` 

@@ -1,5 +1,5 @@
 const sendEmail = () => {
-  var eventsArr = buildEventsArr();
+  let eventsArr = buildEventsArr();
   let msgSubjRaw = [];
   let msgSubj = `${SERVICE_NAME} - `;
   for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
@@ -9,7 +9,7 @@ const sendEmail = () => {
   let uniq = [...new Set(msgSubjRaw)];
   msgSubj += uniq.join(', ');
 
-  var message = new CreateMessage({events: eventsArr});
+  let message = new CreateMessage({events: eventsArr});
   new Emailer({
     message: message,
     email: config.email,
@@ -122,12 +122,12 @@ class CreateMessage
     // iterate through list of events
     for (const [index, [key]] of Object.entries(Object.entries(this.events))) {
       const {date, city, venue, url, image, eName, acts} = this.events[key];
-      var actsArr = new Array;
+      let actsArr = new Array;
       let actsB = new Array;
       //turn text into array
       if (acts != undefined) actsArr = acts.split(',');
       // look for acts' names in event name - if name is in event name, dont list it again
-      for (var i=0;i<actsArr.length;i++) {
+      for (let i=0;i<actsArr.length;i++) {
         if (!eName.match(actsArr[i])) {
           actsB.push(actsArr[i]);
         }

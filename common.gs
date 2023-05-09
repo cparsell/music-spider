@@ -6,7 +6,7 @@ const common = {
   // Retrieve file as JSON object
   grabJson: function(id)
   {
-    var file = DriveApp.getFileById(id).getAs("application/json");
+    let file = DriveApp.getFileById(id).getAs("application/json");
     return JSON.parse(file.getDataAsString());
   },
 
@@ -27,7 +27,7 @@ const common = {
   // & zero-width no-break spaces
   trim: function(string)
   {
-    var pattern = /(^[\s\u00a0\u200b\uFEFF]+)|([\s\u00a0\u200b\uFEFF]+$)/g;
+    let pattern = /(^[\s\u00a0\u200b\uFEFF]+)|([\s\u00a0\u200b\uFEFF]+$)/g;
     return string.replace(pattern, "");
   },
 
@@ -38,21 +38,21 @@ const common = {
     if (input.match(/<[^>]*>/))
     {
       // Find where the tags start & end
-      var start = input.indexOf('<');
-      var end = input.lastIndexOf('>') + 1;
+      let start = input.indexOf('<');
+      let end = input.lastIndexOf('>') + 1;
 
       // Grab any text before all XML tags
-      var pre = input.slice(0, start);
+      let pre = input.slice(0, start);
       // Grab any text after all XML tags
-      var post = input.slice(end);
-      var inside = "";
+      let post = input.slice(end);
+      let inside = "";
 
       try
       {
         // Parse input without any pre or post text
-        var cleanInput = input.slice(start, end);
+        let cleanInput = input.slice(start, end);
 
-        var doc = XmlService.parse(cleanInput);
+        let doc = XmlService.parse(cleanInput);
         inside = doc.getRootElement().getText();
       }
       catch (error)
@@ -74,15 +74,15 @@ const common = {
   // Collate objects at given path, from array of JSON strings
   collateArrays: function(path, objects)
   {
-    var outArray = [];
-    var chunks = path.split('.');
+    let outArray = [];
+    let chunks = path.split('.');
 
     // Iterate over each object
     // try {
       for (const resp of objects)
       {
         // Logger.log(resp);
-        var obj = JSON.parse(resp);
+        let obj = JSON.parse(resp);
         for (const chunk of chunks)
         {
             obj = obj[chunk];
@@ -100,10 +100,10 @@ const common = {
  * @param {array} array
  */
 const arrUnique = (array) => {
-  var outArray = [];
+  let outArray = [];
   array.sort();
   outArray.push(array[0]);
-  for(var n in array){
+  for(let n in array){
     // Logger.log(outArray[outArray.length-1]+'  =  '+array[n]+' ?');
     if(outArray[outArray.length-1]!=array[n]){
       outArray.push(array[n]);
@@ -257,7 +257,7 @@ const searchColForValue = (sheet, columnName, val) => {
     let col = data[0].indexOf(columnName);
     let range = sheet.getRange(2,col+1,lastRow,1).getValues();
     if (col != -1) {
-      var isSearchStringInRange = range.some( function(row){
+      let isSearchStringInRange = range.some( function(row){
         return row[0] === val
       });
       return isSearchStringInRange;

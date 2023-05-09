@@ -42,7 +42,7 @@ const getFreshAuth = (code) =>
     // Retrieve refreshable auth info
     // const writer = new WriteLogger();
     // Request refresh token
-    var payload = {
+    let payload = {
         "grant_type": "authorization_code",
         "code": code,
         "redirect_uri": ScriptApp.getService().getUrl(),
@@ -50,23 +50,23 @@ const getFreshAuth = (code) =>
         "client_secret": config.clientSecretSpotify,
     };
 
-    var options = {
+    let options = {
         'method': 'post',
         'Content-Type': 'application/json',
         'payload': payload
     };
 
-    var response = UrlFetchApp.fetch(refreshUrl, options);
+    let response = UrlFetchApp.fetch(refreshUrl, options);
 
     // Grab the values we're looking for and return them
-    var newTokens = JSON.parse(response.getContentText());
-    var authInfo = new Object();
+    let newTokens = JSON.parse(response.getContentText());
+    let authInfo = new Object();
 
     authInfo.accessToken = newTokens.access_token;
     authInfo.refreshToken = newTokens.refresh_token;
     Logger.log(`Token: ${authInfo.accessToken}`);
     // writer.Info(`Token: ${authInfo.accessToken}`);
-    var now = Date.now() / 1000;
+    let now = Date.now() / 1000;
     authInfo.expiry = now + newTokens.expires_in;
     return authInfo;
 }
@@ -76,31 +76,31 @@ const refreshAuth = (refreshToken) =>
     // Refresh auth info with refresh token
 
     // Request refreshed tokens
-    var payload = {
+    let payload = {
         "grant_type": "refresh_token",
         "refresh_token": refreshToken,
         "client_id": config.clientIdSpotify,
         "client_secret": config.clientSecretSpotify,
     };
 
-    var options = {
+    let options = {
         'method': 'post',
         'Content-Type': 'application/json',
         'payload': payload
     };
 
-    var response = UrlFetchApp.fetch(refreshUrl, options);
+    let response = UrlFetchApp.fetch(refreshUrl, options);
 
     // Grab the values we're looking for and return them
-    var newTokens = JSON.parse(response.getContentText());
-    var authInfo = new Object();
+    let newTokens = JSON.parse(response.getContentText());
+    let authInfo = new Object();
 
     authInfo.accessToken = newTokens.access_token;
     if (newTokens.refresh_token)
     {
         authInfo.refreshToken = newTokens.refresh_token;
     }
-    var now = Date.now() / 1000;
+    let now = Date.now() / 1000;
     authInfo.expiry = now + newTokens.expires_in;
     return authInfo;
 }
@@ -108,7 +108,7 @@ const refreshAuth = (refreshToken) =>
 const storeAuth = (authInfo) =>
 {
     // Retrieve refreshable auth info from user properties store
-    var userProperties = PropertiesService.getUserProperties();
+    let userProperties = PropertiesService.getUserProperties();
 
     // Save the new auth info back to the user properties store
     userProperties.setProperties(authInfo);
@@ -117,8 +117,8 @@ const storeAuth = (authInfo) =>
 const retrieveAuth = async () => 
 {
     // Retrieve refreshable auth info from user properties store
-    var userProperties = PropertiesService.getUserProperties();
-    var authInfo = userProperties.getProperties();
+    let userProperties = PropertiesService.getUserProperties();
+    let authInfo = userProperties.getProperties();
 
     // Check if auth info is there
     if (!authInfo.hasOwnProperty("refreshToken") ||

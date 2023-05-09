@@ -2,9 +2,9 @@ const refreshArtists = async () =>
 {
   // Logs to 'Logger' sheet
   const writer = new WriteLogger();
-  var topArtists = new Array;
-  var playlistArtists = new Array;
-  var followedArtists = new Array;
+  let topArtists = new Array;
+  let playlistArtists = new Array;
+  let followedArtists = new Array;
   if (config.getTopArtists) {
     // Get Top Artists from Spotify ()
     topArtists = await getTopArtists(writer);
@@ -53,13 +53,13 @@ const getSavedTracksArtists = async (writer) =>
   const sheet = artistSheet;
   // Retrieve auth
   // const writer = new WriteLogger();
-  var accessToken = await retrieveAuth();
+  let accessToken = await retrieveAuth();
   debugLog(`Access token`,JSON.stringify(accessToken));
   
   // Retrieve data
-  var params = "?limit=50";
+  let params = "?limit=50";
   Logger.log("Getting artists from saved tracks")
-  var data = await getData(accessToken, savedTracksUrl + params, true);
+  let data = await getData(accessToken, savedTracksUrl + params, true);
 
   // Fold array of responses into single structure
   if (data) {
@@ -87,11 +87,11 @@ const getSavedTracksArtists = async (writer) =>
 const getFollowedArtists = async (writer) =>
 {
   // Retrieve auth
-  var accessToken = await retrieveAuth();
+  let accessToken = await retrieveAuth();
 
   // Retrieve data
-  var params = "?type=artist&limit=50";
-  var data = await getData(accessToken, followUrl + params, true);
+  let params = "?type=artist&limit=50";
+  let data = await getData(accessToken, followUrl + params, true);
 
   // Fold array of responses into single structure
   data = common.collateArrays("artists.items", data);
@@ -132,21 +132,21 @@ const getPlaylistArtists = async (writer) =>
 {
   const playlistId = config.playlistId;
   // Retrieve auth
-  var accessToken = await retrieveAuth();
+  let accessToken = await retrieveAuth();
   debugLog(`Access token`,JSON.stringify(accessToken));
 
   // Retrieve data
-  var params = "?playlist_id=" + playlistId;
+  let params = "?playlist_id=" + playlistId;
   params += `&limit=50`
   Logger.log("Getting artists from playlists")
-  var data = await getData(accessToken, `${playlistUrl}/${playlistId}${params}`);
+  let data = await getData(accessToken, `${playlistUrl}/${playlistId}${params}`);
   // Logger.log(data);
 
   // Fold array of responses into single structure
   if (data[0]) {
-    // var newData = common.collateArrays("items", data);
-    var newData = JSON.parse(data);
-    var items = newData.tracks.items;
+    // let newData = common.collateArrays("items", data);
+    let newData = JSON.parse(data);
+    let items = newData.tracks.items;
     // Logger.log(newData.tracks.items);
     // writer.Info(JSON.stringify(newData.tracks.items));
     let artistsArr = [];
@@ -182,20 +182,20 @@ const getPlaylistArtists = async (writer) =>
 const getTopArtists = async (writer) => 
 {
   // Retrieve auth
-  var accessToken = await retrieveAuth();
+  let accessToken = await retrieveAuth();
   debugLog(`Access token`,JSON.stringify(accessToken));
 
   // Request for LONG TERM top artists
-  var params = "?time_range=long_term";
+  let params = "?time_range=long_term";
   params += `&limit=50`;
-  var resp = undefined;
+  let resp = undefined;
   Logger.log("Getting top artists (long term)...")
   resp = await getData(accessToken, topArtistsUrl + params,true);
-  var artistsArr = [];
+  let artistsArr = [];
   // Fold array of responses into single structure
   if (resp[0]) {
     data = common.collateArrays("items", resp);
-    var ignoree = false;
+    let ignoree = false;
     data.forEach(artist =>
     { 
       if (artistsToIgnore.includes(artist.name)) Logger.log(`Ignoring ${artist.name}`)

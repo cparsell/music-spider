@@ -81,18 +81,18 @@ const writeArrayToColumn = (array, sheet, col) => {
 
 const getData = async (accessToken, url, getAllPages = false) =>
 {
-  var headers = {
+  let headers = {
       "Authorization": "Bearer " + accessToken,
       "Content-Type": "application/json"
   };
 
-  var options = {
+  let options = {
       "muteHttpExceptions": true,
       "headers": headers
   };
 
-  var response = UrlFetchApp.fetch(url, options);
-  var firstPage = response.getContentText();
+  let response = UrlFetchApp.fetch(url, options);
+  let firstPage = response.getContentText();
   debugLog(`Response Code`, `${response.getResponseCode()} - ${RESPONSECODES[response.getResponseCode()]}`);
   // Bail out if we only wanted the first page
   if (!getAllPages)
@@ -101,9 +101,9 @@ const getData = async (accessToken, url, getAllPages = false) =>
   }
 
   // Put first page in array for return with following pages
-  var data = [firstPage];
+  let data = [firstPage];
 
-  var pageObj = JSON.parse(firstPage);
+  let pageObj = JSON.parse(firstPage);
   // Strip any outer shell, if there is one
   if (Object.values(pageObj).length == 1)
   {
@@ -111,7 +111,7 @@ const getData = async (accessToken, url, getAllPages = false) =>
   }
 
   // Retrieve URL for next page
-  var nextPageUrl = pageObj["next"];
+  let nextPageUrl = pageObj["next"];
   while (nextPageUrl)
   {
       // Retrieve the next page
