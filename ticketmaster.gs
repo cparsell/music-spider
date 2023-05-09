@@ -136,7 +136,6 @@ const ticketSearch = async (keyword, writer) =>
         item?._embedded?.venues?.forEach((venue) =>{ 
           let venueName = venue.name; 
           let venueAddress = venue.address.line1;
-          Logger.log(venueAddress);
           let date;
           if (item.dates.start.dateTime) {
             date = item.dates.start.dateTime;
@@ -164,7 +163,7 @@ const ticketSearch = async (keyword, writer) =>
         Logger.log(`No events found for ${keyword}`);
         return;
       }
-      Logger.log(eventsArr);
+      // Logger.log(eventsArr);
       debugLog(`eventsArr`,eventsArr);
   });
   return await eventsArr;
