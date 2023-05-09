@@ -4,8 +4,11 @@ const refreshEvents = async () => {
   //get list of artists from sheet
   let artistsArr = artistsList();
 
+  //Clean expired events
+  removeExpiredEntries(eventSheet);
+
   //Clear events list
-  clearData(eventSheet);
+  // clearData(eventSheet);
 
   //search each artist
   let eventsArr = {};
@@ -20,14 +23,18 @@ const refreshEvents = async () => {
         i++;
         // Logger.log(data);
         for (const [index, [key]] of Object.entries(Object.entries(data))) {
-          eventsArr[key] = {
-            date: data[key].date,
-            eName: data[key].eName,
-            city: data[key].city,
-            venue: data[key].venue, 
-            url: data[key].url, 
-            image: data[key].image,
-            acts: data[key].acts.toString(),
+          let exists = searchColForValue(eventSheet, "URL", data[key].url);
+          if (!exists) {
+            eventsArr[key] = {
+              date: data[key].date,
+              eName: data[key].eName,
+              city: data[key].city,
+              venue: data[key].venue, 
+              url: data[key].url, 
+              image: data[key].image,
+              acts: data[key].acts.toString(),
+              address: data[key].address,
+            }
           }
         }
         Utilities.sleep(200);
@@ -36,15 +43,16 @@ const refreshEvents = async () => {
   }catch (e) { 
       Logger.log(e);
   }
+  // Write new events to events sheet
   writeEventsToSheet(eventsArr);
+
+  // Write Calendar Event for new events
+  createCalEvents(eventsArr);
 }
 
 const writeEventsToSheet = async (eventsArr) => {
   for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
-    let exists = searchColForValue(eventSheet, "URL", eventsArr[key].url);
-    if (!exists) {
-      SetRowData(eventSheet, eventsArr[key]);
-    }
+    SetRowData(eventSheet, eventsArr[key]);
   }
 }
 
@@ -127,6 +135,8 @@ const ticketSearch = async (keyword, writer) =>
         attractions = attractions.sort(function(x,y){ return x == keyword ? -1 : y == keyword ? 1 : 0; });
         item?._embedded?.venues?.forEach((venue) =>{ 
           let venueName = venue.name; 
+          let venueAddress = venue.address.line1;
+          Logger.log(venueAddress);
           let date;
           if (item.dates.start.dateTime) {
             date = item.dates.start.dateTime;
@@ -136,7 +146,7 @@ const ticketSearch = async (keyword, writer) =>
             date = item.dates.start.localDate;
           }
           // Logger.log(`venue: ${venueName}`);
-          if (attractions.includes(keyword) || item.name == keyword) {
+          if (attractions.includes(keyword) || item.name.toUpperCase() == keyword.toUpperCase()) {
             eventsArr[date] = { 
               "eName": item.name,
               "acts": attractions,
@@ -144,7 +154,8 @@ const ticketSearch = async (keyword, writer) =>
               "city": venue.city.name, 
               "date": date, 
               "url": url, 
-              "image": item.images[image[0][0]].url
+              "image": item.images[image[0][0]].url,
+              "address": `${venueAddress}, ${venue.city.name}, ${venue.state.name}`
             }
           }
         });
@@ -153,6 +164,7 @@ const ticketSearch = async (keyword, writer) =>
         Logger.log(`No events found for ${keyword}`);
         return;
       }
+      Logger.log(eventsArr);
       debugLog(`eventsArr`,eventsArr);
   });
   return await eventsArr;

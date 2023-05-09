@@ -147,10 +147,11 @@ class CreateMessage
       message += `<img src='${image}' class="" style="width:90%;float:center;width:350px;height:200px;object-fit:cover;"/></div>`;
       message += `<span style="font-family: Averta,Helvetica Neue,Helvetica,Arial,sans-serif;">`;
       message += `<a href='${url}' style="text-decoration:none;"><span style="color:#44494c;font-size:20px;"><strong>${eName}</strong></span></a><br/>`;
-      if (actsB.length > 1 || !eName.match(actsB[0])) {
+      let actsUpper = actsB.map(function(x){ return x.toUpperCase(); })
+      if (actsUpper.length > 1 || !eName.toUpperCase().match(actsUpper[0])) {
         actsB.forEach((act, index) => {
           if (index == 0) message += `with `;
-          if (!eName.match(act) && index < 6) {
+          if (!eName.toUpperCase().match(act.toUpperCase()) && index < 6) {
             message += (index == actsB.length-1) ?  `${act}` : `${act}, `;
           }
           if (index == 6) message += `...` // truncate list if longer than 5
