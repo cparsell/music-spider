@@ -2,6 +2,10 @@ const sendEmail = () => {
   let eventsArr = buildEventsArr();
   let msgSubjRaw = [];
   let msgSubj = `${SERVICE_NAME} - `;
+  if (Object.keys(eventsArr).length === 0) {
+    console.warn("No events to add to email.")
+    return;
+  }
   for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
     msgSubjRaw.push(eventsArr[key].eName);
   }

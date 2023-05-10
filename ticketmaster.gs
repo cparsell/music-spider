@@ -79,7 +79,7 @@ const buildEventsArr = () =>
       {}
     );
   } else {
-    Logger.warn("No events found- unable to build array of Events");
+    console.warn("No events found- unable to build array of Events");
   }
 
   return ordered;
