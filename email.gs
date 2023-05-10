@@ -12,9 +12,7 @@ const sendEmail = () => {
       continue;
     }
     let actsArr = eventsArr[key].acts.split(',');
-    for (let i=0;i<((actsArr.length < 2) ? actsArr.length : 2);i++){
-      msgSubjRaw.push(actsArr[i]);
-    }
+    msgSubjRaw.push(actsArr[0]);
   }
   // remove duplicates from list of acts
   let uniq = [...new Set(msgSubjRaw)];
