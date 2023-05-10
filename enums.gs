@@ -22,8 +22,7 @@ const topArtistsUrl = baseUrl + "/me/top/artists";
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June",
   "July", "Aug", "Sept", "Oct", "Nov", "Dec"
 ];
-const dayNames = ["Mon", "Tues", "Wed", "Thur", "Fri", "Sat",
-  "Sun"];
+const dayNames = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
 
 // Playlist URLs
 const playlistsUrl = baseUrl + "/me/playlists";
