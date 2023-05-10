@@ -47,7 +47,7 @@ const refreshEvents = async () => {
   writeEventsToSheet(eventsArr);
 
   // Write Calendar Event for new events
-  createCalEvents(eventsArr);
+  if (config.createCalendarEvents) createCalEvents(eventsArr);
 }
 
 const writeEventsToSheet = async (eventsArr) => {
