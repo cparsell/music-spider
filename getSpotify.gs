@@ -39,7 +39,7 @@ const refreshArtists = async () =>
   // Remove duplicates
   let artistsArr = arrUnique(combined);
   if (artistsArr.length == 0) {
-    Logger.log("Unable to retrieve a list of artists from Spotify playlist - check playlist ID");
+    Logger.log(`Unable to retrieve a list of artists from Spotify playlist - check playlist ID, Spotify client ID, or client secret`);
     return;
   }
   Logger.log(`${artistsArr.length} artists total added`);
