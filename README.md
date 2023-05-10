@@ -2,6 +2,7 @@
 Finds concerts near you based on Spotify listening history, emails them to you
 
 Developed by https://github.com/cparsell
+
 Made for Google Apps Script
   
 Requirements:
