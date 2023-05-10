@@ -12,7 +12,7 @@ To setup:
 - Copy the contents into them
 - Modify the config.example.gs and name it config.gs
 - Replace values in config.gs to match your API keys ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/)) and set other settings
-  - If you use a Spotify playlist, get the playlist ID from the end of the playlist URL (https://open.spotify.com/playlist/**1234j1234j23423499D**?si=a8d393c78861425c
+  - If you use a Spotify playlist, get the playlist ID from the end of the playlist URL but before the ? character
 - in Apps Script, click Deploy > New Deployment > Web app > copy the link.
 - Go to this link in your browser. This page will give you further instructions to:
     1. Navigate to your app via the Spotify App Dashboard (https://developer.spotify.com/dashboard/applications)
