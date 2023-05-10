@@ -1,11 +1,14 @@
 # music-spider
 Finds concerts near you based on Spotify listening history, emails them to you
 
-  Music Spider
+Developed by https://github.com/cparsell
   
-  Developed by https://github.com/cparsell
-  
-To setup:
+Requirements:
+- Google account
+- Spotify account
+- Ticketmaster API account
+
+Setup:
 - Create a new copy of the template Google Spreadsheet
 - From the sheet, go Extensions > Apps Script to create a new script project
 - Add a new script file for each of the files in this repo
