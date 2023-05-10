@@ -39,15 +39,20 @@ class Emailer
 
   SendEmail () {
     // const staff = BuildStaff();
-    console.info(`Sending  email to ${this.email}.`);
-    GmailApp.sendEmail(this.email, this.subject, "", {
-      htmlBody: this.message.defaultMessage,
-      from: SUPPORT_ALIAS,
-      // cc: this.designspecialistemail,
-      // bcc: staff.Chris.email,
-      name: SERVICE_NAME,
-      noReply: true,
-    });
+    try {
+      console.info(`Sending  email to ${this.email}.`);
+      GmailApp.sendEmail(this.email, this.subject, "", {
+        htmlBody: this.message.defaultMessage,
+        from: SUPPORT_ALIAS,
+        // cc: this.designspecialistemail,
+        // bcc: staff.Chris.email,
+        name: SERVICE_NAME,
+        noReply: true,
+      });
+    
+    } catch (err) {
+      console.error(`${err} : Couldn't send email. Something went wrong.`);
+    }
   }
 }
 

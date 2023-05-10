@@ -42,6 +42,7 @@ const refreshEvents = async () => {
   }
   }catch (e) { 
       Logger.log(e);
+      writer.Error(e);
   }
   // Write new events to events sheet
   writeEventsToSheet(eventsArr);
@@ -95,78 +96,83 @@ const ticketSearch = async (keyword, writer) =>
   let artist = artistSheet.getRange(2,1);
   let eventsArr = {};
 
-  // returns JSON response
-  await tmSearch(keyword, writer)
-    .then(async(data) => {
-      if (data.page.totalElements == 0) {
-        Logger.log(`No results for ${keyword}`)
-        return false;
-      }
-      
-      
-      data?._embedded?.events?.forEach((item) =>
-      {
-        let url = item.url;
-        let image = [[0,0]];
-        // Loop through image URLs in JSON response. Find the one with the largest filesize
-        for (i=0;i<item.images.length;i++){
-            // let img = new Images();
-            let img = UrlFetchApp.fetch(item.images[i].url).getBlob();
-            let imgBytes = img.getBytes().length;
-            
-            if (imgBytes>image[0][1]) {
-              image[0][0]=i
-              image[0][1]=imgBytes
-            }
+  try {
+    // returns JSON response
+    await tmSearch(keyword, writer)
+      .then(async(data) => {
+        Logger.log(data)
+        if (data.page.totalElements == 0) {
+          Logger.log(`No results for ${keyword}`)
+          return false;
         }
-        let attractions = new Array;
-        item?._embedded?.attractions?.forEach((attraction) => {
-          attractions.push(attraction.name);
-        });
-        // if other artists in my list are in this event, move them to front of list
-        let artistsArr = artistsList();
-        for (i=0;i<artistsArr.length;i++){
-          let artist = artistsArr[i][0];
-          if (attractions.includes(artist) && artist != keyword) {
-            attractions = attractions.sort(function(x,y){ return x == artist ? -1 : y == artist ? 1 : 0; });
+        
+        
+        data?._embedded?.events?.forEach((item) =>
+        {
+          let url = item.url;
+          let image = [[0,0]];
+          // Loop through image URLs in JSON response. Find the one with the largest filesize
+          for (i=0;i<item.images.length;i++){
+              // let img = new Images();
+              let img = UrlFetchApp.fetch(item.images[i].url).getBlob();
+              let imgBytes = img.getBytes().length;
+              
+              if (imgBytes>image[0][1]) {
+                image[0][0]=i
+                image[0][1]=imgBytes
+              }
           }
-        }
-        // then move keyword to front of list of acts
-        attractions = attractions.sort(function(x,y){ return x == keyword ? -1 : y == keyword ? 1 : 0; });
-        item?._embedded?.venues?.forEach((venue) =>{ 
-          let venueName = venue.name; 
-          let venueAddress = venue.address.line1;
-          let date;
-          if (item.dates.start.dateTime) {
-            date = item.dates.start.dateTime;
-          }
-          // some list timeTBA = true, or noSpecificTime = true. if so, use localDate value
-          if (item.dates.start.timeTBA || item.dates.start.noSpecificTime) {
-            date = item.dates.start.localDate;
-          }
-          // Logger.log(`venue: ${venueName}`);
-          if (attractions.includes(keyword) || item.name.toUpperCase() == keyword.toUpperCase()) {
-            eventsArr[date] = { 
-              "eName": item.name,
-              "acts": attractions,
-              "venue": venueName , 
-              "city": venue.city.name, 
-              "date": date, 
-              "url": url, 
-              "image": item.images[image[0][0]].url,
-              "address": `${venueAddress}, ${venue.city.name}, ${venue.state.name}`
+          let attractions = new Array;
+          item?._embedded?.attractions?.forEach((attraction) => {
+            attractions.push(attraction.name);
+          });
+          // if other artists in my list are in this event, move them to front of list
+          let artistsArr = artistsList();
+          for (i=0;i<artistsArr.length;i++){
+            let artist = artistsArr[i][0];
+            if (attractions.includes(artist) && artist != keyword) {
+              attractions = attractions.sort(function(x,y){ return x == artist ? -1 : y == artist ? 1 : 0; });
             }
           }
+          // then move keyword to front of list of acts
+          attractions = attractions.sort(function(x,y){ return x == keyword ? -1 : y == keyword ? 1 : 0; });
+          item?._embedded?.venues?.forEach((venue) =>{ 
+            let venueName = venue.name; 
+            let venueAddress = venue.address.line1;
+            let date;
+            if (item.dates.start.dateTime) {
+              date = item.dates.start.dateTime;
+            }
+            // some list timeTBA = true, or noSpecificTime = true. if so, use localDate value
+            if (item.dates.start.timeTBA || item.dates.start.noSpecificTime) {
+              date = item.dates.start.localDate;
+            }
+            // Logger.log(`venue: ${venueName}`);
+            if (attractions.includes(keyword) || item.name.toUpperCase() == keyword.toUpperCase()) {
+              eventsArr[date] = { 
+                "eName": item.name,
+                "acts": attractions,
+                "venue": venueName , 
+                "city": venue.city.name, 
+                "date": date, 
+                "url": url, 
+                "image": item.images[image[0][0]].url,
+                "address": `${venueAddress}, ${venue.city.name}, ${venue.state.name}`
+              }
+            }
+          });
         });
-      });
-      if (Object.keys(eventsArr)==0) {
-        Logger.log(`No events found for ${keyword}`);
-        return;
-      }
-      // Logger.log(eventsArr);
-      debugLog(`eventsArr`,eventsArr);
-  });
-  return await eventsArr;
+        if (Object.keys(eventsArr)==0) {
+          Logger.log(`No events found for ${keyword}`);
+          return;
+        }
+        // Logger.log(eventsArr);
+        debugLog(`eventsArr`,eventsArr);
+    });
+    return await eventsArr;
+  } catch (err) {
+    writer.Error(`ticketSearch failed - ${err}`);
+  }
 }
 
 
@@ -200,15 +206,20 @@ const tmSearch = async (keyword, writer) =>
   params += `&unit=${config.unit}`;
   params += `&keyword=${encodeURIComponent(keyword)}`;
   Logger.log(`Searching Ticketmaster for ${keyword}`);
-  let response = await UrlFetchApp.fetch(ticketmasterUrl+params, options);
-  let responseCode = response.getResponseCode();
-  if (responseCode == 200 || responseCode == 201) {
-    let content = await response.getContentText();
-    // writer.Info(content);  // uncomment this to write raw JSON response to 'Logger' sheet
-    let parsed = JSON.parse(content);
-    return parsed;
-  } else {
-    writer.Error('Failed to search Ticketmaster');
-    return false;
+  try {
+    let response = await UrlFetchApp.fetch(ticketmasterUrl+params, options);
+    let responseCode = response.getResponseCode();
+    if (responseCode == 200 || responseCode == 201) {
+      let content = await response.getContentText();
+      writer.Info(content);  // uncomment this to write raw JSON response to 'Logger' sheet
+      let parsed = JSON.parse(content);
+      return parsed;
+    } else {
+      writer.Error('Failed to search Ticketmaster');
+      return false;
+    }
+  } catch (err) {
+    writer.Error(`Failed to search Ticketmaster ${err}`);
+    return {};
   }
 }

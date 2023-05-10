@@ -93,16 +93,24 @@ const common = {
  * @param {array} array
  */
 const arrUnique = (array) => {
-  let outArray = [];
-  array.sort();
-  outArray.push(array[0]);
-  for(let n in array){
-    // Logger.log(outArray[outArray.length-1]+'  =  '+array[n]+' ?');
-    if(outArray[outArray.length-1]!=array[n]){
-      outArray.push(array[n]);
-    }
+  if (array.length < 1) {
+    Logger.log("Array length 0 - arrUnique");
+    return [];
   }
-  return outArray;
+  try {
+    let outArray = [];
+    array.sort();
+    outArray.push(array[0]);
+    for(let n in array){
+      // Logger.log(outArray[outArray.length-1]+'  =  '+array[n]+' ?');
+      if(outArray[outArray.length-1]!=array[n]){
+        outArray.push(array[n]);
+      }
+    }
+    return outArray;
+  } catch (err) {
+    return [];
+  }
 }
 
 /**
@@ -115,8 +123,7 @@ const debugLog = (valueName, value) =>
 {
   if (config.debug) 
   {
-    Logger.log(`${value.length} ${valueName}`);
-    Logger.log(`${valueName}: ${value}`);
+    console.info(`${valueName} value: ${value}`);
   }
 }
 

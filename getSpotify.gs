@@ -6,26 +6,42 @@ const refreshArtists = async () =>
   let playlistArtists = new Array;
   let followedArtists = new Array;
   if (config.getTopArtists) {
+    try {
     // Get Top Artists from Spotify ()
-    topArtists = await getTopArtists(writer);
-    Logger.log(`${topArtists.length} Top Artists`);
-    debugLog(`Top Artists`, topArtists);
+      topArtists = await getTopArtists(writer);
+      Logger.log(`${topArtists.length} Top Artists`);
+      debugLog(`Top Artists`, topArtists);
+    } catch (err) {
+      writer.Error(`${err} : getTopArtists failed`);
+    }
   }
   if (config.getArtistsFromPlaylist) {
-    playlistArtists = await getPlaylistArtists(writer);
-    Logger.log(`${playlistArtists.length} Playlist Artists`);
-    debugLog("plastlistArtists", playlistArtists);
+    try {
+      playlistArtists = await getPlaylistArtists(writer);
+      Logger.log(`${playlistArtists.length} Playlist Artists`);
+      debugLog("plastlistArtists", playlistArtists);
+    } catch (err) {
+      writer.Error(`${err} : getArtistsFromPlaylist failed`);
+    }
   }
   if (config.getFollowing) { 
+    try {
     followedArtists = await getFollowedArtists(writer);
     Logger.log(`${followedArtists.length} Followed Artists`);
     debugLog("followedArtists", followedArtists);
+    } catch (err) {
+      writer.Error(`${err} : getFollowing failed`);
+    }
   }
   // Combine both arrays
   let combined = topArtists.concat(playlistArtists).concat(followedArtists);
   debugLog(`combined`, combined);
   // Remove duplicates
   let artistsArr = arrUnique(combined);
+  if (artistsArr.length == 0) {
+    Logger.log("Unable to retrieve a list of artists from Spotify playlist - check playlist ID");
+    return;
+  }
   Logger.log(`${artistsArr.length} artists total added`);
   if (artistsArr.length > 0) {
     // Clear previous artist list
@@ -264,11 +280,10 @@ const getTopArtists = async (writer) =>
   
   let final = new Array;
 
-  if (artistsArr.length > 0) {
-    // Logger.log("Top Artists Array");
-    // Logger.log(artistsArr);
-    // Logger.log(`Artists Array length: ${artistsArr.length}`);
-    final = arrUnique(artistsArr);
+  if (artistsArr.length == 0) {
+    Logger.log(`Returned 0 top artists somehow`)
+    return artistsArr;
   }
+  final = arrUnique(artistsArr);
   return final;
 }
