@@ -1,5 +1,21 @@
 /**
  * ----------------------------------------------------------------------------------------------------------------
+ * Clear a range of values
+ * @param {sheet} sheet 
+ * @param {number} startRow header title
+ */
+const clearData = (sheet, startRow = 2) => 
+{
+  if(typeof sheet != `object`) return 1;
+  let numCols = sheet.getLastColumn();
+  let numRows = sheet.getLastRow() - startRow + 1; // The number of row to clear
+  if (numRows == 0) numRows = 1;
+  let range = sheet.getRange(startRow, 1, numRows,numCols);
+  range.clear();
+}
+
+/**
+ * ----------------------------------------------------------------------------------------------------------------
  * Removes any row of data if the Date value is before today
  * @param {sheet} sheet
  * @param {string} dateHeaderName default is "Date"
