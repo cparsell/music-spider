@@ -7,7 +7,14 @@ const sendEmail = () => {
     return;
   }
   for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
-    msgSubjRaw.push(eventsArr[key].eName);
+    if (eventsArr[key].acts==""){
+      msgSubjRaw.push(eventsArr[key].eName);
+      continue;
+    }
+    let actsArr = eventsArr[key].acts.split(',');
+    for (let i=0;i<((actsArr.length < 2) ? actsArr.length : 2);i++){
+      msgSubjRaw.push(actsArr[i]);
+    }
   }
   // remove duplicates from list of acts
   let uniq = [...new Set(msgSubjRaw)];
