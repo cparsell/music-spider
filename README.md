@@ -27,7 +27,7 @@ It then searches Ticketmaster's API for events with these artist's names as keyw
   - If you use a Spotify playlist, get the playlist ID from the end of the playlist URL but before the ? character
 
 ### 2. Spotify Authorization:
-- in Apps Script, click **Deploy > New Deployment > Web app** and copy the link.
+- Go to Apps Script from the sheet (**Extensions > Apps Script**), then click **Deploy > New Deployment > Web app** and copy the link.
 - Go to this link in your browser. This page will give you further instructions to:
     1. Navigate to your app via the **[Spotify App Dashboard](https://developer.spotify.com/dashboard/applications)**
     2. Add the given URI **(the one given on this page, don't use the URL you went to)** to the **Redirect URIs** field, found under "Edit Settings"
