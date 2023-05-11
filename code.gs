@@ -34,11 +34,12 @@
  */
 const BarMenu = () => {
   SpreadsheetApp.getUi()
-    .createMenu(`Tickets Tool`)
+    .createMenu(`Music Spider`)
     .addItem(`Refresh Artists`, `refreshArtists`)
     .addItem(`Refresh Events`, `refreshEvents`)
-    // .addSeparator()
     .addItem(`Send Email Newsletter`, `sendEmail`)
+    .addSeparator()
+    .addItem(`Delete Blank Rows`, `deleteEmptyRows`)
     .addToUi();
 };
 
