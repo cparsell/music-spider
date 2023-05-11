@@ -49,7 +49,7 @@ Google Triggers
   - **7am to 8am**
   - Save.
 - Click **Add Trigger**
-  - Function to run: **barMenu**    (send out a regular email with events)
+  - Function to run: **barMenu**    (adds a menu in the spreadsheet)
   - Event source: **From Spreadsheet**
   - Event type: **On Open**
   - Save.
