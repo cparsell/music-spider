@@ -27,8 +27,32 @@ Spotify Authorization:
 
 Google Triggers
 - In the Apps Script project, go to **Triggers** on the left sidebar
+- Feel free to change the timing of these to your preference.
 - Click **Add Trigger**
-  - Function to run: **BarMenu**
+  - Function to run: **refreshArtists**   (the function that updates your Spotify artists)
+  - Event source: **Time-driven**
+  - **Week timer**
+  - **Every Monday** (or your preference)
+  - **2am to 3am**
+  - Save.
+- Click **Add Trigger**
+  - Function to run: **refreshEvents**   (the function that looks for new events on Ticketmaster)
+  - Event source: **Time-driven**
+  - **Day timer** (or your preference)
+  - **4am to 5am**
+  - Save.
+- Click **Add Trigger**
+  - Function to run: **sendEmail**    (send out a regular email with events)
+  - Event source: **Time-driven**
+  - **Week timer** 
+  - **Every Monday** 
+  - **7am to 8am**
+  - Save.
+- Click **Add Trigger**
+  - Function to run: **barMenu**    (send out a regular email with events)
+  - Event source: **From Spreadsheet**
+  - Event type: **On Open**
+  - Save.
 
 
 
