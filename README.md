@@ -36,8 +36,9 @@ It then searches Ticketmaster's API for events with these artist's names as keyw
 - Now the script should have authorization to get your user's info (playlists, top artists, etc)
 
 ### 3. Google Triggers
+This will set up Apps Script to regularly update artists, events, and send you an email. Feel free to change the timing of these to your preference.
+
 - In the Apps Script project, go to **Triggers** on the left sidebar
-- Feel free to change the timing of these to your preference.
 - Click **Add Trigger**
   - Function to run: **refreshArtists**   (the function that updates your Spotify artists)
   - Event source: **Time-driven**
@@ -45,12 +46,14 @@ It then searches Ticketmaster's API for events with these artist's names as keyw
   - **Every Monday** (or your preference)
   - **2am to 3am**
   - Save.
+
 - Click **Add Trigger**
   - Function to run: **refreshEvents**   (the function that looks for new events on Ticketmaster)
   - Event source: **Time-driven**
   - **Day timer** (or your preference)
   - **4am to 5am**
   - Save.
+
 - Click **Add Trigger**
   - Function to run: **sendEmail**    (send out a regular email with events)
   - Event source: **Time-driven**
@@ -58,6 +61,7 @@ It then searches Ticketmaster's API for events with these artist's names as keyw
   - **Every Monday** 
   - **7am to 8am**
   - Save.
+
 - Click **Add Trigger**
   - Function to run: **barMenu**    (adds a menu in the spreadsheet)
   - Event source: **From Spreadsheet**
