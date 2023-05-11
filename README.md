@@ -5,7 +5,7 @@ Developed by https://github.com/cparsell
 
 Made for Google Apps Script
   
-What it does:
+### What it does:
 It can gather the names of artists from Spotify's API from three sources:
 - Top Artists - Spotify keeps a list of the artists you listen to the most. The API will return this list based on long-term, medium-term, and short-term listening history
 - Artists you follow
@@ -15,18 +15,18 @@ These are all optional and you can configure it to gather these from any or all 
 
 It then searches Ticketmaster's API for events with these artist's names as keywords and in the area you specify. 
   
-Requirements:
+### Requirements:
 - Google account
 - Spotify account
 - Ticketmaster API account
 
-Setup:
+### 1. Setup:
 - Go to the  [template Google Spreadsheet](https://docs.google.com/spreadsheets/d/1H4pvSK4jpRikHO11PtpJGSdycpVmM566XLQzRot4E_g/edit?usp=sharing) and make a copy of it on your Google Drive. This will copy the Apps Script code with it.
 - Rename config.example.gs to **config.gs**
 - Replace values in **config.gs** to match your API keys ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/)) and set other settings
   - If you use a Spotify playlist, get the playlist ID from the end of the playlist URL but before the ? character
 
-Spotify Authorization:
+### 2. Spotify Authorization:
 - in Apps Script, click **Deploy > New Deployment > Web app** and copy the link.
 - Go to this link in your browser. This page will give you further instructions to:
     1. Navigate to your app via the **[Spotify App Dashboard](https://developer.spotify.com/dashboard/applications)**
@@ -35,7 +35,7 @@ Spotify Authorization:
     4. You should be redirected back to a success page on Google App Script.
 - Now the script should have authorization to get your user's info (playlists, top artists, etc)
 
-Google Triggers
+### 3. Google Triggers
 - In the Apps Script project, go to **Triggers** on the left sidebar
 - Feel free to change the timing of these to your preference.
 - Click **Add Trigger**
