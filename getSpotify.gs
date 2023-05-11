@@ -129,11 +129,11 @@ const getFollowedArtists = async (writer) =>
   let artistsArr = new Array;
   data.forEach(artist =>
   {
-    if (artistsToIgnore.includes(artist.name)) Logger.log(`Ignoring ${artist.name}`)
+    if (artistsToIgnore.includes(artist.name)) debugLog(`Ignoring`, artist.name);
     if (!artistsToIgnore.includes(artist.name)) artistsArr.push(artist.name);  
     // artistsArr.push(JSON.stringify(artist.name));
   });
-  Logger.log(artistsArr);
+  debugLog(`artistsArr`, artistsArr);
   return artistsArr;
 }
 
@@ -170,7 +170,7 @@ const getPlaylistArtists = async (writer) =>
       let artists = item.track.album.artists;
       artists.forEach(artist =>
       { 
-        if (artistsToIgnore.includes(artist.name)) Logger.log(`Ignoring ${artist.name}`)
+        if (artistsToIgnore.includes(artist.name)) debugLog(`Ignoring`, artist.name);
         if (!artistsToIgnore.includes(artist.name)) artistsArr.push(artist.name);  
         // artistsArr.push(artist.name);
       });
@@ -193,90 +193,26 @@ const getPlaylistArtists = async (writer) =>
  * ----------------------------------------------------------------------------------------------------------------
  * Returns an array of Top Artists as gathered by Spotify
  * This searches "long term", "medium term", and "short term"
- * @param {writer} instance of WriteLogger
+ * @param {object} writer instance of WriteLogger
  */
 const getTopArtists = async (writer) => 
 {
   // Retrieve auth
   let accessToken = await retrieveAuth();
   debugLog(`Access token`,JSON.stringify(accessToken));
+  let artistsArr = new Array;
 
   // Request for LONG TERM top artists
-  let params = "?time_range=long_term";
-  params += `&limit=50`;
-  let resp = undefined;
-  Logger.log("Getting top artists (long term)...")
-  resp = await getData(accessToken, topArtistsUrl + params,true);
-  let artistsArr = [];
-  // Fold array of responses into single structure
-  if (resp[0]) {
-    data = common.collateArrays("items", resp);
-    let ignoree = false;
-    data.forEach(artist =>
-    { 
-      if (artistsToIgnore.includes(artist.name)) Logger.log(`Ignoring ${artist.name}`)
-      if (!artistsToIgnore.includes(artist.name)) artistsArr.push(artist.name);
-    });
-  } else {
-    Logger.log("No data received (long term)");
-  }
+  artistsArr.push(getTopData("long_term", 0));
   
   // Request for LONG TERM top artists OFFSET +48
-  params = "?time_range=medium_term";
-  params += `&limit=50`;
-  params += `&offset=48`;
-  resp = undefined;
-  Logger.log("Getting top artists (long term) with offset...")
-  resp = await getData(accessToken, topArtistsUrl + params,true);
-  // Fold array of responses into single structure
-  if (resp[0]) {
-    data = common.collateArrays("items", resp);
-    data.forEach(artist =>
-    {
-      if (artistsToIgnore.includes(artist.name)) Logger.log(`Ignoring ${artist.name}`)
-      if (!artistsToIgnore.includes(artist.name)) artistsArr.push(artist.name);
-    });
-  } else {
-    Logger.log("No data received (long term) with offset");
-  }
-
+  artistsArr.push(getTopData("long_term", 48));
+  
   // Re-request for MEDIUM TERM top artists
-  params = "?time_range=medium_term";
-  params += `&limit=50`;
-  resp = undefined;
-  Logger.log("Getting top artists (medium term)...")
-  resp = await getData(accessToken, topArtistsUrl + params,true);
-
-  // Fold array of responses into single structure
-  if (resp[0]) {
-    data = common.collateArrays("items", resp);
-    data.forEach(artist =>
-    {
-      if (artistsToIgnore.includes(artist.name)) Logger.log(`Ignoring ${artist.name}`)
-      if (!artistsToIgnore.includes(artist.name)) artistsArr.push(artist.name);
-    });
-  } else {
-    Logger.log("No data received (medium term)");
-  }
+  artistsArr.push(getTopData("medium_term", 48));
 
   // Re-request for SHORT TERM top artists
-  params = "?time_range=short_term";
-  params += `&limit=50`;
-  resp = undefined;
-  Logger.log("Getting top artists (short term)...")
-  resp = await getData(accessToken, topArtistsUrl + params,true);
-
-  // Fold array of responses into single structure
-  if (resp[0]) {
-    data = common.collateArrays("items", resp);
-    data.forEach(artist =>
-    {
-      if (artistsToIgnore.includes(artist.name)) Logger.log(`Ignoring ${artist.name}`)
-      if (!artistsToIgnore.includes(artist.name)) artistsArr.push(artist.name);
-    });
-  } else {
-    Logger.log("No data received (short term)");
-  }
+  artistsArr.push(getTopData("short_term", 48));
   
   let final = new Array;
 
@@ -286,4 +222,35 @@ const getTopArtists = async (writer) =>
   }
   final = arrUnique(artistsArr);
   return final;
+}
+
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * Returns an array of Top Artists as gathered by Spotify
+ * This searches "long term", "medium term", and "short term"
+ * @param {string} term expects "long_term", "medium_term", or "short_term"
+ * @param {integer} offset 
+ */
+const getTopData = async (term, offset) => {
+let params = `?time_range=${term}`;
+  params += `&limit=50`;
+  params += `&offset=${offset}`;
+
+  let resp = undefined;
+  Logger.log("Getting top artists (long term)...")
+  resp = await getData(accessToken, topArtistsUrl + params,true);
+  let artistsArr = new Array;
+  // Fold array of responses into single structure
+  if (resp[0]) {
+    data = common.collateArrays("items", resp);
+    let ignoree = false;
+    data.forEach(artist =>
+    { 
+      if (artistsToIgnore.includes(artist.name)) debugLog(`Ignoring`, artist.name);
+      if (!artistsToIgnore.includes(artist.name)) artistsArr.push(artist.name);
+    });
+  } else {
+    Logger.log("No data received (long term)");
+  }
+  return artistsArr;
 }
