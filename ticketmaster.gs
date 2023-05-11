@@ -7,8 +7,8 @@ const refreshEvents = async () => {
   //Clean expired events
   removeExpiredEntries(eventSheet);
 
-  //Clear events list
-  // clearData(eventSheet);
+  // Clear any empty rows if something was manually deleted
+  deleteEmptyRows(eventSheet);
 
   //search each artist
   let eventsArr = {};
