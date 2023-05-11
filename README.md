@@ -7,9 +7,9 @@ Made for Google Apps Script
   
 ### What it does:
 It can gather the names of artists from Spotify's API from three sources:
-- Top Artists - Spotify keeps a list of the artists you listen to the most. The API will return this list based on long-term, medium-term, and short-term listening history
-- Artists you follow
-- Artists in a specified playlist
+- **Top Artists** - Spotify keeps a list of the artists you listen to the most. The API will return this list based on long-term, medium-term, and short-term listening history
+- **Artists you follow**
+- **Artists in a specified playlist**
 
 These are all optional and you can configure it to gather these from any or all of these in the **config.gs** file. 
 
