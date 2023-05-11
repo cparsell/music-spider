@@ -2,10 +2,10 @@ const config = {
   // Spreadsheet ID is in the spreadsheet URL:
   // https://docs.google.com/spreadsheets/d/THIS_IS_THE_ID/edit#gid=0
   'spreadsheetId': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-  // Spotify API keys
+  // Spotify API keys (create at https://developer.spotify.com/dashboard/applications)
   'clientIdSpotify': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx',
   'clientSecretSpotify': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx',  
-  // Ticketmaster API keys
+  // Ticketmaster API keys (create at https://developer.ticketmaster.com/)
   'keyTM': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
   // Ticketmaster search params
   'latlong': '34.052235,-118.243683',  // get your latlong from a website like https://www.latlong.net/
@@ -13,11 +13,11 @@ const config = {
   'unit': 'miles',
   // Spotify preferances
   'getTopArtists': true,
-  'getArtistsFromPlaylist': true,
+  'getArtistsFromPlaylist': false,
   'playlistId': 'xxxxxxxxxxxxxxxxxxxxxxx',
   // Email(s) to send newsletter to
   'email': 'somebody@somewhere.com',
-  'createCalendarEvents': true,
+  'createCalendarEvents': false,
   'calendarId': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx@group.calendar.google.com',
   // enable debug for verbose logging in Apps Script Executions log
   'debug': false,
@@ -33,4 +33,3 @@ const artistsToIgnore = [
   'The Beatles',
   'J Dilla',
 ];
-
