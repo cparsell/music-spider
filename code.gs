@@ -6,7 +6,7 @@
  * Developed by https://github.com/cparsell
  * 
  * 
- * I borrowed many core Spotify API code from https://github.com/Nitemice/spotify-backup-gas
+ * I borrowed many core Spotify API functions from https://github.com/Nitemice/spotify-backup-gas
  * 
  * To setup:
  * - Create a new copy of the template Google Spreadsheet
@@ -125,9 +125,8 @@ const xmlElement = (type, text) =>
 
 const main = () =>
 {
-    // backupProfile();
-    // backupLibrary();
-    // getArtists();
-    // backupPlaylists();
+  // await refreshArtists();
+  // await refreshEvents();
+  // await sendEmail();
 }
 

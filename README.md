@@ -11,10 +11,7 @@ Requirements:
 - Ticketmaster API account
 
 Setup:
-- Create a new copy of the template Google Spreadsheet
-- From the sheet, go Extensions > Apps Script to create a new script project
-- Add a new script file for each of the files in this repo
-- Copy the contents into them
+- Go to the  [template Google Spreadsheet](https://docs.google.com/spreadsheets/d/1H4pvSK4jpRikHO11PtpJGSdycpVmM566XLQzRot4E_g/edit?usp=sharing) and make a copy of it on your Google Drive. This will copy the Apps Script code with it.
 - Rename config.example.gs to **config.gs**
 - Replace values in **config.gs** to match your API keys ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/)) and set other settings
   - If you use a Spotify playlist, get the playlist ID from the end of the playlist URL but before the ? character
@@ -35,7 +32,8 @@ Google Triggers
 
 
 
+
 NOTE: Use the address given in the text of the web app page, not the one you copied from Google Script. For me at least, they were slightly different.
  
  Sources:
- - I borrowed many core Spotify API code from https://github.com/Nitemice/spotify-backup-gas
+ - I borrowed many core Spotify API functions from https://github.com/Nitemice/spotify-backup-gas
