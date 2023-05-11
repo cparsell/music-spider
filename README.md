@@ -18,6 +18,8 @@ Setup:
 - Rename config.example.gs to **config.gs**
 - Replace values in **config.gs** to match your API keys ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/)) and set other settings
   - If you use a Spotify playlist, get the playlist ID from the end of the playlist URL but before the ? character
+
+Spotify Authorization:
 - in Apps Script, click **Deploy > New Deployment > Web app** and copy the link.
 - Go to this link in your browser. This page will give you further instructions to:
     1. Navigate to your app via the **[Spotify App Dashboard](https://developer.spotify.com/dashboard/applications)**
@@ -25,7 +27,15 @@ Setup:
     3. Go to the given URL, log into the desired user's Spotify account, and approve access.
     4. You should be redirected back to a success page on Google App Script.
 - Now the script should have authorization to get your user's info (playlists, top artists, etc)
-- NOTE: Use the address given in the text of the web app page, not the one you copied from Google Script. For me at least, they were slightly different.
+
+Google Triggers
+- In the Apps Script project, go to **Triggers** on the left sidebar
+- Click **Add Trigger**
+  - Function to run: **BarMenu**
+
+
+
+NOTE: Use the address given in the text of the web app page, not the one you copied from Google Script. For me at least, they were slightly different.
  
  Sources:
  - I borrowed many core Spotify API code from https://github.com/Nitemice/spotify-backup-gas
