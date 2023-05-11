@@ -1,6 +1,6 @@
-const artistSheet = SpreadsheetApp.openById('1_Q1YKrvZ33BPj_sQYDpS8Bxb4e2ZQdWnq3lR5U-GBdg').getSheetByName("Artists");
-
-const eventSheet = SpreadsheetApp.openById('1_Q1YKrvZ33BPj_sQYDpS8Bxb4e2ZQdWnq3lR5U-GBdg').getSheetByName("Events");
+const spreadsheet = SpreadsheetApp.openById(config.spreadsheetId);
+const artistSheet = spreadsheet.getSheetByName("Artists");
+const eventSheet = spreadsheet.getSheetByName("Events");
 
 const SERVICE_NAME = `Music Spider`;
 const SUPPORT_ALIAS = GmailApp.getAliases()[0];

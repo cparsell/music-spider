@@ -1,4 +1,5 @@
 const config = {
+  'spreadsheetId': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
   // Spotify API keys
   'clientIdSpotify': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx',
   'clientSecretSpotify': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx',  
