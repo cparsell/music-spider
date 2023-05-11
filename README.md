@@ -1,7 +1,7 @@
 # music-spider
 Finds concerts near you based on your Spotify listening history and emails them to you. It can also create Google Calendar events for the concerts it finds.
 
-This was made so that I can find out when artists I love are in town. I have often missed these. I wanted something that just focused on the artists I listen to. No artists recommended by an AI based on my listening habits. No newsletters with 99% concerts I would not be interested in.
+This was made so that I can find out when artists I love are in town. I want something that just focuses on the artists I listen to. No artists recommended by an AI. No newsletters listing 99% concerts I'm not interested in.
 
 ![logo](https://i.postimg.cc/GtnY2t84/music-spider-logo-inv-nobg.png)
 
