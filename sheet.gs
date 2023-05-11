@@ -195,9 +195,8 @@ const writeArrayToColumn = (array, sheet, col) => {
   range.setValues(outerArray);
 };
 
-const deleteEmptyRows = () => {
-  // const sheet = SpreadsheetApp.getActiveSheet();
-  let sheet = eventSheet;
+const deleteEmptyRows = (sheet) => {
+  if (sheet == undefined) sheet = SpreadsheetApp.getActiveSheet();
   // Gets active selection and dimensions.
   let activeRange = sheet.getRange(2,1,sheet.getLastRow()-1,sheet.getLastColumn());
   let rowCount = activeRange.getHeight();
@@ -258,9 +257,8 @@ const deleteEmptyRows = () => {
  *   
  * Called from menu option.
  */
-const deleteEmptyColumns = () => {
-  // let sheet = SpreadsheetApp.getActiveSheet();
-  let sheet = eventSheet;
+const deleteEmptyColumns = (sheet) => {
+  if (sheet == undefined) sheet = SpreadsheetApp.getActiveSheet();
   // Gets active selection and dimensions.
   let activeRange = sheet.getActiveRange();
   Logger.log(activeRange);
