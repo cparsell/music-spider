@@ -1,7 +1,7 @@
 # music-spider
 Finds concerts near you based on your Spotify listening history and emails them to you. It can also create Google Calendar events for the concerts it finds.
-<p style="text-align: center;">
-![logo](https://i.postimg.cc/GtnY2t84/music-spider-logo-inv-nobg.png)</p>
+
+![logo](https://i.postimg.cc/GtnY2t84/music-spider-logo-inv-nobg.png)
 
 Developed by https://github.com/cparsell
 
