@@ -1,6 +1,8 @@
 # music-spider
 Finds concerts near you based on your Spotify listening history and emails them to you. It can also create Google Calendar events for the concerts it finds.
 
+This was made so that I can find out when artists I love are in town. I have often missed these. I wanted something that just focused on the artists I listen to. No artists recommended by an AI based on my listening habits. No newsletters with 99% concerts I would not be interested in.
+
 ![logo](https://i.postimg.cc/GtnY2t84/music-spider-logo-inv-nobg.png)
 
 Developed by https://github.com/cparsell
@@ -15,9 +17,11 @@ It can gather the names of artists from Spotify's API from three sources:
 - **Artists you follow**
 - **Artists in a specified playlist**
 
-These are all optional and you can configure it to gather these from any or all of these in the **config.gs** file. 
+These are all optional and you can configure it to gather these from any or all of these in the **config.gs** file. It writes the artist's names to the Artist Sheet.
 
-It then searches Ticketmaster's API for events with these artist's names as keywords and in the area you specify. 
+It then searches Ticketmaster's API for events with these artist's names as keywords and in the area you specify. It writes any event matches into the Event Sheet.
+
+Then it sends an email (e.g. weekly) listing these events.
   
   
   
