@@ -180,3 +180,17 @@ const SetRowData = (sheet,data) => {
     return 1;
   }
 }
+
+const writeArrayToColumn = (array, sheet, col) => {
+  let outerArray = [],
+  tempArray = [],
+  i=0;
+
+  for (i=0;i<array.length;i+=1) {
+    tempArray = [];
+    tempArray.push(array[i]);
+    outerArray.push(tempArray);
+  };
+  let range = sheet.getRange(sheet.getLastRow()+1, col, array.length, 1);
+  range.setValues(outerArray);
+};

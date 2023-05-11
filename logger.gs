@@ -6,7 +6,7 @@
 class WriteLogger
 {
   constructor() { 
-    this.sheet = SpreadsheetApp.openById('1_Q1YKrvZ33BPj_sQYDpS8Bxb4e2ZQdWnq3lR5U-GBdg').getSheetByName("Logger");
+    this.sheet = spreadsheet.getSheetByName("Logger");
     // this.sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Logger");
   }
   Error(message) {

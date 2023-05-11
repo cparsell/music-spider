@@ -123,7 +123,7 @@ const debugLog = (valueName, value) =>
 {
   if (config.debug) 
   {
-    console.info(`${valueName} value: ${value}`);
+    console.info(`${valueName}: ${value}`);
   }
 }
 

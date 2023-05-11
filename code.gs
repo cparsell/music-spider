@@ -65,20 +65,6 @@ const artistsList = () => {
   return artistsArr;
 }
 
-const writeArrayToColumn = (array, sheet, col) => {
-  let outerArray = [],
-  tempArray = [],
-  i=0;
-
-  for (i=0;i<array.length;i+=1) {
-    tempArray = [];
-    tempArray.push(array[i]);
-    outerArray.push(tempArray);
-  };
-  let range = sheet.getRange(sheet.getLastRow()+1, 1, array.length, 1);
-  range.setValues(outerArray);
-};
-
 const getData = async (accessToken, url, getAllPages = false) =>
 {
   let headers = {

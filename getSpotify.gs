@@ -198,21 +198,26 @@ const getPlaylistArtists = async (writer) =>
 const getTopArtists = async (writer) => 
 {
   // Retrieve auth
-  let accessToken = await retrieveAuth();
-  debugLog(`Access token`,JSON.stringify(accessToken));
+  
   let artistsArr = new Array;
+  let long_term1 = new Array;
+  let long_term2 = new Array;
+  let med_term = new Array;
+  let short_term = new Array;
 
   // Request for LONG TERM top artists
-  artistsArr.push(getTopData("long_term", 0));
+  artistsArr = artistsArr.concat(await getTopData("long_term", 0));
+  Logger.log(long_term1);
   
   // Request for LONG TERM top artists OFFSET +48
-  artistsArr.push(getTopData("long_term", 48));
+  artistsArr = artistsArr.concat(await getTopData("long_term", 48));
+  Logger.log(long_term2);
   
   // Re-request for MEDIUM TERM top artists
-  artistsArr.push(getTopData("medium_term", 48));
+  artistsArr = artistsArr.concat(await getTopData("medium_term", 0));
 
   // Re-request for SHORT TERM top artists
-  artistsArr.push(getTopData("short_term", 48));
+  artistsArr = artistsArr.concat(await getTopData("short_term", 0));
   
   let final = new Array;
 
@@ -232,7 +237,10 @@ const getTopArtists = async (writer) =>
  * @param {integer} offset 
  */
 const getTopData = async (term, offset) => {
-let params = `?time_range=${term}`;
+  let accessToken = await retrieveAuth();
+  debugLog(`Access token`,JSON.stringify(accessToken));
+  
+  let params = `?time_range=${term}`;
   params += `&limit=50`;
   params += `&offset=${offset}`;
 
