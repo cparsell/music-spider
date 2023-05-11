@@ -104,6 +104,13 @@ const GetRowData = (sheet, row) => {
   }
 }
 
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * Search a sheet's column for a value - if found, returns TRUE, if not found, returns FALSE
+ * @param {sheet} sheet
+ * @param {string} columnName
+ * @param {string} val value to search for
+ */
 const searchColForValue = (sheet, columnName, val) => {
   if(typeof sheet != `object`) return false;
   try {
@@ -159,7 +166,6 @@ const SetByHeader = (sheet, columnName, row, val) => {
  * Writes a row of data to a sheet. Input event data and it writes each value to the sheet with matching header name
  * @param {sheet} sheet
  * @param {dict} data 
- * @returns {dict} {header, value}
  */
 const SetRowData = (sheet,data) => {
   if(typeof sheet != `object`) return 1;
@@ -181,20 +187,36 @@ const SetRowData = (sheet,data) => {
   }
 }
 
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * Write array to a column on a sheet
+ * @param {array} sheet
+ * @param {object} sheet
+ * @param {integer} col column number
+ */
 const writeArrayToColumn = (array, sheet, col) => {
   let outerArray = [],
   tempArray = [],
   i=0;
 
-  for (i=0;i<array.length;i+=1) {
-    tempArray = [];
-    tempArray.push(array[i]);
-    outerArray.push(tempArray);
-  };
-  let range = sheet.getRange(sheet.getLastRow()+1, col, array.length, 1);
-  range.setValues(outerArray);
+  try {
+    for (i=0;i<array.length;i+=1) {
+      tempArray = [];
+      tempArray.push(array[i]);
+      outerArray.push(tempArray);
+    };
+    let range = sheet.getRange(sheet.getLastRow()+1, col, array.length, 1);
+    range.setValues(outerArray);
+  } catch (err) {
+    console.error(`${err} : writeArrayToColumn failed - Sheet: ${sheet}, Array: ${array}, Col: ${col}`);
+  }
 };
 
+/**
+ * ------------------------------------------------------------------------------------------------------
+ * Removes blank rows on a sheet
+ * @param {sheet} sheet
+ */
 const deleteEmptyRows = (sheet) => {
   // if(typeof sheet != `object`) return 1;
   try {
