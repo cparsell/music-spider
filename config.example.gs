@@ -1,4 +1,6 @@
 const config = {
+  // Spreadsheet ID is in the spreadsheet URL:
+  // https://docs.google.com/spreadsheets/d/THIS_IS_THE_ID/edit#gid=0
   'spreadsheetId': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
   // Spotify API keys
   'clientIdSpotify': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx',
