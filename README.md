@@ -7,6 +7,8 @@ Developed by https://github.com/cparsell
 
 Made for Google Apps Script
   
+  
+  
 ### What it does:
 It can gather the names of artists from Spotify's API from three sources:
 - **Top Artists** - Spotify keeps a list of the artists you listen to the most. The API will return this list based on long-term, medium-term, and short-term listening history
@@ -17,10 +19,14 @@ These are all optional and you can configure it to gather these from any or all 
 
 It then searches Ticketmaster's API for events with these artist's names as keywords and in the area you specify. 
   
+  
+  
 ### Requirements:
 - Google account
 - Spotify account
 - Ticketmaster API account
+
+
 
 ### 1. Setup:
 - Go to the  [template Google Spreadsheet](https://docs.google.com/spreadsheets/d/1H4pvSK4jpRikHO11PtpJGSdycpVmM566XLQzRot4E_g/edit?usp=sharing) and make a copy of it on your Google Drive. This will copy the Apps Script code with it.
