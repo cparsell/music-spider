@@ -24,16 +24,21 @@ It then searches Ticketmaster's API for events with these artist's names as keyw
 
 Then it sends an email (e.g. weekly) listing these events.
   
-  
-  
+
 ### Requirements:
 - Google account
 - Spotify account
 - Ticketmaster API account
 
 
+### TL;DR Setup
+1. Copy [template Google Spreadsheet](https://docs.google.com/spreadsheets/d/1H4pvSK4jpRikHO11PtpJGSdycpVmM566XLQzRot4E_g/edit?usp=sharing) to your drive
+2. Set up API keys for ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/)). Put keys in config file.
+3. Set up triggers in Apps Script
 
-### 1. Setup:
+## Step by step setup
+
+### 1. Template file
 - Go to the  [template Google Spreadsheet](https://docs.google.com/spreadsheets/d/1H4pvSK4jpRikHO11PtpJGSdycpVmM566XLQzRot4E_g/edit?usp=sharing) and make a copy of it on your Google Drive. This will copy the Apps Script code with it.
 - Rename config.example.gs to **config.gs**
 - Replace values in **config.gs** to match your API keys ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/)) and set other settings
