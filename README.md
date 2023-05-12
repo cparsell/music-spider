@@ -12,7 +12,7 @@ Made for Google Apps Script
   
   
   
-### What it does:
+## What it does:
 It can gather the names of artists from Spotify's API from three sources:
 - **Top Artists** - Spotify keeps a list of the artists you listen to the most. The API will return this list based on long-term, medium-term, and short-term listening history
 - **Artists you follow**
@@ -25,13 +25,13 @@ It then searches Ticketmaster's API for events with these artist's names as keyw
 Then it sends an email (e.g. weekly) listing these events.
   
 
-### Requirements:
+## Requirements:
 - Google account
 - Spotify account
 - Ticketmaster API account
 
 
-### TL;DR Setup
+## TL;DR Setup
 1. Copy [template Google Spreadsheet](https://docs.google.com/spreadsheets/d/1H4pvSK4jpRikHO11PtpJGSdycpVmM566XLQzRot4E_g/edit?usp=sharing) to your drive
 2. Set up API keys for ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/)). Put keys in config file.
 3. Set up triggers in Apps Script
