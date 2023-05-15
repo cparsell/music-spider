@@ -6,7 +6,7 @@ Finds concerts near you based on your Spotify listening history and emails them 
 This was made so that I can find out when artists I love are in town. I want something that just focuses on the artists I listen to. No artists recommended by an AI. No newsletters listing concerts I'm not interested in.
 
 
-Developed by https://github.com/cparsell
+Developed by [cparsell](https://github.com/cparsell)
 
 Made for Google Apps Script
   
