@@ -8,7 +8,7 @@ This was made so that I can find out when artists I love are in town. I want som
 
 Developed by [cparsell](https://github.com/cparsell)
 
-Made for Google Apps Script
+Made for [Google Apps Script](https://developers.google.com/apps-script/)
   
   
   
