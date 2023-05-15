@@ -81,11 +81,13 @@ const getSavedTracksArtists = async (writer) =>
   if (data) {
     data = common.collateArrays("items", data);
     let artistsArr = [];
+    let ignoreUpperCase = artistsToIgnore.map(function(x){ return x.toUpperCase(); })
     data.forEach(track =>
     {
       track.track.artists.forEach(artist =>
       {
-          artistsArr.push(artist.name);
+        if (ignoreUpperCase.includes(artist.name.toUpperCase())) debugLog(`getSaveTracksArtists Ignoring`, artist.name);
+        if (!ignoreUpperCase.includes(artist.name.toUpperCase())) artistsArr.push(artist.name);  
       });
     });
 
@@ -127,10 +129,11 @@ const getFollowedArtists = async (writer) =>
     return 0;
   });
   let artistsArr = new Array;
+  let ignoreUpperCase = artistsToIgnore.map(function(x){ return x.toUpperCase(); })
   data.forEach(artist =>
   {
-    if (artistsToIgnore.includes(artist.name)) debugLog(`Ignoring`, artist.name);
-    if (!artistsToIgnore.includes(artist.name)) artistsArr.push(artist.name);  
+    if (ignoreUpperCase.includes(artist.name.toUpperCase())) debugLog(`getFollowedArtists Ignoring`, artist.name);
+    if (!ignoreUpperCase.includes(artist.name.toUpperCase())) artistsArr.push(artist.name);  
     // artistsArr.push(JSON.stringify(artist.name));
   });
   debugLog(`artistsArr`, artistsArr);
@@ -166,12 +169,13 @@ const getPlaylistArtists = async (writer) =>
     // Logger.log(newData.tracks.items);
     // writer.Info(JSON.stringify(newData.tracks.items));
     let artistsArr = [];
+    let ignoreUpperCase = artistsToIgnore.map(function(x){ return x.toUpperCase(); })
     items.forEach(item => {
       let artists = item.track.album.artists;
       artists.forEach(artist =>
       { 
-        if (artistsToIgnore.includes(artist.name)) debugLog(`Ignoring`, artist.name);
-        if (!artistsToIgnore.includes(artist.name)) artistsArr.push(artist.name);  
+        if (ignoreUpperCase.includes(artist.name.toUpperCase())) debugLog(`getPlayListArtists Ignoring`, artist.name);
+        if (!ignoreUpperCase.includes(artist.name.toUpperCase())) artistsArr.push(artist.name);  
         // artistsArr.push(artist.name);
       });
     })
@@ -252,10 +256,11 @@ const getTopData = async (term, offset) => {
   if (resp[0]) {
     data = common.collateArrays("items", resp);
     let ignoree = false;
+    let ignoreUpperCase = artistsToIgnore.map(function(x){ return x.toUpperCase(); })
     data.forEach(artist =>
     { 
-      if (artistsToIgnore.includes(artist.name)) debugLog(`Ignoring`, artist.name);
-      if (!artistsToIgnore.includes(artist.name)) artistsArr.push(artist.name);
+      if (ignoreUpperCase.includes(artist.name.toUpperCase())) debugLog(`getTopData Ignoring`, artist.name);
+      if (!ignoreUpperCase.includes(artist.name.toUpperCase())) artistsArr.push(artist.name);
     });
   } else {
     Logger.log("No data received (long term)");

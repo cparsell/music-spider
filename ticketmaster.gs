@@ -100,7 +100,7 @@ const ticketSearch = async (keyword, writer) =>
     // returns JSON response
     await tmSearch(keyword, writer)
       .then(async(data) => {
-        Logger.log(data)
+        debugLog(`tmSearch data`, data)
         if (data.page.totalElements == 0) {
           Logger.log(`No results for ${keyword}`)
           return false;
