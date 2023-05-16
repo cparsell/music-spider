@@ -13,6 +13,7 @@ const config = {
   'unit': 'miles',
   // Spotify preferances
   'getTopArtists': true,
+  'getFollowing': true, 
   'getArtistsFromPlaylist': false,
   'playlistId': 'xxxxxxxxxxxxxxxxxxxxxxx',
   // Email(s) to send newsletter to
