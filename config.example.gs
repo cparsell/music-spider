@@ -1,4 +1,5 @@
-const config = {
+const config = 
+{
   // Spreadsheet ID is in the spreadsheet URL:
   // https://docs.google.com/spreadsheets/d/THIS_IS_THE_ID/edit#gid=0
   'spreadsheetId': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
@@ -27,7 +28,8 @@ const config = {
 
 // Artists that may show up in Spotify but should be ignored because
 // they're long deceased, you're not interested in their concert, etc.
-const artistsToIgnore = [
+const artistsToIgnore = 
+[
   'David Bowie',
   'Lou Reed',
   'The Velvet Underground',

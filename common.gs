@@ -2,7 +2,6 @@
 // v2.2.0 - 2021-10-04
 
 const common = {
-
   // Parse URL path parameters
   parsePathParameters: function(request)
   {
@@ -11,7 +10,6 @@ const common = {
     {
         return request.queryString;
     }
-
     // Look for a parameter called "path"
     return request.parameter.path || "";
   },
@@ -50,7 +48,7 @@ const common = {
       }
       catch (error)
       {
-        writer.Info(input + " = " + error);
+        console.error(input + " = " + error);
       }
 
       return pre + inside + post;
@@ -71,7 +69,6 @@ const common = {
     let chunks = path.split('.');
 
     // Iterate over each object
-    // try {
       for (const resp of objects)
       {
         // Logger.log(resp);
@@ -92,18 +89,23 @@ const common = {
  * Remove duplictes from an array
  * @param {array} array
  */
-const arrUnique = (array) => {
-  if (array.length < 1) {
+const arrUnique = (array) => 
+{
+  if (array.length < 1) 
+  {
     Logger.log("Array length 0 - arrUnique");
     return [];
   }
-  try {
+  try 
+  {
     let outArray = [];
     array.sort();
     outArray.push(array[0]);
-    for(let n in array){
+    for(let n in array)
+    {
       // Logger.log(outArray[outArray.length-1]+'  =  '+array[n]+' ?');
-      if(outArray[outArray.length-1]!=array[n]){
+      if(outArray[outArray.length-1]!=array[n])
+      {
         outArray.push(array[n]);
       }
     }
@@ -132,6 +134,7 @@ const debugLog = (valueName, value) =>
  * Return TRUE if number is even, FALSE if it is odd
  * @param {number} n
  */
-const isEven = (n) => {
+const isEven = (n) => 
+{
    return n % 2 == 0;
 }

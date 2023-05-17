@@ -20,15 +20,15 @@ const savedEpisodesUrl = baseUrl + "/me/episodes";
 const topArtistsUrl = baseUrl + "/me/top/artists";
 
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June",
-  "July", "Aug", "Sept", "Oct", "Nov", "Dec"
-];
+  "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
 const dayNames = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
 
 // Playlist URLs
 const playlistsUrl = baseUrl + "/me/playlists";
 
 const ticketmasterUrl = 'https://app.ticketmaster.com/discovery/v2/events.json'
-const HEADERNAMES = {
+const HEADERNAMES = 
+{
   eName : `Event Name`,	
   venue : `Venue`,	
   city : `City`,	

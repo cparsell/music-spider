@@ -20,7 +20,8 @@ const clearData = (sheet, startRow = 2) =>
  * @param {sheet} sheet
  * @param {string} dateHeaderName default is "Date"
  */
-const removeExpiredEntries = (sheet,dateHeaderName="Date") => {
+const removeExpiredEntries = (sheet,dateHeaderName="Date") => 
+{
   // sheet = eventSheet; // for debugging
   if(typeof sheet != `object`) return 1;
   try {
@@ -30,7 +31,8 @@ const removeExpiredEntries = (sheet,dateHeaderName="Date") => {
     if (lastRow < 1) return 1;
     let col = data[0].indexOf(dateHeaderName);
     let range = sheet.getRange(2,col+1,lastRow,1).getValues();
-    if (col == -1) {
+    if (col == -1) 
+    {
       console.error(`Matching data by header failed...`);
       return false;
     }
@@ -41,7 +43,8 @@ const removeExpiredEntries = (sheet,dateHeaderName="Date") => {
         rowsToDel.push(i+2);
       }
     }
-    for (let i=0;i<rowsToDel.length;i++){
+    for (let i=0;i<rowsToDel.length;i++)
+    {
       Logger.log(`Removing expired event: ${data[i+1][0]}, Date: ${range[rowsToDel[i]-2]}`);
       sheet.deleteRow(rowsToDel[i]);
     }
@@ -58,7 +61,8 @@ const removeExpiredEntries = (sheet,dateHeaderName="Date") => {
  * @param {string} colName
  * @param {number} row
  */
-const GetByHeader = (sheet, columnName, row) => {
+const GetByHeader = (sheet, columnName, row) => 
+{
   if(typeof sheet != `object`) return 1;
   try {
     let data = sheet.getDataRange().getValues();
@@ -80,18 +84,21 @@ const GetByHeader = (sheet, columnName, row) => {
  * @param {sheet} sheet
  * @param {number} row
  */
-const GetRowData = (sheet, row) => {
+const GetRowData = (sheet, row) => 
+{
   if(typeof sheet != `object`) return 1;
   let dict = {};
   try {
     let headers = sheet.getRange(1, 1, 1, sheet.getMaxColumns()).getValues()[0];
-    headers.forEach( (name, index) => {
+    headers.forEach( (name, index) => 
+    {
       let linkedKey = Object.keys(HEADERNAMES).find(key => HEADERNAMES[key] === name);
       if(!linkedKey) headers[index] = name;
       else headers[index] = linkedKey;
     })
     let data = sheet.getRange(row, 1, 1, sheet.getMaxColumns()).getValues()[0];
-    headers.forEach( (header, index) => {
+    headers.forEach( (header, index) => 
+    {
       dict[header] = data[index];
     });
     dict[`sheetName`] = sheet.getSheetName();
@@ -111,7 +118,8 @@ const GetRowData = (sheet, row) => {
  * @param {string} columnName
  * @param {string} val value to search for
  */
-const searchColForValue = (sheet, columnName, val) => {
+const searchColForValue = (sheet, columnName, val) => 
+{
   if(typeof sheet != `object`) return false;
   try {
     let data = sheet.getDataRange().getValues();
@@ -119,7 +127,8 @@ const searchColForValue = (sheet, columnName, val) => {
     let col = data[0].indexOf(columnName);
     let range = sheet.getRange(2,col+1,lastRow,1).getValues();
     // Logger.log(range);
-    if (col != -1) {
+    if (col != -1) 
+    {
       let isSearchStringInRange = range.some( function(row){
         return row[0] === val
       });
@@ -150,7 +159,8 @@ const SetByHeader = (sheet, columnName, row, val) => {
   try {
     data = sheet.getDataRange().getValues();
     col = data[0].indexOf(columnName) + 1;
-    if(col != -1) {
+    if(col != -1) 
+    {
       sheet.getRange(row, col).setValue(val);
       return 0;
     } else return 1;
@@ -167,19 +177,18 @@ const SetByHeader = (sheet, columnName, row, val) => {
  * @param {sheet} sheet
  * @param {dict} data 
  */
-const SetRowData = (sheet,data) => {
+const SetRowData = (sheet,data) => 
+{
   if(typeof sheet != `object`) return 1;
   try {
     let sheetHeaderNames = Object.values(GetRowData(sheet, 1));
     let values = [];
-    // for (const [index, [key]] of Object.entries(Object.entries(data))) {
-      Object.entries(data).forEach(pair => {
+      Object.entries(data).forEach(pair => 
+      {
         let headername = HEADERNAMES[pair[0]];
         let index = sheetHeaderNames.indexOf(headername);
         values[index] = pair[1];
       })
-    // };
-    // console.info(values);
     sheet.appendRow(values);
   } catch (err) {
     console.error(`${err} : SetRowData failed - Sheet: ${sheet}`);
@@ -194,13 +203,15 @@ const SetRowData = (sheet,data) => {
  * @param {object} sheet
  * @param {integer} col column number
  */
-const writeArrayToColumn = (array, sheet, col) => {
+const writeArrayToColumn = (array, sheet, col) => 
+{
   let outerArray = [],
   tempArray = [],
   i=0;
 
   try {
-    for (i=0;i<array.length;i+=1) {
+    for (i=0;i<array.length;i+=1) 
+    {
       tempArray = [];
       tempArray.push(array[i]);
       outerArray.push(tempArray);
@@ -217,7 +228,8 @@ const writeArrayToColumn = (array, sheet, col) => {
  * Removes blank rows on a sheet
  * @param {sheet} sheet
  */
-const deleteEmptyRows = (sheet) => {
+const deleteEmptyRows = (sheet) => 
+{
   // if(typeof sheet != `object`) return 1;
   try {
     if (sheet == undefined) sheet = SpreadsheetApp.getActiveSheet();
@@ -265,7 +277,7 @@ const deleteEmptyRows = (sheet) => {
     }, []);
 
     // Sends a list of row indexes to be deleted to the console.
-    console.log(rangesToDelete);
+    debugLog(`ranges to delete`, rangesToDelete);
 
     // Deletes the rows using REVERSE order to ensure proper indexing is used.
     rangesToDelete.reverse().forEach(([start, end]) => sheet.deleteRows(start, end - start + 1));
@@ -284,7 +296,8 @@ const deleteEmptyRows = (sheet) => {
  *   
  * Called from menu option.
  */
-const deleteEmptyColumns = (sheet) => {
+const deleteEmptyColumns = (sheet) => 
+{
   try {
     if (sheet == undefined) sheet = SpreadsheetApp.getActiveSheet();
     // Gets active selection and dimensions.
@@ -350,7 +363,8 @@ const deleteEmptyColumns = (sheet) => {
  * 
  * Called from menu option.
  */
-const cropSheet = (sheet) => {
+const cropSheet = (sheet) => 
+{
   try {
     if (sheet == undefined) sheet = SpreadsheetApp.getActiveSheet();
     let dataRange = sheet.getDataRange();
@@ -387,7 +401,8 @@ const cropSheet = (sheet) => {
  * 
  * Called from menu option.
  */
-const fillDownData = (sheet) => {
+const fillDownData = (sheet) => 
+{
   try {
     if (sheet == undefined) sheet = SpreadsheetApp.getActiveSheet();
     // let sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
@@ -396,7 +411,8 @@ const fillDownData = (sheet) => {
     let activeCell = sheet.getActiveCell();
     let activeCellValue = activeCell.getValue();
 
-    if (!activeCellValue) {
+    if (!activeCellValue) 
+    {
       Logger.log("The active cell is empty. Nothing to fill.");
       return;
     }
@@ -436,7 +452,8 @@ const fillDownData = (sheet) => {
  * @param {string} message - Message to be displayed.
  * @param {string} caller - {Optional} text to append to title.
  */
-const showMessage = (message, caller) => {
+const showMessage = (message, caller) => 
+{
   try {
     // Sets the title using the APP_TITLE variable; adds optional caller string.
     let title = APP_TITLE

@@ -1,4 +1,5 @@
-const refreshEvents = async () => {
+const refreshEvents = async () => 
+{
   const writer = new WriteLogger();
   
   //get list of artists from sheet
@@ -18,14 +19,18 @@ const refreshEvents = async () => {
   try {
     // Logger.log(`arrray length ${artistsArr.length}`);
     // for (i=0;i<artistsArr.length; i++){
-    while (i<artistsArr.length){
-      await ticketSearch(artistsArr[i][0], writer).then(data => {
+    while (i<artistsArr.length)
+    {
+      await ticketSearch(artistsArr[i][0], writer).then(data => 
+      {
         i++;
         // Logger.log(data);
-        for (const [index, [key]] of Object.entries(Object.entries(data))) {
+        for (const [index, [key]] of Object.entries(Object.entries(data))) 
+        {
           let exists = searchColForValue(eventSheet, "URL", data[key].url);
           if (!exists) {
-            eventsArr[key] = {
+            eventsArr[key] = 
+            {
               date: data[key].date,
               eName: data[key].eName,
               city: data[key].city,
@@ -40,7 +45,8 @@ const refreshEvents = async () => {
         Utilities.sleep(200);
         });
   }
-  }catch (e) { 
+  } catch (e) 
+  { 
       Logger.log(e);
       writer.Error(e);
   }
@@ -51,7 +57,8 @@ const refreshEvents = async () => {
   if (config.createCalendarEvents) createCalEvents(eventsArr);
 }
 
-const writeEventsToSheet = async (eventsArr) => {
+const writeEventsToSheet = async (eventsArr) => 
+{
   for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
     SetRowData(eventSheet, eventsArr[key]);
   }
@@ -62,7 +69,8 @@ const buildEventsArr = () =>
   let lastRow = eventSheet.getLastRow();
   let events = {};
   let ordered = {};
-  if (lastRow>1) {
+  if (lastRow>1) 
+  {
     for (i=1; i<lastRow;i++)
     {
       let rowData = GetRowData(eventSheet, i+1);
@@ -72,7 +80,8 @@ const buildEventsArr = () =>
     }
       // Sort by key, which is the date
     ordered = Object.keys(events).sort().reduce(
-      (obj, key) => { 
+      (obj, key) => 
+      { 
         obj[key] = events[key]; 
         return obj;
       }, 
@@ -101,8 +110,9 @@ const ticketSearch = async (keyword, writer) =>
     await tmSearch(keyword, writer)
       .then(async(data) => {
         debugLog(`tmSearch data`, data)
-        if (data.page.totalElements == 0) {
-          Logger.log(`No results for ${keyword}`)
+        if (data.page.totalElements == 0) 
+        {
+          debugLog(`No results for`, keyword);
           return false;
         }
         
@@ -112,23 +122,26 @@ const ticketSearch = async (keyword, writer) =>
           let url = item.url;
           let image = [[0,0]];
           // Loop through image URLs in JSON response. Find the one with the largest filesize
-          for (i=0;i<item.images.length;i++){
-              // let img = new Images();
-              let img = UrlFetchApp.fetch(item.images[i].url).getBlob();
-              let imgBytes = img.getBytes().length;
-              
-              if (imgBytes>image[0][1]) {
-                image[0][0]=i
-                image[0][1]=imgBytes
-              }
+          for (i=0;i<item.images.length;i++)
+          {
+            // let img = new Images();
+            let img = UrlFetchApp.fetch(item.images[i].url).getBlob();
+            let imgBytes = img.getBytes().length;
+            
+            if (imgBytes>image[0][1]) {
+              image[0][0]=i
+              image[0][1]=imgBytes
+            }
           }
           let attractions = new Array;
-          item?._embedded?.attractions?.forEach((attraction) => {
+          item?._embedded?.attractions?.forEach((attraction) => 
+          {
             attractions.push(attraction.name);
           });
           // if other artists in my list are in this event, move them to front of list
           let artistsArr = artistsList();
-          for (i=0;i<artistsArr.length;i++){
+          for (i=0;i<artistsArr.length;i++)
+          {
             let artist = artistsArr[i][0];
             if (attractions.includes(artist) && artist != keyword) {
               attractions = attractions.sort(function(x,y){ return x == artist ? -1 : y == artist ? 1 : 0; });
@@ -136,7 +149,8 @@ const ticketSearch = async (keyword, writer) =>
           }
           // then move keyword to front of list of acts
           attractions = attractions.sort(function(x,y){ return x == keyword ? -1 : y == keyword ? 1 : 0; });
-          item?._embedded?.venues?.forEach((venue) =>{ 
+          item?._embedded?.venues?.forEach((venue) =>
+          { 
             let venueName = venue.name; 
             let venueAddress = venue.address.line1;
             let date;
@@ -144,12 +158,15 @@ const ticketSearch = async (keyword, writer) =>
               date = item.dates.start.dateTime;
             }
             // some list timeTBA = true, or noSpecificTime = true. if so, use localDate value
-            if (item.dates.start.timeTBA || item.dates.start.noSpecificTime) {
+            if (item.dates.start.timeTBA || item.dates.start.noSpecificTime) 
+            {
               date = item.dates.start.localDate;
             }
             // Logger.log(`venue: ${venueName}`);
-            if (attractions.includes(keyword) || item.name.toUpperCase() == keyword.toUpperCase()) {
-              eventsArr[date] = { 
+            if (attractions.includes(keyword) || item.name.toUpperCase() == keyword.toUpperCase()) 
+            {
+              eventsArr[date] = 
+              { 
                 "eName": item.name,
                 "acts": attractions,
                 "venue": venueName , 
@@ -162,7 +179,8 @@ const ticketSearch = async (keyword, writer) =>
             }
           });
         });
-        if (Object.keys(eventsArr)==0) {
+        if (Object.keys(eventsArr)==0) 
+        {
           Logger.log(`No events found for ${keyword}`);
           return;
         }
@@ -194,9 +212,9 @@ const writeEvent = ({name, date, city, venue, url, image, acts}) =>
 const tmSearch = async (keyword, writer) => 
 {
   let options = {
-      "method": "GET",
-      "async": true,
-      "contentType": "application/json",
+    "method": "GET",
+    "async": true,
+    "contentType": "application/json",
   };
   let params = `?apikey=${config.keyTM}`;
   // params += `&postalCode=`;  
@@ -209,7 +227,8 @@ const tmSearch = async (keyword, writer) =>
   try {
     let response = await UrlFetchApp.fetch(ticketmasterUrl+params, options);
     let responseCode = response.getResponseCode();
-    if (responseCode == 200 || responseCode == 201) {
+    if (responseCode == 200 || responseCode == 201) 
+    {
       let content = await response.getContentText();
       writer.Info(content);  // uncomment this to write raw JSON response to 'Logger' sheet
       let parsed = JSON.parse(content);

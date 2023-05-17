@@ -5,31 +5,39 @@ const refreshArtists = async () =>
   let topArtists = new Array;
   let playlistArtists = new Array;
   let followedArtists = new Array;
-  if (config.getTopArtists) {
-    try {
+  if (config.getTopArtists) 
+  {
+    try 
+    {
     // Get Top Artists from Spotify ()
       topArtists = await getTopArtists(writer);
       Logger.log(`${topArtists.length} Top Artists`);
       debugLog(`Top Artists`, topArtists);
-    } catch (err) {
+    } catch (err) 
+    {
       writer.Error(`${err} : getTopArtists failed`);
     }
   }
-  if (config.getArtistsFromPlaylist) {
-    try {
+  if (config.getArtistsFromPlaylist) 
+  {
+    try 
+    {
       playlistArtists = await getPlaylistArtists(writer);
       Logger.log(`${playlistArtists.length} Playlist Artists`);
       debugLog("plastlistArtists", playlistArtists);
-    } catch (err) {
+    } catch (err) 
+    {
       writer.Error(`${err} : getArtistsFromPlaylist failed`);
     }
   }
-  if (config.getFollowing) { 
+  if (config.getFollowing) 
+  { 
     try {
     followedArtists = await getFollowedArtists(writer);
     Logger.log(`${followedArtists.length} Followed Artists`);
     debugLog("followedArtists", followedArtists);
-    } catch (err) {
+    } catch (err) 
+    {
       writer.Error(`${err} : getFollowing failed`);
     }
   }
@@ -38,18 +46,21 @@ const refreshArtists = async () =>
   debugLog(`combined`, combined);
   // Remove duplicates
   let artistsArr = arrUnique(combined);
-  if (artistsArr.length == 0) {
+  if (artistsArr.length == 0) 
+  {
     Logger.log(`Unable to retrieve a list of artists from Spotify playlist - check playlist ID, Spotify client ID, or client secret`);
     return;
   }
   Logger.log(`${artistsArr.length} artists total added`);
-  if (artistsArr.length > 0) {
+  if (artistsArr.length > 0) 
+  {
     // Clear previous artist list
     clearData(artistSheet);
     // Write new artists to sheet
     writeArrayToColumn(artistsArr, artistSheet, 1);
     debugLog("Total Artists", artistsArr);
-  } else {
+  } else 
+  {
     Logger.log("Unable to retrieve a list of artists from Spotify");
     writer.Info("Unable to retrieve a list of artists from Spotify");
   }
@@ -78,7 +89,8 @@ const getSavedTracksArtists = async (writer) =>
   let data = await getData(accessToken, savedTracksUrl + params, true);
 
   // Fold array of responses into single structure
-  if (data) {
+  if (data) 
+  {
     data = common.collateArrays("items", data);
     let artistsArr = [];
     let ignoreUpperCase = artistsToIgnore.map(function(x){ return x.toUpperCase(); })
@@ -162,7 +174,8 @@ const getPlaylistArtists = async (writer) =>
   // Logger.log(data);
 
   // Fold array of responses into single structure
-  if (data[0]) {
+  if (data[0]) 
+  {
     // let newData = common.collateArrays("items", data);
     let newData = JSON.parse(data);
     let items = newData.tracks.items;
@@ -170,7 +183,8 @@ const getPlaylistArtists = async (writer) =>
     // writer.Info(JSON.stringify(newData.tracks.items));
     let artistsArr = [];
     let ignoreUpperCase = artistsToIgnore.map(function(x){ return x.toUpperCase(); })
-    items.forEach(item => {
+    items.forEach(item => 
+    {
       let artists = item.track.album.artists;
       artists.forEach(artist =>
       { 
@@ -253,7 +267,8 @@ const getTopData = async (term, offset) => {
   resp = await getData(accessToken, topArtistsUrl + params,true);
   let artistsArr = new Array;
   // Fold array of responses into single structure
-  if (resp[0]) {
+  if (resp[0]) 
+  {
     data = common.collateArrays("items", resp);
     let ignoree = false;
     let ignoreUpperCase = artistsToIgnore.map(function(x){ return x.toUpperCase(); })
@@ -262,7 +277,8 @@ const getTopData = async (term, offset) => {
       if (ignoreUpperCase.includes(artist.name.toUpperCase())) debugLog(`getTopData Ignoring`, artist.name);
       if (!ignoreUpperCase.includes(artist.name.toUpperCase())) artistsArr.push(artist.name);
     });
-  } else {
+  } else 
+  {
     Logger.log("No data received (long term)");
   }
   return artistsArr;

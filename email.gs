@@ -1,13 +1,17 @@
-const sendEmail = () => {
+const sendEmail = () => 
+{
   let eventsArr = buildEventsArr();
   let msgSubjRaw = [];
   let msgSubj = `${SERVICE_NAME} - `;
-  if (Object.keys(eventsArr).length === 0) {
+  if (Object.keys(eventsArr).length === 0) 
+  {
     console.warn("No events to add to email.")
     return;
   }
-  for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
-    if (eventsArr[key].acts==""){
+  for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) 
+  {
+    if (eventsArr[key].acts=="")
+    {
       msgSubjRaw.push(eventsArr[key].eName);
       continue;
     }
@@ -19,7 +23,8 @@ const sendEmail = () => {
   msgSubj += uniq.join(', ');
 
   let message = new CreateMessage({events: eventsArr});
-  new Emailer({
+  new Emailer(
+  {
     message: message,
     email: config.email,
     subject: msgSubj,
@@ -35,22 +40,27 @@ const sendEmail = () => {
  */
 class Emailer
 {
-  constructor({ 
+  constructor(
+  { 
     email : email = `Unknown Email`, 
     message : message = ``,
     subject: subject = `${SERVICE_NAME} : Event Update`,
-  }) {
+  }) 
+  {
     this.email = email;
     this.message = message;
     this.subject = subject.substring(0,249);
     this.SendEmail();
   }
 
-  SendEmail () {
+  SendEmail () 
+  {
     // const staff = BuildStaff();
-    try {
+    try 
+    {
       console.info(`Sending  email to ${this.email}.`);
-      GmailApp.sendEmail(this.email, this.subject, "", {
+      GmailApp.sendEmail(this.email, this.subject, "", 
+      {
         htmlBody: this.message.defaultMessage,
         from: SUPPORT_ALIAS,
         // cc: this.designspecialistemail,
@@ -59,7 +69,8 @@ class Emailer
         noReply: true,
       });
     
-    } catch (err) {
+    } catch (err) 
+    {
       console.error(`${err} : Couldn't send email. Something went wrong.`);
     }
   }
@@ -85,11 +96,13 @@ class CreateMessage
 {
   constructor({
     events : events
-  }) {
+  }) 
+  {
     this.events = events;
   }
 
-  get defaultMessage() {
+  get defaultMessage() 
+  {
     let message = `<style type="text/css">
       .tg {
         border-collapse:collapse;
@@ -134,15 +147,18 @@ class CreateMessage
     // for (const key of Object.keys(this.events)) { 
 
     // iterate through list of events
-    for (const [index, [key]] of Object.entries(Object.entries(this.events))) {
+    for (const [index, [key]] of Object.entries(Object.entries(this.events))) 
+    {
       const {date, city, venue, url, image, eName, acts} = this.events[key];
       let actsArr = new Array;
       let actsB = new Array;
       //turn text into array
       if (acts != undefined) actsArr = acts.split(',');
       // look for acts' names in event name - if name is in event name, dont list it again
-      for (let i=0;i<actsArr.length;i++) {
-        if (!eName.match(actsArr[i])) {
+      for (let i=0;i<actsArr.length;i++) 
+      {
+        if (!eName.match(actsArr[i])) 
+        {
           actsB.push(actsArr[i]);
         }
       }
@@ -153,7 +169,8 @@ class CreateMessage
       let eventYear = eDate.getFullYear();
       let eventTime = Utilities.formatDate(eDate, "PST", "h a");
       // Start a new table row every even event
-      if (isEven(index)) {
+      if (isEven(index)) 
+      {
         message += `<tr>`;
       }
       message += `<td class="tg-0lax" style="height:300px;vertical-align:top;"><div style="text-align: left;margin-left: 10px;">`;
@@ -162,10 +179,13 @@ class CreateMessage
       message += `<span style="font-family: Averta,Helvetica Neue,Helvetica,Arial,sans-serif;">`;
       message += `<a href='${url}' style="text-decoration:none;"><span style="color:#44494c;font-size:20px;"><strong>${eName}</strong></span></a><br/>`;
       let actsUpper = actsB.map(function(x){ return x.toUpperCase(); })
-      if (actsUpper.length > 1 || !eName.toUpperCase().match(actsUpper[0])) {
-        actsB.forEach((act, index) => {
+      if (actsUpper.length > 1 || !eName.toUpperCase().match(actsUpper[0])) 
+      {
+        actsB.forEach((act, index) => 
+        {
           if (index == 0) message += `with `;
-          if (!eName.toUpperCase().match(act.toUpperCase()) && index < 6) {
+          if (!eName.toUpperCase().match(act.toUpperCase()) && index < 6) 
+          {
             message += (index == actsB.length-1) ?  `${act}` : `${act}, `;
           }
           if (index == 6) message += `...` // truncate list if longer than 5

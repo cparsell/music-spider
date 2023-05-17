@@ -32,7 +32,8 @@
  * Reserved word: onFormSubmit() cannot be used here because it's reserved for simple triggers.
  * @param {Event} e
  */
-const BarMenu = () => {
+const BarMenu = () => 
+{
   SpreadsheetApp.getUi()
     .createMenu(`Music Spider`)
     .addItem(`Refresh Artists`, `refreshArtists`)
@@ -52,14 +53,16 @@ const BarMenu = () => {
  */
 const addArrayToSheet = (sheet, column, values) => 
 {
-  const range = [column, "1:", column, values.length].join("");
-  const fn = function(v) {
+  let range = [column, "1:", column, values.length].join("");
+  let fn = function(v) 
+  {
     return [ v ];
   };
   sheet.getRange(range).setValues(values.map(fn));
 }
 
-const artistsList = () => {
+const artistsList = () => 
+{
   let artistRows = artistSheet.getLastRow()-1;
   if (artistRows==0) artistRows=1;
   let artistsArr = artistSheet.getRange(2,1,artistRows,1).getValues();
@@ -68,12 +71,14 @@ const artistsList = () => {
 
 const getData = async (accessToken, url, getAllPages = false) =>
 {
-  let headers = {
+  let headers = 
+  {
       "Authorization": "Bearer " + accessToken,
       "Content-Type": "application/json"
   };
 
-  let options = {
+  let options = 
+  {
       "muteHttpExceptions": true,
       "headers": headers
   };
