@@ -107,6 +107,7 @@ const refreshAuth = (refreshToken) =>
 
 const storeAuth = (authInfo) =>
 {
+    // API auth reference: https://developer.spotify.com/documentation/web-api/concepts/authorization
     // Retrieve refreshable auth info from user properties store
     let userProperties = PropertiesService.getUserProperties();
 

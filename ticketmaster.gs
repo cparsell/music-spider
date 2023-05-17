@@ -211,6 +211,8 @@ const writeEvent = ({name, date, city, venue, url, image, acts}) =>
 }
 const tmSearch = async (keyword, writer) => 
 {
+  // Ticketmaster API
+  // reference: https://developer.ticketmaster.com/products-and-docs/apis/discovery-api/v2/#search-events-v2
   let options = {
     "method": "GET",
     "async": true,

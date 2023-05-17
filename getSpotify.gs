@@ -118,9 +118,11 @@ const getFollowedArtists = async (writer) =>
 {
   // Retrieve auth
   let accessToken = await retrieveAuth();
-
-  // Retrieve data
+  
+  // API reference: https://developer.spotify.com/documentation/web-api/reference/get-followed
   let params = "?type=artist&limit=50";
+  
+  // Retrieve data
   let data = await getData(accessToken, followUrl + params, true);
 
   // Fold array of responses into single structure
@@ -215,22 +217,14 @@ const getPlaylistArtists = async (writer) =>
  */
 const getTopArtists = async (writer) => 
 {
-  // Retrieve auth
-  
   let artistsArr = new Array;
-  let long_term1 = new Array;
-  let long_term2 = new Array;
-  let med_term = new Array;
-  let short_term = new Array;
 
   // Request for LONG TERM top artists
   artistsArr = artistsArr.concat(await getTopData("long_term", 0));
-  Logger.log(long_term1);
   
   // Request for LONG TERM top artists OFFSET +48
   artistsArr = artistsArr.concat(await getTopData("long_term", 48));
-  Logger.log(long_term2);
-  
+
   // Re-request for MEDIUM TERM top artists
   artistsArr = artistsArr.concat(await getTopData("medium_term", 0));
 
@@ -255,9 +249,11 @@ const getTopArtists = async (writer) =>
  * @param {integer} offset 
  */
 const getTopData = async (term, offset) => {
+  // Retrieve auth
   let accessToken = await retrieveAuth();
   debugLog(`Access token`,JSON.stringify(accessToken));
-  
+  // params for Top Artists 
+  // reference: https://developer.spotify.com/documentation/web-api/reference/get-users-top-artists-and-tracks
   let params = `?time_range=${term}`;
   params += `&limit=50`;
   params += `&offset=${offset}`;
