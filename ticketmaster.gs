@@ -109,8 +109,7 @@ const ticketSearch = async (keyword, writer) =>
     // returns JSON response
     await tmSearch(keyword, writer)
       .then(async(data) => {
-        writer.Info(data);
-        debugLog(`tmSearch data`, data)
+        writer.Debug(`tmSearch data: ${data}`)
         if (data.page.totalElements == 0) 
         {
           writer.Debug(`No results for`, keyword);
@@ -184,7 +183,7 @@ const ticketSearch = async (keyword, writer) =>
           return;
         }
         // Logger.log(eventsArr);
-        debugLog(`eventsArr`,eventsArr);
+        writer.Debug(`eventsArr: ${eventsArr}`);
     });
     return await eventsArr;
   } catch (err) {

@@ -12,7 +12,7 @@ const refreshArtists = async () =>
     // Get Top Artists from Spotify ()
       topArtists = await getTopArtists(writer);
       Logger.log(`${topArtists.length} Top Artists`);
-      debugLog(`Top Artists`, topArtists);
+      writer.Debug(`Top Artists: ${topArtists}`);
     } catch (err) 
     {
       writer.Error(`${err} : getTopArtists failed`);
@@ -24,7 +24,7 @@ const refreshArtists = async () =>
     {
       playlistArtists = await getPlaylistArtists(writer);
       Logger.log(`${playlistArtists.length} Playlist Artists`);
-      debugLog("plastlistArtists", playlistArtists);
+      writer.Debug(`plastlistArtists: ${playlistArtists}`);
     } catch (err) 
     {
       writer.Error(`${err} : getArtistsFromPlaylist failed`);
@@ -35,7 +35,7 @@ const refreshArtists = async () =>
     try {
     followedArtists = await getFollowedArtists(writer);
     Logger.log(`${followedArtists.length} Followed Artists`);
-    debugLog("followedArtists", followedArtists);
+    writer.Debug(`followedArtists: ${followedArtists}`);
     } catch (err) 
     {
       writer.Error(`${err} : getFollowing failed`);
@@ -43,22 +43,22 @@ const refreshArtists = async () =>
   }
   // Combine both arrays
   let combined = topArtists.concat(playlistArtists).concat(followedArtists);
-  debugLog(`combined`, combined);
+  writer.Debug(`Artists combined: ${combined}`);
   // Remove duplicates
   let artistsArr = arrUnique(combined);
   if (artistsArr.length == 0) 
   {
-    Logger.log(`Unable to retrieve a list of artists from Spotify playlist - check playlist ID, Spotify client ID, or client secret`);
+    writer.Warning(`Unable to retrieve a list of artists from Spotify playlist - check playlist ID, Spotify client ID, or client secret`);
     return;
   }
-  Logger.log(`${artistsArr.length} artists total added`);
+  writer.Info(`${artistsArr.length} artists total added`);
   if (artistsArr.length > 0) 
   {
     // Clear previous artist list
     clearData(artistSheet);
     // Write new artists to sheet
     writeArrayToColumn(artistsArr, artistSheet, 1);
-    debugLog("Total Artists", artistsArr);
+    writer.Debug(`Total Artists, duplicates removed: ${artistsArr}`);
   } else 
   {
     Logger.log("Unable to retrieve a list of artists from Spotify");
@@ -81,11 +81,11 @@ const getSavedTracksArtists = async (writer) =>
   // Retrieve auth
   // const writer = new WriteLogger();
   let accessToken = await retrieveAuth();
-  debugLog(`Access token`,JSON.stringify(accessToken));
+  writer.Debug(`Access token: ${JSON.stringify(accessToken)}`);
   
   // Retrieve data
   let params = "?limit=50";
-  Logger.log("Getting artists from saved tracks")
+  writer.Info(`Getting artists from saved tracks`);
   let data = await getData(accessToken, savedTracksUrl + params, true);
 
   // Fold array of responses into single structure
@@ -98,7 +98,7 @@ const getSavedTracksArtists = async (writer) =>
     {
       track.track.artists.forEach(artist =>
       {
-        if (ignoreUpperCase.includes(artist.name.toUpperCase())) debugLog(`getSaveTracksArtists Ignoring`, artist.name);
+        if (ignoreUpperCase.includes(artist.name.toUpperCase())) writer.Debug(`getSaveTracksArtists Ignoring: ${artist.name}`);
         if (!ignoreUpperCase.includes(artist.name.toUpperCase())) artistsArr.push(artist.name);  
       });
     });
@@ -106,11 +106,11 @@ const getSavedTracksArtists = async (writer) =>
     artistsArr = arrUnique(artistsArr);
     lastRow = sheet.getLastRow();
 
-    debugLog(`Artists Array`, artistsArr);
+    writer.Debug(`Artists Array: ${artistsArr}`);
     // if (artistsArr.length > 0) writeArrayToColumn(artistsArr, sheet, 1);
     return artistsArr;
   } else {
-    writer.Info("Unable to get artists from saved tracks");
+    writer.Warning("Unable to get artists from saved tracks");
   }
 }
 
@@ -146,11 +146,11 @@ const getFollowedArtists = async (writer) =>
   let ignoreUpperCase = artistsToIgnore.map(function(x){ return x.toUpperCase(); })
   data.forEach(artist =>
   {
-    if (ignoreUpperCase.includes(artist.name.toUpperCase())) debugLog(`getFollowedArtists Ignoring`, artist.name);
+    if (ignoreUpperCase.includes(artist.name.toUpperCase())) writer.Debug(`getFollowedArtists Ignoring: ${artist.name}`);
     if (!ignoreUpperCase.includes(artist.name.toUpperCase())) artistsArr.push(artist.name);  
     // artistsArr.push(JSON.stringify(artist.name));
   });
-  debugLog(`artistsArr`, artistsArr);
+  writer.Debug(`artistsArr ${artistsArr}`);
   return artistsArr;
 }
 
@@ -166,7 +166,7 @@ const getPlaylistArtists = async (writer) =>
   const playlistId = config.playlistId;
   // Retrieve auth
   let accessToken = await retrieveAuth();
-  debugLog(`Access token`,JSON.stringify(accessToken));
+  writer.Debug(`Access token: ${JSON.stringify(accessToken)}`);
 
   // Retrieve data
   let params = "?playlist_id=" + playlistId;
@@ -190,7 +190,7 @@ const getPlaylistArtists = async (writer) =>
       let artists = item.track.album.artists;
       artists.forEach(artist =>
       { 
-        if (ignoreUpperCase.includes(artist.name.toUpperCase())) debugLog(`getPlayListArtists Ignoring`, artist.name);
+        if (ignoreUpperCase.includes(artist.name.toUpperCase())) writer.Debug(`getPlayListArtists Ignoring: ${artist.name}`);
         if (!ignoreUpperCase.includes(artist.name.toUpperCase())) artistsArr.push(artist.name);  
         // artistsArr.push(artist.name);
       });
@@ -199,7 +199,7 @@ const getPlaylistArtists = async (writer) =>
     artistsArr = arrUnique(artistsArr);
   //   lastRow = sheet.getLastRow();
   //   Logger.log("Artist Array");
-    debugLog("Playlist Artists", artistsArr);
+  writer.Debug(`Playlist Artists: ${artistsArr}`);
   //   Logger.log(`Artists Array length: ${artistsArr.length}`);
   //   if (artistsArr.length > 0) writeArrayToColumn(artistsArr, sheet, 1);
     return artistsArr;
@@ -251,7 +251,7 @@ const getTopArtists = async (writer) =>
 const getTopData = async (term, offset) => {
   // Retrieve auth
   let accessToken = await retrieveAuth();
-  debugLog(`Access token`,JSON.stringify(accessToken));
+  writer.Debug(`Access token: ${JSON.stringify(accessToken)}`);
   // params for Top Artists 
   // reference: https://developer.spotify.com/documentation/web-api/reference/get-users-top-artists-and-tracks
   let params = `?time_range=${term}`;
@@ -270,7 +270,7 @@ const getTopData = async (term, offset) => {
     let ignoreUpperCase = artistsToIgnore.map(function(x){ return x.toUpperCase(); })
     data.forEach(artist =>
     { 
-      if (ignoreUpperCase.includes(artist.name.toUpperCase())) debugLog(`getTopData Ignoring`, artist.name);
+      if (ignoreUpperCase.includes(artist.name.toUpperCase())) writer.Debug(`getTopData Ignoring: ${artist.name}`);
       if (!ignoreUpperCase.includes(artist.name.toUpperCase())) artistsArr.push(artist.name);
     });
   } else 
