@@ -96,7 +96,7 @@ const buildEventsArr = () =>
 
 const ticketSearch = async (keyword, writer) => 
 {
-  // keyword = "Clark" // for debugging, I uncomment this, specify something that returns a result, and run the function from Apps Script to see the Execution Log
+  // keyword = "The Books" // for debugging, I uncomment this, specify something that returns a result, and run the function from Apps Script to see the Execution Log
   // writer = new WriteLogger();  // and uncomment this
   if (keyword == undefined) {
     Logger.log("No keyword provided");
@@ -109,14 +109,13 @@ const ticketSearch = async (keyword, writer) =>
     // returns JSON response
     await tmSearch(keyword, writer)
       .then(async(data) => {
+        writer.Info(data);
         debugLog(`tmSearch data`, data)
         if (data.page.totalElements == 0) 
         {
-          debugLog(`No results for`, keyword);
+          writer.Debug(`No results for`, keyword);
           return false;
         }
-        
-        
         data?._embedded?.events?.forEach((item) =>
         {
           let url = item.url;
@@ -232,7 +231,7 @@ const tmSearch = async (keyword, writer) =>
     if (responseCode == 200 || responseCode == 201) 
     {
       let content = await response.getContentText();
-      // writer.Info(content);  // uncomment this to write raw JSON response to 'Logger' sheet
+      writer.Debug(content);  // uncomment this to write raw JSON response to 'Logger' sheet
       let parsed = JSON.parse(content);
       return parsed;
     } else {

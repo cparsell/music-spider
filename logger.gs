@@ -43,14 +43,17 @@ class WriteLogger
     }
   }
   Debug(message) {
-    try {
-      const text = [new Date().toUTCString(), "DEBUG", message, ];
-      this.sheet.appendRow(text);
-      console.log(`${text[0]}, ${text[1]} : ${message}`);
-      this._PopItem();
-      this._CleanupSheet();
-    } catch(err) {
-      console.error(`Whoops ---> ${err}`);
+    if (config.debug)
+    {
+      try {
+        const text = [new Date().toUTCString(), "DEBUG", message, ];
+        this.sheet.appendRow(text);
+        console.log(`${text[0]}, ${text[1]} : ${message}`);
+        this._PopItem();
+        this._CleanupSheet();
+      } catch(err) {
+        console.error(`Whoops ---> ${err}`);
+      }
     }
   }
   _PopItem() {
