@@ -232,7 +232,7 @@ const tmSearch = async (keyword, writer) =>
     if (responseCode == 200 || responseCode == 201) 
     {
       let content = await response.getContentText();
-      writer.Info(content);  // uncomment this to write raw JSON response to 'Logger' sheet
+      // writer.Info(content);  // uncomment this to write raw JSON response to 'Logger' sheet
       let parsed = JSON.parse(content);
       return parsed;
     } else {
