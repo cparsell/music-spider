@@ -35,7 +35,7 @@ Then it sends an email (e.g. weekly) listing these events.
 1. Copy [template Google Spreadsheet](https://docs.google.com/spreadsheets/d/1H4pvSK4jpRikHO11PtpJGSdycpVmM566XLQzRot4E_g/edit?usp=sharing) to your drive
 2. Set up API keys for ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/)). Put keys in config file.
 3. Deploy as web app. Run it in browser. 
-4. Copy URI **given IN BOLD in this web page** into Spotiy App settings under Redirect URI (STEP 3) NOTE: Do NOT use URL! It is different for me at least**. Save.
+4. Copy URI **given IN BOLD in this web page** into Spotiy App settings under Redirect URI (STEP 3) NOTE: Do NOT use URL! It is different for me at least. Save.
 3. Set up triggers in Apps Script
 
 ## Step by step setup
