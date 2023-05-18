@@ -220,16 +220,16 @@ const getTopArtists = async (writer) =>
   let artistsArr = new Array;
 
   // Request for LONG TERM top artists
-  artistsArr = artistsArr.concat(await getTopData("long_term", 0));
+  artistsArr = artistsArr.concat(await getTopData("long_term", 0, writer));
   
   // Request for LONG TERM top artists OFFSET +48
-  artistsArr = artistsArr.concat(await getTopData("long_term", 48));
+  artistsArr = artistsArr.concat(await getTopData("long_term", 48, writer));
 
   // Re-request for MEDIUM TERM top artists
-  artistsArr = artistsArr.concat(await getTopData("medium_term", 0));
+  artistsArr = artistsArr.concat(await getTopData("medium_term", 0, writer));
 
   // Re-request for SHORT TERM top artists
-  artistsArr = artistsArr.concat(await getTopData("short_term", 0));
+  artistsArr = artistsArr.concat(await getTopData("short_term", 0, writer));
   
   let final = new Array;
 
@@ -248,7 +248,7 @@ const getTopArtists = async (writer) =>
  * @param {string} term expects "long_term", "medium_term", or "short_term"
  * @param {integer} offset 
  */
-const getTopData = async (term, offset) => {
+const getTopData = async (term, offset, writer) => {
   // Retrieve auth
   let accessToken = await retrieveAuth();
   writer.Debug(`Access token: ${JSON.stringify(accessToken)}`);
