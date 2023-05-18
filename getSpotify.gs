@@ -64,6 +64,7 @@ const refreshArtists = async () =>
     Logger.log("Unable to retrieve a list of artists from Spotify");
     writer.Info("Unable to retrieve a list of artists from Spotify");
   }
+  // Set alignment of column to 'left' - artist names that are just numbers get aligned right
   artistSheet.getRange(1,1,artistSheet.getLastRow(),1).setHorizontalAlignment('left');
 }
 
