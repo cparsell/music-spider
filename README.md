@@ -94,4 +94,4 @@ This will set up Apps Script to regularly update artists, events, and send you a
 NOTE: Use the address given in the text of the web app page, not the one you copied from Google Script. For me at least, they were slightly different.
  
 ### Sources:
- - Functions from [Spotify-Backup-GAS](https://github.com/Nitemice/spotify-backup-gas) were adapted and extremely helpful in figuring out how Spotify API authentication works
+ - Authentication web app functions were adapted from [Spotify-Backup-GAS](https://github.com/Nitemice/spotify-backup-gas). This was extremely helpful in getting Spotify API authentication to work.
