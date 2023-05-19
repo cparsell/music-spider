@@ -17,14 +17,10 @@ const refreshEvents = async () =>
   let i = 0;
   
   try {
-    // Logger.log(`arrray length ${artistsArr.length}`);
-    // for (i=0;i<artistsArr.length; i++){
     while (i<artistsArr.length)
     {
       await ticketSearch(artistsArr[i][0], writer).then(data => 
       {
-        i++;
-        // Logger.log(data);
         for (const [index, [key]] of Object.entries(Object.entries(data))) 
         {
           let exists = searchColForValue(eventSheet, "URL", data[key].url);
@@ -43,6 +39,7 @@ const refreshEvents = async () =>
           }
         }
         Utilities.sleep(200);
+        i++;
         });
   }
   } catch (e) 
