@@ -21,16 +21,18 @@
     </script>
     <style>
         h1 {text-align: center;}
-        img {align-items:  center;}
-        
-        /* p {text-align: center;} */
-        /* div {text-align: center;} */
+        .center {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 50%;
+        }
         </style>
 </head>
 
 <body>
     <a href="https://github.com/cparsell/music-spider">
-    <img src="https://i.postimg.cc/HkVc4bCq/music-spider-logo-nobg.png" height="15%" width="15%" /></a><br>
+    <img src="https://i.postimg.cc/HkVc4bCq/music-spider-logo-nobg.png" height="15%" width="15%" class="center" /></a><br>
     
     <h1>Music Spider - First Time Authentication</h1>
     <ol>
@@ -46,7 +48,7 @@
                         </a>
                     </p>
                 </a>
-            </p>
+            </p><br /><br />
         </li>
         <li>
             <p>
@@ -55,7 +57,7 @@
                 <br />
                 <code><strong>
                     <!-- The text field -->
-                    <input type="text" value="<?= ScriptApp.getService().getUrl() ?>" id="URI" style='background:#f8f8f8; display:block; width:80%'>
+                    <input type="text" value="<?= ScriptApp.getService().getUrl() ?>" id="URI" style='background:#f8f8f8; display:block; width:80%; font-weight:600;font-family: monospace;'>
 
                     <!-- The button used to copy the text -->
                     <button onclick="copyURI()">Copy URI</button>
@@ -63,7 +65,7 @@
             </p><p><strong>NOTE: Do not copy the URL from the address bar as it can be slightly different</strong></p>
             <p>
                 
-            </p>
+            </p><br /><br />
         </li>
         <li>
             <p>
@@ -74,7 +76,7 @@
                     <?= generateAuthUrl() ?>
                 </a>
             </p>
-        </li>
+        </li><br /><br />
         <li>
             You should be redirected back to a success page on Google App Script.
         </li>
