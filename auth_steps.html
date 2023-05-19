@@ -21,16 +21,16 @@
     </script>
     <style>
         h1 {text-align: center;}
-        img {text-align: center;}
+        img {align-items:  center;}
         
-        p {text-align: center;}
-        div {text-align: center;}
+        /* p {text-align: center;} */
+        /* div {text-align: center;} */
         </style>
 </head>
 
 <body>
-    <a href="https://github.com/cparsell/music-spider">`
-        message += `<img src="https://i.postimg.cc/HkVc4bCq/music-spider-logo-nobg.png" height="22%" width="22%" /></a><br>
+    <a href="https://github.com/cparsell/music-spider">
+    <img src="https://i.postimg.cc/HkVc4bCq/music-spider-logo-nobg.png" height="15%" width="15%" /></a><br>
     
     <h1>Music Spider - First Time Authentication</h1>
     <ol>
@@ -55,7 +55,7 @@
                 <br />
                 <code><strong>
                     <!-- The text field -->
-                    <input type="text" value="<?= ScriptApp.getService().getUrl() ?>" id="URI">
+                    <input type="text" value="<?= ScriptApp.getService().getUrl() ?>" id="URI" style='background:#f8f8f8; display:block; width:auto'>
 
                     <!-- The button used to copy the text -->
                     <button onclick="copyURI()">Copy URI</button>
