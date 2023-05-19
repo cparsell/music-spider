@@ -56,5 +56,5 @@ const config = {
   email: userProps.getProperty(`email`),
   createCalendarEvents: userProps.getProperty(`createCalendarEvents`),
   calendarId: userProps.getProperty(`calendarId`),
-  debug: userProps.getProperty(`debug`),
+  debug: (userProps.getProperty(`debug`) === 'true'),
 };

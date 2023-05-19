@@ -43,7 +43,7 @@ class WriteLogger
     }
   }
   Debug(message) {
-    if (config.debug == `true`)
+    if (config.debug)
     {
       try {
         const text = [new Date().toUTCString(), "DEBUG", message, ];
