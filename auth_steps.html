@@ -27,6 +27,16 @@
             margin-right: auto;
             width: 15%;
         }
+        .button {
+            background-color: #008CBA; 
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            }
         </style>
 </head>
 
@@ -65,7 +75,7 @@
                     <input type="text" value="<?= ScriptApp.getService().getUrl() ?>" id="URI" style='background:#f8f8f8; display:block; width:80%; font-weight:600;font-family: monospace;'>
 
                     <!-- The button used to copy the text -->
-                    <button onclick="copyURI()">Copy URI</button>
+                    <button onclick="copyURI()" class="button">Copy URI</button>
                 </strong></code>
             </p><p><strong>NOTE: Do not copy the URL from the address bar as it can be slightly different</strong></p>
             <p>
