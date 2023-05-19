@@ -31,7 +31,7 @@
             background-color: #008CBA; 
             border: none;
             color: white;
-            padding: 15px 32px;
+            padding: 10px 18px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
@@ -70,14 +70,14 @@
                 Add <strong>the following URI</strong> to the <strong>'Redirect URIs'</strong> field,
                 found under "Edit Settings":
                 <br />
-                <code><strong>
-                    <!-- The text field -->
-                    <input type="text" value="<?= ScriptApp.getService().getUrl() ?>" id="URI" style='background:#f8f8f8; display:block; width:80%; font-weight:600;font-family: monospace;'>
-
+                <!-- The text field -->
+                <input type="text" value="<?= ScriptApp.getService().getUrl() ?>" id="URI" style='background:#f8f8f8; display:block; width:80%; font-weight:600;font-family: monospace;'>
                     <!-- The button used to copy the text -->
                     <button onclick="copyURI()" class="button">Copy URI</button>
-                </strong></code>
-            </p><p><strong>NOTE: Do not copy the URL from the address bar as it can be slightly different</strong></p>
+                </input>
+            </p>
+            <p>
+                <strong>NOTE: Do not copy the URL from the address bar as it can be slightly different</strong></p>
             <p>
                 
             </p><br /><br />
