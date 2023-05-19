@@ -74,14 +74,14 @@ const getData = async (accessToken, url, getAllPages = false) =>
 {
   let headers = 
   {
-      "Authorization": "Bearer " + accessToken,
-      "Content-Type": "application/json"
+    "Authorization": "Bearer " + accessToken,
+    "Content-Type": "application/json"
   };
 
   let options = 
   {
-      "muteHttpExceptions": true,
-      "headers": headers
+    "muteHttpExceptions": true,
+    "headers": headers
   };
 
   let response = UrlFetchApp.fetch(url, options);
@@ -90,7 +90,7 @@ const getData = async (accessToken, url, getAllPages = false) =>
   // Bail out if we only wanted the first page
   if (!getAllPages)
   {
-      return [firstPage];
+    return [firstPage];
   }
 
   // Put first page in array for return with following pages
@@ -100,35 +100,35 @@ const getData = async (accessToken, url, getAllPages = false) =>
   // Strip any outer shell, if there is one
   if (Object.values(pageObj).length == 1)
   {
-      pageObj = Object.values(pageObj)[0];
+    pageObj = Object.values(pageObj)[0];
   }
 
   // Retrieve URL for next page
   let nextPageUrl = pageObj["next"];
   while (nextPageUrl)
   {
-      // Retrieve the next page
-      nextPage = UrlFetchApp.fetch(nextPageUrl, options).getContentText();
-      data.push(nextPage);
+    // Retrieve the next page
+    nextPage = UrlFetchApp.fetch(nextPageUrl, options).getContentText();
+    data.push(nextPage);
 
-      // Retrieve URL for next page
-      pageObj = JSON.parse(nextPage);
-      // Strip any outer shell, if there is one
-      if (Object.values(pageObj).length == 1)
-      {
-          pageObj = Object.values(pageObj)[0];
-      }
-      nextPageUrl = pageObj["next"];
+    // Retrieve URL for next page
+    pageObj = JSON.parse(nextPage);
+    // Strip any outer shell, if there is one
+    if (Object.values(pageObj).length == 1)
+    {
+      pageObj = Object.values(pageObj)[0];
+    }
+    nextPageUrl = pageObj["next"];
   }
 
   return data;
 }
 
 // Just a wrapper function to simplify some code
-const xmlElement = (type, text) =>
-{
-    return XmlService.createElement(type).setText(text);
-}
+// const xmlElement = (type, text) =>
+// {
+//     return XmlService.createElement(type).setText(text);
+// }
 
 const main = () =>
 {
