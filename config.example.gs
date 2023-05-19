@@ -47,7 +47,7 @@ const config = {
   clientSecretSpotify: userProps.getProperty(`clientSecretSpotify`),
   keyTM: userProps.getProperty(`keyTM`),
   latlong: userProps.getProperty(`latlong`),
-  radius: userProps.getProperty(`radius`),
+  radius: Number(userProps.getProperty(`radius`)),
   unit: userProps.getProperty(`unit`),
   getTopArtists: userProps.getProperty(`getTopArtists`),
   getFollowing: userProps.getProperty(`getFollowing`),

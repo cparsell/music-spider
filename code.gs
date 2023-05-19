@@ -66,7 +66,8 @@ const artistsList = () =>
   let artistRows = artistSheet.getLastRow()-1;
   if (artistRows==0) artistRows=1;
   let artistsArr = artistSheet.getRange(2,1,artistRows,1).getValues();
-  return artistsArr;
+  let filtered = artistsArr.filter(n => n);
+  return filtered;
 }
 
 const getData = async (accessToken, url, getAllPages = false) =>
