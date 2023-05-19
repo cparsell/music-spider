@@ -33,7 +33,7 @@ Then it sends an email (e.g. weekly) listing these events.
 
 ## TL;DR Setup
 1. Copy [template Google Spreadsheet](https://docs.google.com/spreadsheets/d/1H4pvSK4jpRikHO11PtpJGSdycpVmM566XLQzRot4E_g/edit?usp=sharing) to your drive
-2. Set up API keys for ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/)). Put keys in config file.
+2. Set up API keys for ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/)). Put keys in config file. In the config file, you can also change settings to your liking.
 3. Deploy as web app. Run it in browser. 
 4. Copy URI **given IN BOLD in web app** into Spotiy App settings under Redirect URI (STEP 3) NOTE: Do NOT use URL! It is different for me at least. Save.
 3. Set up triggers in Apps Script
@@ -56,7 +56,7 @@ Then it sends an email (e.g. weekly) listing these events.
 - Now the script should have authorization to get your user's info (playlists, top artists, etc)
 
 ### 3. Google Triggers
-This will set up Apps Script to regularly update artists, events, and send you an email. Feel free to change the timing of these to your preference.
+This will set up Apps Script to regularly update artists, events, and send you an email. Change the timing of these to your preference. If you do not want an email, just don't create this trigger.
 
 - In the Apps Script project, go to **Triggers** on the left sidebar
 - Click **Add Trigger**
