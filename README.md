@@ -70,7 +70,7 @@ This will set up Apps Script to regularly update artists, events, and send you a
 - Click **Add Trigger**
   - Function to run: **refreshEvents**   (the function that looks for new events on Ticketmaster)
   - Event source: **Time-driven**
-  - **Day timer** (or your preference)
+  - **Week timer** (or your preference)
   - **4am to 5am**
   - Save.
 
@@ -79,7 +79,7 @@ This will set up Apps Script to regularly update artists, events, and send you a
   - Event source: **Time-driven**
   - **Week timer** 
   - **Every Monday** 
-  - **7am to 8am**
+  - **6am to 7am**
   - Save.
 
 - Click **Add Trigger**
