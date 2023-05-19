@@ -2,17 +2,49 @@
 <html>
 
 <head>
-    <title>Spotify Backup Script - First Time Authentication</title>
+    <title>Music Spider - First Time Authentication</title>
+    <script>
+        function copyURI() {
+        // Get the text field
+        var copyText = document.getElementById("URI");
+
+        // Select the text field
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); // For mobile devices
+
+        // Copy the text inside the text field
+        navigator.clipboard.writeText(copyText.value);
+
+        // Alert the copied text
+        alert("Copied the text: " + copyText.value);
+}
+    </script>
+    <style>
+        h1 {text-align: center;}
+        img {text-align: center;}
+        
+        p {text-align: center;}
+        div {text-align: center;}
+        </style>
 </head>
 
 <body>
-    <h1>Spotify Backup Script - First Time Authentication</h1>
+    <a href="https://github.com/cparsell/music-spider">`
+        message += `<img src="https://i.postimg.cc/HkVc4bCq/music-spider-logo-nobg.png" height="22%" width="22%" /></a><br>
+    
+    <h1>Music Spider - First Time Authentication</h1>
     <ol>
         <li>
             <p>
-                Navigate to your Spotify Backup Script app via the
+                Navigate to your Music Spider app via the
                 <a href="https://developer.spotify.com/dashboard/applications">
-                    Spotify App Dashboard.
+                    Spotify App Dashboard. 
+                    <p>
+                        For more information, see
+                        <a href="https://developer.spotify.com/documentation/general/guides/app-settings/">
+                            Spotify's Development Guide.
+                        </a>
+                    </p>
                 </a>
             </p>
         </li>
@@ -21,13 +53,16 @@
                 Add <strong>the following URI</strong> to the 'Redirect URIs' field,
                 found under "Edit Settings":
                 <br />
-                <code><h2><strong><?= ScriptApp.getService().getUrl() ?> </strong> </h2></code>
+                <code><strong>
+                    <!-- The text field -->
+                    <input type="text" value="<?= ScriptApp.getService().getUrl() ?>" id="URI">
+
+                    <!-- The button used to copy the text -->
+                    <button onclick="copyURI()">Copy URI</button>
+                </strong></code>
             </p><p><strong>NOTE: Do not copy the URL from the address bar as it can be slightly different</strong></p>
             <p>
-                For more information, see
-                <a href="https://developer.spotify.com/documentation/general/guides/app-settings/">
-                    Spotify's Development Guide.
-                </a>
+                
             </p>
         </li>
         <li>
