@@ -1,6 +1,6 @@
 const createCalEvents = (events) => 
 {
-  let calendarId = config.calendarId;
+  let calendarId = Config.CALENDAR_ID;
   let eventCal = CalendarApp.getCalendarById(calendarId);
   for (const [index, [key]] of Object.entries(Object.entries(events))) 
   {

@@ -1,32 +1,32 @@
-const spreadsheet = SpreadsheetApp.openById(config.spreadsheetId);
-const artistSheet = spreadsheet.getSheetByName("Artists");
-const eventSheet = spreadsheet.getSheetByName("Events");
+const SPREADSHEET = SpreadsheetApp.openById(Config.SPREADSHEET_ID);
+const ARTIST_SHEET = SPREADSHEET.getSheetByName("Artists");
+const EVENT_SHEET = SPREADSHEET.getSheetByName("Events");
 
 const SERVICE_NAME = `Music Spider`;
 const SUPPORT_ALIAS = GmailApp.getAliases()[0];
 
-const baseUrl = "https://api.spotify.com/v1";
+const BASE_URL = "https://api.spotify.com/v1";
 
 // Profile URLs
-const profileUrl = baseUrl + "/me";
+const PROFILE_URL = BASE_URL + "/me";
 
 // Library URLs
-const followUrl = baseUrl + "/me/following";
-const savedTracksUrl = baseUrl + "/me/tracks";
-const playlistUrl = baseUrl + "/playlists";
-const savedAlbumsUrl = baseUrl + "/me/albums";
-const savedShowsUrl = baseUrl + "/me/shows";
-const savedEpisodesUrl = baseUrl + "/me/episodes";
-const topArtistsUrl = baseUrl + "/me/top/artists";
+const FOLLOW_URL = BASE_URL + "/me/following";
+const SAVED_TRACKS_URL = BASE_URL + "/me/tracks";
+const PLAYLIST_URL = BASE_URL + "/playlists";
+const SAVED_ALBUMS_URL = BASE_URL + "/me/albums";
+const SAVED_SHOWS_URL = BASE_URL + "/me/shows";
+const SAVED_EPISODERS_URL = BASE_URL + "/me/episodes";
+const TOP_ARTISTS_URL = BASE_URL + "/me/top/artists";
 
-const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June",
+const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "June",
   "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
-const dayNames = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
+const DAY_NAMES = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
 
 // Playlist URLs
-const playlistsUrl = baseUrl + "/me/playlists";
+const PLAYLISTS_URL = BASE_URL + "/me/playlists";
 
-const ticketmasterUrl = 'https://app.ticketmaster.com/discovery/v2/events.json'
+const TICKETMASTER_URL = 'https://app.ticketmaster.com/discovery/v2/events.json'
 const HEADERNAMES = 
 {
   eName : `Event Name`,	

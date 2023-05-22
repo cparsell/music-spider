@@ -22,7 +22,7 @@ const clearData = (sheet, startRow = 2) =>
  */
 const removeExpiredEntries = (sheet,dateHeaderName="Date") => 
 {
-  // sheet = eventSheet; // for debugging
+  // sheet = EVENT_SHEET; // for debugging
   if(typeof sheet != `object`) return 1;
   try {
     let today = new Date();

@@ -12,8 +12,8 @@
  * - Create a new copy of the template Google Spreadsheet
  * - From the sheet, go Extensions > Apps Script to create a new script project
  * - Add a new script file for each of the files in this repo
- * - Modify the config.example.gs and name it config.gs
- * - Replace values in config.gs to match your API keys 
+ * - Modify the Config.example.gs and name it Config.gs
+ * - Replace values in Config.gs to match your API keys 
  * - in Apps Script, click Deploy > New Deployment > Web app > copy the link.
  * - Go to this link in your browser. This page will give you further instructions to:
  *   1. Navigate to your app via the Spotify App Dashboard (https://developer.spotify.com/dashboard/applications)
@@ -63,9 +63,9 @@ const addArrayToSheet = (sheet, column, values) =>
 
 const artistsList = () => 
 {
-  let artistRows = artistSheet.getLastRow()-1;
+  let artistRows = ARTIST_SHEET.getLastRow()-1;
   if (artistRows==0) artistRows=1;
-  let artistsArr = artistSheet.getRange(2,1,artistRows,1).getValues();
+  let artistsArr = ARTIST_SHEET.getRange(2,1,artistRows,1).getValues();
   let filtered = artistsArr.filter(n => n);
   return filtered;
 }

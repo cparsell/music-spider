@@ -6,7 +6,7 @@
 class WriteLogger
 {
   constructor() { 
-    this.sheet = spreadsheet.getSheetByName("Logger");
+    this.sheet = SPREADSHEET.getSheetByName("Logger");
     // this.sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Logger");
   }
   Error(message) {
@@ -43,7 +43,7 @@ class WriteLogger
     }
   }
   Debug(message) {
-    if (config.debug)
+    if (Config.DEBUG)
     {
       try {
         const text = [new Date().toUTCString(), "DEBUG", message, ];

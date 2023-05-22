@@ -1,6 +1,6 @@
-const userProps = PropertiesService.getUserProperties();
+const USER_PROPS = PropertiesService.getUserProperties();
 try {
-  userProps.setProperties(
+  USER_PROPS.setProperties(
   {
     // Spreadsheet ID is in the spreadsheet URL:
     // https://docs.google.com/spreadsheets/d/THIS_IS_THE_ID/edit#gid=0
@@ -32,7 +32,7 @@ try {
 
 // Artists that may show up in Spotify but will not be added to the Artists sheet
 // because they're long deceased, you're not interested in their concert, etc.
-const artistsToIgnore = 
+const ARTISTS_TO_IGNORE = 
 [
   'David Bowie',
   'Lou Reed',
@@ -41,20 +41,20 @@ const artistsToIgnore =
   'J Dilla',
 ];
 
-const config = {
-  spreadsheetId: userProps.getProperty(`spreadsheetId`),
-  clientIdSpotify: userProps.getProperty(`clientIdSpotify`),
-  clientSecretSpotify: userProps.getProperty(`clientSecretSpotify`),
-  keyTM: userProps.getProperty(`keyTM`),
-  latlong: userProps.getProperty(`latlong`),
-  radius: Number(userProps.getProperty(`radius`)),
-  unit: userProps.getProperty(`unit`),
-  getTopArtists: userProps.getProperty(`getTopArtists`),
-  getFollowing: userProps.getProperty(`getFollowing`),
-  getArtistsFromPlaylist: userProps.getProperty(`getArtistsFromPlaylist`),
-  playlistId: userProps.getProperty(`playlistId`),
-  email: userProps.getProperty(`email`),
-  createCalendarEvents: userProps.getProperty(`createCalendarEvents`),
-  calendarId: userProps.getProperty(`calendarId`),
-  debug: (userProps.getProperty(`debug`) === 'true'),
+const Config = {
+  SPREADSHEET_ID: userProps.getProperty(`spreadsheetId`),
+  CLIENT_ID_SPOTIFY: userProps.getProperty(`clientIdSpotify`),
+  CLIENT_SECRET_SPOTIFY: userProps.getProperty(`clientSecretSpotify`),
+  KEY_TM: userProps.getProperty(`keyTM`),
+  LAT_LONG: userProps.getProperty(`latlong`),
+  RADIUS: Number(userProps.getProperty(`radius`)),
+  UNIT: userProps.getProperty(`unit`),
+  GET_TOP_ARTISTS: userProps.getProperty(`getTopArtists`),
+  GET_FOLLOWING: userProps.getProperty(`getFollowing`),
+  GET_ARTISTS_FROM_PLAYLIST: userProps.getProperty(`getArtistsFromPlaylist`),
+  PLAYLIST_ID: userProps.getProperty(`playlistId`),
+  EMAIL: userProps.getProperty(`email`),
+  CREATE_CALENDAR_EVENTS: userProps.getProperty(`createCalendarEvents`),
+  CALENDAR_ID: userProps.getProperty(`calendarId`),
+  DEBUG: (userProps.getProperty(`debug`) === 'true'),
 };

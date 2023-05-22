@@ -117,13 +117,13 @@ const arrUnique = (array) =>
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
- * Log a value to Execution Log if config.debug = true
+ * Log a value to Execution Log if Config.debug = true
  * @param {string} valueName "variable"
  * @param {variable} value the variable itself
  */
 const debugLog = (valueName, value) => 
 {
-  if (config.debug) 
+  if (Config.DEBUG) 
   {
     console.info(`${valueName}: ${value}`);
   }

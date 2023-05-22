@@ -6,10 +6,10 @@ const refreshEvents = async () =>
   let artistsArr = artistsList();
 
   //Clean expired events
-  removeExpiredEntries(eventSheet);
+  removeExpiredEntries(EVENT_SHEET);
 
   // Clear any empty rows if something was manually deleted
-  deleteEmptyRows(eventSheet);
+  deleteEmptyRows(EVENT_SHEET);
 
   //search each artist
   let eventsArr = {};
@@ -23,7 +23,7 @@ const refreshEvents = async () =>
       {
         for (const [index, [key]] of Object.entries(Object.entries(data))) 
         {
-          let exists = searchColForValue(eventSheet, "URL", data[key].url);
+          let exists = searchColForValue(EVENT_SHEET, "URL", data[key].url);
           if (!exists) {
             eventsArr[key] = 
             {
@@ -51,26 +51,26 @@ const refreshEvents = async () =>
   writeEventsToSheet(eventsArr);
 
   // Write Calendar Event for new events
-  if (config.createCalendarEvents) createCalEvents(eventsArr);
+  if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(eventsArr);
 }
 
 const writeEventsToSheet = async (eventsArr) => 
 {
   for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
-    SetRowData(eventSheet, eventsArr[key]);
+    SetRowData(EVENT_SHEET, eventsArr[key]);
   }
 }
 
 const buildEventsArr = () => 
 {
-  let lastRow = eventSheet.getLastRow();
+  let lastRow = EVENT_SHEET.getLastRow();
   let events = {};
   let ordered = {};
   if (lastRow>1) 
   {
     for (i=1; i<lastRow;i++)
     {
-      let rowData = GetRowData(eventSheet, i+1);
+      let rowData = GetRowData(EVENT_SHEET, i+1);
       let { date } = rowData;
       // let formattedDate = Utilities.formatDate(newDate, `PST`,`MM-dd-yyyy hh:mm a`);
       events[date] = rowData;
@@ -99,7 +99,7 @@ const ticketSearch = async (keyword, writer) =>
     Logger.log("No keyword provided");
     return;
   }
-  let artist = artistSheet.getRange(2,1);
+  let artist = ARTIST_SHEET.getRange(2,1);
   let eventsArr = {};
 
   try {
@@ -194,15 +194,15 @@ const writeEvent = ({name, date, city, venue, url, image, acts}) =>
   // let newData = new Array;
   // newData[0] = [eventName, eventVenue, eventCity,eventDate];
 
-  let lastRow = eventSheet.getLastRow();
-  // eventSheet.getRange(lastRow+1,1,1,4).setValues(newData);
-  SetByHeader(eventSheet, "Event Name", lastRow+1, name);
-  SetByHeader(eventSheet, "City", lastRow+1, city);
-  SetByHeader(eventSheet, "Venue", lastRow+1, venue);
-  SetByHeader(eventSheet, "Date", lastRow+1, date);
-  SetByHeader(eventSheet, "URL", lastRow+1, url);
-  SetByHeader(eventSheet, "Image", lastRow+1, image);
-  SetByHeader(eventSheet, "Acts", lastRow+1, acts.toString());
+  let lastRow = EVENT_SHEET.getLastRow();
+  // EVENT_SHEET.getRange(lastRow+1,1,1,4).setValues(newData);
+  SetByHeader(EVENT_SHEET, "Event Name", lastRow+1, name);
+  SetByHeader(EVENT_SHEET, "City", lastRow+1, city);
+  SetByHeader(EVENT_SHEET, "Venue", lastRow+1, venue);
+  SetByHeader(EVENT_SHEET, "Date", lastRow+1, date);
+  SetByHeader(EVENT_SHEET, "URL", lastRow+1, url);
+  SetByHeader(EVENT_SHEET, "Image", lastRow+1, image);
+  SetByHeader(EVENT_SHEET, "Acts", lastRow+1, acts.toString());
 }
 const tmSearch = async (keyword, writer) => 
 {
@@ -213,16 +213,16 @@ const tmSearch = async (keyword, writer) =>
     "async": true,
     "contentType": "application/json",
   };
-  let params = `?apikey=${config.keyTM}`;
+  let params = `?apikey=${Config.KEY_TM}`;
   // params += `&postalCode=`;  
   // params += `&city=Los+Angeles`;
-  params += `&latlong=${config.latlong}` 
-  params += `&radius=${config.radius}`; // radius only seems to work with latlong
-  params += `&unit=${config.unit}`;
+  params += `&latlong=${Config.LAT_LONG}` 
+  params += `&radius=${Config.RADIUS}`; // radius only seems to work with latlong
+  params += `&unit=${Config.UNIT}`;
   params += `&keyword=${encodeURIComponent(keyword)}`;
   Logger.log(`Searching Ticketmaster for ${keyword}`);
   try {
-    let response = await UrlFetchApp.fetch(ticketmasterUrl+params, options);
+    let response = await UrlFetchApp.fetch(TICKETMASTER_URL+params, options);
     let responseCode = response.getResponseCode();
     if (responseCode == 200 || responseCode == 201) 
     {

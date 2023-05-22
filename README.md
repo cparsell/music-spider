@@ -18,7 +18,7 @@ It can gather the names of artists from Spotify's API from three sources:
 - **Artists you follow**
 - **Artists in a specified playlist**
 
-These are all optional and you can configure it to gather these from any or all of these in the **config.gs** file. It writes the artist's names to the Artist Sheet.
+These are all optional and you can configure it to gather these from any or all of these in the **Config.gs** file. It writes the artist's names to the Artist Sheet.
 
 It then searches Ticketmaster's API for events with these artist's names as keywords and in the area you specify. It writes any event matches into the Event Sheet.
 
@@ -42,8 +42,8 @@ Then it sends an email (e.g. weekly) listing these events.
 
 ### 1. Template file
 - Go to the  [template Google Spreadsheet](https://docs.google.com/spreadsheets/d/1H4pvSK4jpRikHO11PtpJGSdycpVmM566XLQzRot4E_g/edit?usp=sharing) and make a copy of it on your Google Drive. This will copy the Apps Script code with it.
-- Rename config.example.gs to **config.gs**
-- Replace values in **config.gs** to match your API keys ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/)) and set other settings
+- Rename Config.example.gs to **Config.gs**
+- Replace values in **Config.gs** to match your API keys ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/)) and set other settings
   - If you use a Spotify playlist, get the playlist ID from the end of the playlist URL but before the ? character
 
 ### 2. Spotify Authorization:
