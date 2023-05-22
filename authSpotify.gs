@@ -46,7 +46,7 @@ const getFreshAuth = (code) =>
         "grant_type": "authorization_code",
         "code": code,
         "redirect_uri": ScriptApp.getService().getUrl(),
-        "client_id": Config.clientIdSpotify,
+        "client_id": Config.CLIENT_ID_SPOTIFY,
         "client_secret": Config.CLIENT_SECRET_SPOTIFY,
     };
 
@@ -80,7 +80,7 @@ const refreshAuth = (refreshToken) =>
         "grant_type": "refresh_token",
         "refresh_token": refreshToken,
         "client_id": Config.CLIENT_ID_SPOTIFY,
-        "client_secret": Config.clientSecretSpotify,
+        "client_secret": Config.CLIENT_SECRET_SPOTIFY,
     };
 
     let options = {
