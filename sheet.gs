@@ -228,7 +228,7 @@ const writeArrayToColumn = (array, sheet, col) =>
  * Removes blank rows on a sheet
  * @param {sheet} sheet
  */
-const deleteEmptyRows = (sheet) => 
+const deleteEmptyRows = (sheet, writer) => 
 {
   // if(typeof sheet != `object`) return 1;
   try {
@@ -277,7 +277,7 @@ const deleteEmptyRows = (sheet) =>
     }, []);
 
     // Sends a list of row indexes to be deleted to the console.
-    debugLog(`ranges to delete`, rangesToDelete);
+    writer.Debug(`ranges to delete`, rangesToDelete);
 
     // Deletes the rows using REVERSE order to ensure proper indexing is used.
     rangesToDelete.reverse().forEach(([start, end]) => sheet.deleteRows(start, end - start + 1));

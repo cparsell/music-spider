@@ -9,7 +9,7 @@ const refreshEvents = async () =>
   removeExpiredEntries(EVENT_SHEET);
 
   // Clear any empty rows if something was manually deleted
-  deleteEmptyRows(EVENT_SHEET);
+  deleteEmptyRows(EVENT_SHEET, writer);
 
   //search each artist
   let eventsArr = {};

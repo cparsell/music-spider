@@ -87,7 +87,7 @@ const getSavedTracksArtists = async (writer) =>
   // Retrieve data
   let params = "?limit=50";
   writer.Info(`Getting artists from saved tracks`);
-  let data = await getData(accessToken, SAVED_TRACKS_URL + params, true);
+  let data = await getData(accessToken, SAVED_TRACKS_URL + params, writer, true);
 
   // Fold array of responses into single structure
   if (data) 
@@ -124,7 +124,7 @@ const getFollowedArtists = async (writer) =>
   let params = "?type=artist&limit=50";
   
   // Retrieve data
-  let data = await getData(accessToken, FOLLOW_URL + params, true);
+  let data = await getData(accessToken, FOLLOW_URL + params, writer, true);
 
   // Fold array of responses into single structure
   data = Common.collateArrays("artists.items", data);
@@ -173,7 +173,7 @@ const getPlaylistArtists = async (writer) =>
   let params = "?playlist_id=" + playlistId;
   params += `&limit=50`
   Logger.log("Getting artists from playlists")
-  let data = await getData(accessToken, `${PLAYLIST_URL}/${playlistId}${params}`);
+  let data = await getData(accessToken, `${PLAYLIST_URL}/${playlistId}${params}`, writer);
   // Logger.log(data);
 
   // Fold array of responses into single structure
@@ -261,7 +261,7 @@ const getTopData = async (term, offset, writer) => {
 
   let resp = undefined;
   Logger.log(`Getting top artists (${term})...`)
-  resp = await getData(accessToken, TOP_ARTISTS_URL + params,true);
+  resp = await getData(accessToken, TOP_ARTISTS_URL + params, writer, true);
   let artistsArr = new Array;
   // Fold array of responses into single structure
   if (resp[0]) 

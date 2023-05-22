@@ -70,7 +70,7 @@ const artistsList = () =>
   return filtered;
 }
 
-const getData = async (accessToken, url, getAllPages = false) =>
+const getData = async (accessToken, url, writer, getAllPages = false) =>
 {
   let headers = 
   {
@@ -86,7 +86,7 @@ const getData = async (accessToken, url, getAllPages = false) =>
 
   let response = UrlFetchApp.fetch(url, options);
   let firstPage = response.getContentText();
-  debugLog(`Response Code`, `${response.getResponseCode()} - ${RESPONSECODES[response.getResponseCode()]}`);
+  writer.Info(`Response Code`, `${response.getResponseCode()} - ${RESPONSECODES[response.getResponseCode()]}`);
   // Bail out if we only wanted the first page
   if (!getAllPages)
   {
