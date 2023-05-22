@@ -169,7 +169,7 @@ class CreateMessage
       let eventYear = eDate.getFullYear();
       let eventTime = Utilities.formatDate(eDate, "PST", "h a");
       // Start a new table row every even event
-      if (isEven(index)) 
+      if (Common.isEven(index)) 
       {
         message += `<tr>`;
       }
@@ -195,7 +195,7 @@ class CreateMessage
       message += `<span style="color:#696969;font-size:12px;font-family:georgia,times,times new roman,serif;">at ${venue}, ${city}<br/> `;
       message += `<strong>${DAY_NAMES[eventDay]}, ${MONTH_NAMES[eventMonth]} ${eventDayNum} ${eventYear}</strong> ${eventTime}</span></span></div>`;
       message += `<br/></td>`;
-      if (!isEven(index)) message += `</tr><br/>`; // End table row every odd event
+      if (!Common.isEven(index)) message += `</tr><br/>`; // End table row every odd event
     };
     message += `<br/></tbody></table>`; 
     message += `</td></tr></tbody></table>`;

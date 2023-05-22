@@ -45,7 +45,7 @@ const refreshArtists = async () =>
   let combined = topArtists.concat(playlistArtists).concat(followedArtists);
   writer.Debug(`Artists combined: ${combined}`);
   // Remove duplicates
-  let artistsArr = arrUnique(combined);
+  let artistsArr = Common.arrayRemoveDupes(combined);
   if (artistsArr.length == 0) 
   {
     writer.Warning(`Unable to retrieve a list of artists from Spotify playlist - check playlist ID, Spotify client ID, or client secret`);
@@ -92,7 +92,7 @@ const getSavedTracksArtists = async (writer) =>
   // Fold array of responses into single structure
   if (data) 
   {
-    data = common.collateArrays("items", data);
+    data = Common.collateArrays("items", data);
     let artistsArr = [];
     let ignoreUpperCase = ARTISTS_TO_IGNORE.map(function(x){ return x.toUpperCase(); })
     data.forEach(track =>
@@ -104,7 +104,7 @@ const getSavedTracksArtists = async (writer) =>
       });
     });
 
-    artistsArr = arrUnique(artistsArr);
+    artistsArr = Common.arrayRemoveDupes(artistsArr);
     lastRow = sheet.getLastRow();
 
     writer.Debug(`Artists Array: ${artistsArr}`);
@@ -127,7 +127,7 @@ const getFollowedArtists = async (writer) =>
   let data = await getData(accessToken, FOLLOW_URL + params, true);
 
   // Fold array of responses into single structure
-  data = common.collateArrays("artists.items", data);
+  data = Common.collateArrays("artists.items", data);
 
   // Sort artists by name
   data.sort((first, second) =>
@@ -179,7 +179,7 @@ const getPlaylistArtists = async (writer) =>
   // Fold array of responses into single structure
   if (data[0]) 
   {
-    // let newData = common.collateArrays("items", data);
+    // let newData = Common.collateArrays("items", data);
     let newData = JSON.parse(data);
     let items = newData.tracks.items;
     // Logger.log(newData.tracks.items);
@@ -197,7 +197,7 @@ const getPlaylistArtists = async (writer) =>
       });
     })
 
-    artistsArr = arrUnique(artistsArr);
+    artistsArr = Common.arrayRemoveDupes(artistsArr);
   //   lastRow = sheet.getLastRow();
   //   Logger.log("Artist Array");
   writer.Debug(`Playlist Artists: ${artistsArr}`);
@@ -238,7 +238,7 @@ const getTopArtists = async (writer) =>
     Logger.log(`Returned 0 top artists somehow`)
     return artistsArr;
   }
-  final = arrUnique(artistsArr);
+  final = Common.arrayRemoveDupes(artistsArr);
   return final;
 }
 
@@ -266,7 +266,7 @@ const getTopData = async (term, offset, writer) => {
   // Fold array of responses into single structure
   if (resp[0]) 
   {
-    data = common.collateArrays("items", resp);
+    data = Common.collateArrays("items", resp);
     let ignoree = false;
     let ignoreUpperCase = ARTISTS_TO_IGNORE.map(function(x){ return x.toUpperCase(); })
     data.forEach(artist =>
