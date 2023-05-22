@@ -260,7 +260,7 @@ const getTopData = async (term, offset, writer) => {
   params += `&offset=${offset}`;
 
   let resp = undefined;
-  Logger.log("Getting top artists (long term)...")
+  Logger.log(`Getting top artists (${term})...`)
   resp = await getData(accessToken, TOP_ARTISTS_URL + params,true);
   let artistsArr = new Array;
   // Fold array of responses into single structure
@@ -276,7 +276,7 @@ const getTopData = async (term, offset, writer) => {
     });
   } else 
   {
-    Logger.log("No data received (long term)");
+    Logger.log(`No data received (${term})`);
   }
   return artistsArr;
 }
