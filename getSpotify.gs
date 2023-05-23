@@ -175,7 +175,7 @@ const getPlaylistArtists = async (ignoreUpperCase, writer) =>
   let params = "?playlist_id=" + playlistId;
   params += `&limit=50`
   Logger.log("Getting artists from playlists")
-  let data = await getSpotifyData(accessToken, `${PLAYLIST_URL}/${playlistId}${params}`, writer);
+  let data = await getSpotifyData(accessToken, `${PLAYLIST_URL}/${playlistId}${params}`, writer, true);
 
 
   // Fold array of responses into single structure
