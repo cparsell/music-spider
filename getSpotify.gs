@@ -5,7 +5,7 @@ const refreshArtists = async () =>
   let topArtists = new Array;
   let playlistArtists = new Array;
   let followedArtists = new Array;
-  let ignoreUpperCase = ARTISTS_TO_IGNORE.map(function(x){ return x.toUpperCase(); })
+  let ignoreUpperCase = ARTISTS_TO_IGNORE.map((x) => { return x.toUpperCase(); })
   if (Config.GET_TOP_ARTISTS) 
   {
     try 
