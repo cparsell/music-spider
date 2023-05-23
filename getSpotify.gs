@@ -5,12 +5,13 @@ const refreshArtists = async () =>
   let topArtists = new Array;
   let playlistArtists = new Array;
   let followedArtists = new Array;
+  let ignoreUpperCase = ARTISTS_TO_IGNORE.map(function(x){ return x.toUpperCase(); })
   if (Config.GET_TOP_ARTISTS) 
   {
     try 
     {
     // Get Top Artists from Spotify ()
-      topArtists = await getTopArtists(writer);
+      topArtists = await getTopArtists(ignoreUpperCase, writer);
       Logger.log(`${topArtists.length} Top Artists`);
       writer.Debug(`Top Artists: ${topArtists}`);
     } catch (err) 
@@ -22,7 +23,7 @@ const refreshArtists = async () =>
   {
     try 
     {
-      playlistArtists = await getPlaylistArtists(writer);
+      playlistArtists = await getPlaylistArtists(ignoreUpperCase, writer);
       Logger.log(`${playlistArtists.length} Playlist Artists`);
       writer.Debug(`plastlistArtists: ${playlistArtists}`);
     } catch (err) 
@@ -33,7 +34,7 @@ const refreshArtists = async () =>
   if (Config.GET_FOLLOWING) 
   { 
     try {
-    followedArtists = await getFollowedArtists(writer);
+    followedArtists = await getFollowedArtists(ignoreUpperCase, writer);
     Logger.log(`${followedArtists.length} Followed Artists`);
     writer.Debug(`followedArtists: ${followedArtists}`);
     } catch (err) 
@@ -76,7 +77,7 @@ const refreshArtists = async () =>
  * interested in seeing live ;)
  * @param {writer} instance of WriteLogger
  */
-const getSavedTracksArtists = async (writer) => 
+const getSavedTracksArtists = async (ignoreUpperCase, writer) => 
 {
   const sheet = ARTIST_SHEET;
   // Retrieve auth
@@ -94,7 +95,6 @@ const getSavedTracksArtists = async (writer) =>
   {
     data = Common.collateArrays("items", data);
     let artistsArr = [];
-    let ignoreUpperCase = ARTISTS_TO_IGNORE.map(function(x){ return x.toUpperCase(); })
     data.forEach(track =>
     {
       track.track.artists.forEach(artist =>
@@ -115,7 +115,7 @@ const getSavedTracksArtists = async (writer) =>
   }
 }
 
-const getFollowedArtists = async (writer) =>
+const getFollowedArtists = async (ignoreUpperCase, writer) =>
 {
   // Retrieve auth
   let accessToken = await retrieveAuth();
@@ -144,7 +144,6 @@ const getFollowedArtists = async (writer) =>
     return 0;
   });
   let artistsArr = new Array;
-  let ignoreUpperCase = ARTISTS_TO_IGNORE.map(function(x){ return x.toUpperCase(); })
   data.forEach(artist =>
   {
     if (ignoreUpperCase.includes(artist.name.toUpperCase())) writer.Debug(`getFollowedArtists Ignoring: ${artist.name}`);
@@ -162,7 +161,7 @@ const getFollowedArtists = async (writer) =>
  * Playlist ID is supplied in Config.gs
  * @param {writer} instance of WriteLogger
  */
-const getPlaylistArtists = async (writer) => 
+const getPlaylistArtists = async (ignoreUpperCase, writer) => 
 {
   const playlistId = Config.PLAYLIST_ID;
   // Retrieve auth
@@ -174,18 +173,17 @@ const getPlaylistArtists = async (writer) =>
   params += `&limit=50`
   Logger.log("Getting artists from playlists")
   let data = await getData(accessToken, `${PLAYLIST_URL}/${playlistId}${params}`, writer);
-  // Logger.log(data);
+
 
   // Fold array of responses into single structure
   if (data[0]) 
   {
-    // let newData = Common.collateArrays("items", data);
     let newData = JSON.parse(data);
     let items = newData.tracks.items;
     // Logger.log(newData.tracks.items);
     // writer.Info(JSON.stringify(newData.tracks.items));
     let artistsArr = [];
-    let ignoreUpperCase = ARTISTS_TO_IGNORE.map(function(x){ return x.toUpperCase(); })
+
     items.forEach(item => 
     {
       let artists = item.track.album.artists;
@@ -216,21 +214,20 @@ const getPlaylistArtists = async (writer) =>
  * This searches "long term", "medium term", and "short term"
  * @param {object} writer instance of WriteLogger
  */
-const getTopArtists = async (writer) => 
+const getTopArtists = async (ignoreUpperCase, writer) => 
 {
   let artistsArr = new Array;
-
   // Request for LONG TERM top artists
-  artistsArr = artistsArr.concat(await getTopData("long_term", 0, writer));
+  artistsArr = artistsArr.concat(await getTopData("long_term", 0, ignoreUpperCase, writer));
   
   // Request for LONG TERM top artists OFFSET +48
-  artistsArr = artistsArr.concat(await getTopData("long_term", 48, writer));
+  artistsArr = artistsArr.concat(await getTopData("long_term", 48, ignoreUpperCase, writer));
 
   // Re-request for MEDIUM TERM top artists
-  artistsArr = artistsArr.concat(await getTopData("medium_term", 0, writer));
+  artistsArr = artistsArr.concat(await getTopData("medium_term", 0, ignoreUpperCase, writer));
 
   // Re-request for SHORT TERM top artists
-  artistsArr = artistsArr.concat(await getTopData("short_term", 0, writer));
+  artistsArr = artistsArr.concat(await getTopData("short_term", 0, ignoreUpperCase, writer));
   
   let final = new Array;
 
@@ -248,8 +245,9 @@ const getTopArtists = async (writer) =>
  * This searches "long term", "medium term", and "short term"
  * @param {string} term expects "long_term", "medium_term", or "short_term"
  * @param {integer} offset 
+ * @param {array} artistsToIgnore Uppercase array of artists
  */
-const getTopData = async (term, offset, writer) => {
+const getTopData = async (term, offset, artistsToIgnore, writer) => {
   // Retrieve auth
   let accessToken = await retrieveAuth();
   writer.Debug(`Access token: ${JSON.stringify(accessToken)}`);
@@ -268,7 +266,7 @@ const getTopData = async (term, offset, writer) => {
   {
     data = Common.collateArrays("items", resp);
     let ignoree = false;
-    let ignoreUpperCase = ARTISTS_TO_IGNORE.map(function(x){ return x.toUpperCase(); })
+    
     data.forEach(artist =>
     { 
       if (ignoreUpperCase.includes(artist.name.toUpperCase())) writer.Debug(`getTopData Ignoring: ${artist.name}`);

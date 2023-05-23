@@ -87,6 +87,7 @@ const getData = async (accessToken, url, writer, getAllPages = false) =>
   let response = UrlFetchApp.fetch(url, options);
   let firstPage = response.getContentText();
   writer.Info(`Response Code ${response.getResponseCode()} - ${RESPONSECODES[response.getResponseCode()]}`);
+  writer.Debug(Common.prettifyJson(firstPage));
   // Bail out if we only wanted the first page
   if (!getAllPages)
   {
