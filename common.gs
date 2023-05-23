@@ -147,10 +147,7 @@ const Common = {
    * Return TRUE if number is even, FALSE if it is odd
    * @param {number} n
    */
-  isEven: (n) => 
-  {
-    return n % 2 == 0;
-  },
+  isEven: (n) => n % 2 == 0,
 
   /**
    * ----------------------------------------------------------------------------------------------------------------
@@ -158,9 +155,9 @@ const Common = {
    * @param {function} fn
    */
   dataResponseTime: (fn) => {
-    return async (url) => {
+    return async (accessToken, url, writer, getAllPages) => {
       console.time('fn');
-      const data = await fn(url);
+      const data = await fn(accessToken, url, writer, getAllPages);
       console.timeEnd('fn');
       return data;
     }

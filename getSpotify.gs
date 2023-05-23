@@ -262,7 +262,10 @@ const getTopData = async (term, offset, ignoreUpperCase, writer) => {
 
   let resp = undefined;
   Logger.log(`Getting top artists (${term})...`)
+
+  getSpotifyData = Common.dataResponseTime(getSpotifyData)
   resp = await getSpotifyData(accessToken, TOP_ARTISTS_URL + params, writer, true);
+
   let artistsArr = new Array;
   // Fold array of responses into single structure
   if (resp[0]) 

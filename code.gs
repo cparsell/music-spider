@@ -70,7 +70,7 @@ const artistsList = () =>
   return filtered;
 }
 
-const getSpotifyData = async (accessToken, url, writer, getAllPages = false) =>
+let getSpotifyData = async (accessToken, url, writer, getAllPages = false) =>
 {
   let headers = 
   {
