@@ -10,8 +10,7 @@ const refreshArtists = async () =>
   {
     try 
     {
-    // Get Top Artists from Spotify ()
-      
+    // Get Top Artists from Spotify
       topArtists = await getTopArtists(ignoreUpperCase, writer);
       Logger.log(`${topArtists.length} Top Artists`);
       writer.Debug(`Top Artists: ${topArtists}`);
@@ -24,6 +23,7 @@ const refreshArtists = async () =>
   {
     try 
     {
+      // Get Artists from a playlist on Spotify
       playlistArtists = await getPlaylistArtists(ignoreUpperCase, writer);
       Logger.log(`${playlistArtists.length} Playlist Artists`);
       writer.Debug(`plastlistArtists: ${playlistArtists}`);
@@ -34,7 +34,9 @@ const refreshArtists = async () =>
   }
   if (Config.GET_FOLLOWING) 
   { 
-    try {
+    try 
+    {
+    // Get Artists you follow
     followedArtists = await getFollowedArtists(ignoreUpperCase, writer);
     Logger.log(`${followedArtists.length} Followed Artists`);
     writer.Debug(`followedArtists: ${followedArtists}`);
@@ -43,7 +45,7 @@ const refreshArtists = async () =>
       writer.Error(`${err} : getFollowing failed`);
     }
   }
-  // Combine both arrays
+  // Combine arrays
   let combined = topArtists.concat(playlistArtists).concat(followedArtists);
   writer.Debug(`Artists combined: ${combined}`);
   // Remove duplicates
