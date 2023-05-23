@@ -89,7 +89,7 @@ This will set up Apps Script to regularly update artists, events, and send you a
   - Save.
 
 ### Updating:
-Your copy of this code may not be up-to-date if I have updated this repository since you made your copy. There are two ways to update the code in Apps Script:
+Your copy of this code may not be up-to-date if I have updated the repository after you made your copy. There are two ways to update the code in Apps Script:
 - Copy and paste each file into your corresponding copy of each file.
 - Install [Google Apps Script Github Assistant](https://chrome.google.com/webstore/detail/google-apps-script-github/lfjcgcmkmjjlieihflfhjopckgpelofo), hook it to your GitHub account (see their ), and pull from the Music Spider repo.
  
