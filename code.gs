@@ -84,10 +84,10 @@ const getSpotifyData = async (accessToken, url, writer, getAllPages = false) =>
     "headers": headers
   };
   try {
-    let response = UrlFetchApp.fetch(url, options);
+    let response = await UrlFetchApp.fetch(url, options);
     let firstPage = await response.getContentText();
     let responseCode = await response.getResponseCode();
-    writer.Info(`Response Code ${response.getResponseCode()} - ${RESPONSECODES[response.getResponseCode()]}`);
+    writer.Info(`Response Code ${responseCode} - ${RESPONSECODES[responseCode]}`);
     if (responseCode == 200 || responseCode == 201) 
     {
 
@@ -125,6 +125,7 @@ const getSpotifyData = async (accessToken, url, writer, getAllPages = false) =>
         }
         nextPageUrl = pageObj["next"];
       }
+      return data;
     } else {
       writer.Error(`Failed to get data from ${url} - `);
       return false;
@@ -134,7 +135,7 @@ const getSpotifyData = async (accessToken, url, writer, getAllPages = false) =>
     return {};
   }
 
-  return data;
+  
 }
 
 // Just a wrapper function to simplify some code
