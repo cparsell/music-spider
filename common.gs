@@ -142,6 +142,7 @@ const Common = {
       return [];
     }
   },
+
   /**
    * ----------------------------------------------------------------------------------------------------------------
    * Return TRUE if number is even, FALSE if it is odd
@@ -150,7 +151,21 @@ const Common = {
   isEven: (n) => 
   {
     return n % 2 == 0;
-  }
+  },
+
+  /**
+   * ----------------------------------------------------------------------------------------------------------------
+   * Async await decorator to return its response time 
+   * @param {function} fn
+   */
+  dataResponseTime: (fn) => {
+    return async (url) => {
+      console.time('fn');
+      const data = await fn(url);
+      console.timeEnd('fn');
+      return data;
+    }
+  },
 };
 
 
