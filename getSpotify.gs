@@ -11,6 +11,7 @@ const refreshArtists = async () =>
     try 
     {
     // Get Top Artists from Spotify ()
+      
       topArtists = await getTopArtists(ignoreUpperCase, writer);
       Logger.log(`${topArtists.length} Top Artists`);
       writer.Debug(`Top Artists: ${topArtists}`);
@@ -88,7 +89,7 @@ const getSavedTracksArtists = async (ignoreUpperCase, writer) =>
   // Retrieve data
   let params = "?limit=50";
   writer.Info(`Getting artists from saved tracks`);
-  let data = await getData(accessToken, SAVED_TRACKS_URL + params, writer, true);
+  let data = await getSpotifyData(accessToken, SAVED_TRACKS_URL + params, writer, true);
 
   // Fold array of responses into single structure
   if (data) 
@@ -124,7 +125,7 @@ const getFollowedArtists = async (ignoreUpperCase, writer) =>
   let params = "?type=artist&limit=50";
   
   // Retrieve data
-  let data = await getData(accessToken, FOLLOW_URL + params, writer, true);
+  let data = await getSpotifyData(accessToken, FOLLOW_URL + params, writer, true);
 
   // Fold array of responses into single structure
   data = Common.collateArrays("artists.items", data);
@@ -172,7 +173,7 @@ const getPlaylistArtists = async (ignoreUpperCase, writer) =>
   let params = "?playlist_id=" + playlistId;
   params += `&limit=50`
   Logger.log("Getting artists from playlists")
-  let data = await getData(accessToken, `${PLAYLIST_URL}/${playlistId}${params}`, writer);
+  let data = await getSpotifyData(accessToken, `${PLAYLIST_URL}/${playlistId}${params}`, writer);
 
 
   // Fold array of responses into single structure
@@ -247,7 +248,7 @@ const getTopArtists = async (ignoreUpperCase, writer) =>
  * @param {integer} offset 
  * @param {array} artistsToIgnore Uppercase array of artists
  */
-const getTopData = async (term, offset, artistsToIgnore, writer) => {
+const getTopData = async (term, offset, ignoreUpperCase, writer) => {
   // Retrieve auth
   let accessToken = await retrieveAuth();
   writer.Debug(`Access token: ${JSON.stringify(accessToken)}`);
@@ -259,7 +260,7 @@ const getTopData = async (term, offset, artistsToIgnore, writer) => {
 
   let resp = undefined;
   Logger.log(`Getting top artists (${term})...`)
-  resp = await getData(accessToken, TOP_ARTISTS_URL + params, writer, true);
+  resp = await getSpotifyData(accessToken, TOP_ARTISTS_URL + params, writer, true);
   let artistsArr = new Array;
   // Fold array of responses into single structure
   if (resp[0]) 

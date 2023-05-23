@@ -70,7 +70,7 @@ const artistsList = () =>
   return filtered;
 }
 
-const getData = async (accessToken, url, writer, getAllPages = false) =>
+const getSpotifyData = async (accessToken, url, writer, getAllPages = false) =>
 {
   let headers = 
   {
@@ -83,43 +83,55 @@ const getData = async (accessToken, url, writer, getAllPages = false) =>
     "muteHttpExceptions": true,
     "headers": headers
   };
-
-  let response = UrlFetchApp.fetch(url, options);
-  let firstPage = response.getContentText();
-  writer.Info(`Response Code ${response.getResponseCode()} - ${RESPONSECODES[response.getResponseCode()]}`);
-  writer.Debug(Common.prettifyJson(firstPage));
-  // Bail out if we only wanted the first page
-  if (!getAllPages)
-  {
-    return [firstPage];
-  }
-
-  // Put first page in array for return with following pages
-  let data = [firstPage];
-
-  let pageObj = JSON.parse(firstPage);
-  // Strip any outer shell, if there is one
-  if (Object.values(pageObj).length == 1)
-  {
-    pageObj = Object.values(pageObj)[0];
-  }
-
-  // Retrieve URL for next page
-  let nextPageUrl = pageObj["next"];
-  while (nextPageUrl)
-  {
-    // Retrieve the next page
-    nextPage = UrlFetchApp.fetch(nextPageUrl, options).getContentText();
-    data.push(nextPage);
-
-    // Retrieve URL for next page
-    pageObj = JSON.parse(nextPage);
-    // Strip any outer shell, if there is one
-    if (Object.values(pageObj).length == 1)
+  try {
+    let response = UrlFetchApp.fetch(url, options);
+    let firstPage = await response.getContentText();
+    let responseCode = await response.getResponseCode();
+    writer.Info(`Response Code ${response.getResponseCode()} - ${RESPONSECODES[response.getResponseCode()]}`);
+    if (responseCode == 200 || responseCode == 201) 
     {
-      pageObj = Object.values(pageObj)[0];
+
+      writer.Debug(Common.prettifyJson(firstPage));
+      // Bail out if we only wanted the first page
+      if (!getAllPages)
+      {
+        return [firstPage];
+      }
+
+      // Put first page in array for return with following pages
+      let data = [firstPage];
+
+      let pageObj = JSON.parse(firstPage);
+      // Strip any outer shell, if there is one
+      if (Object.values(pageObj).length == 1)
+      {
+        pageObj = Object.values(pageObj)[0];
+      }
+
+      // Retrieve URL for next page
+      let nextPageUrl = pageObj["next"];
+      while (nextPageUrl)
+      {
+        // Retrieve the next page
+        nextPage = UrlFetchApp.fetch(nextPageUrl, options).getContentText();
+        data.push(nextPage);
+
+        // Retrieve URL for next page
+        pageObj = JSON.parse(nextPage);
+        // Strip any outer shell, if there is one
+        if (Object.values(pageObj).length == 1)
+        {
+          pageObj = Object.values(pageObj)[0];
+        }
+        nextPageUrl = pageObj["next"];
+      }
+    } else {
+      writer.Error(`Failed to get data from ${url} - `);
+      return false;
     }
-    nextPageUrl = pageObj["next"];
+  } catch (err) {
+    writer.Error(`Failed to get data from ${url} - ${err}`);
+    return {};
   }
 
   return data;
