@@ -100,7 +100,7 @@ const getSavedTracksArtists = async (ignoreUpperCase, writer) =>
     let artistsArr = [];
     data.forEach(track =>
     {
-      track.track.artists.forEach(artist =>
+      track.track?.artists.forEach(artist =>
       {
         // if (ignoreUpperCase.includes(artist.name.toUpperCase())) writer.Debug(`getSaveTracksArtists Ignoring: ${artist.name}`);
         if (!ignoreUpperCase.includes(artist.name.toUpperCase())) artistsArr.push(artist.name);  

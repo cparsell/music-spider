@@ -16,8 +16,9 @@ const refreshEvents = async () =>
   
   let i = 0;
   
-  try {
-    while (i<artistsArr.length)
+  try 
+  {
+    for (let i=0;i<artistsArr.length;i++)
     {
       await ticketSearch(artistsArr[i][0], writer).then(data => 
       {
@@ -39,9 +40,8 @@ const refreshEvents = async () =>
           }
         }
         Utilities.sleep(200);
-        i++;
-        });
-  }
+      });
+    }
   } catch (e) 
   { 
       Logger.log(e);
