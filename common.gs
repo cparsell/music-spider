@@ -130,7 +130,6 @@ const Common = {
       outArray.push(array[0]);
       for(let n in array)
       {
-        // Logger.log(outArray[outArray.length-1]+'  =  '+array[n]+' ?');
         if(outArray[outArray.length-1]!=array[n])
         {
           outArray.push(array[n]);

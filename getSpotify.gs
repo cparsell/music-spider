@@ -102,7 +102,7 @@ const getSavedTracksArtists = async (ignoreUpperCase, writer) =>
     {
       track.track.artists.forEach(artist =>
       {
-        if (ignoreUpperCase.includes(artist.name.toUpperCase())) writer.Debug(`getSaveTracksArtists Ignoring: ${artist.name}`);
+        // if (ignoreUpperCase.includes(artist.name.toUpperCase())) writer.Debug(`getSaveTracksArtists Ignoring: ${artist.name}`);
         if (!ignoreUpperCase.includes(artist.name.toUpperCase())) artistsArr.push(artist.name);  
       });
     });
@@ -149,7 +149,7 @@ const getFollowedArtists = async (ignoreUpperCase, writer) =>
   let artistsArr = new Array;
   data.forEach(artist =>
   {
-    if (ignoreUpperCase.includes(artist.name.toUpperCase())) writer.Debug(`getFollowedArtists Ignoring: ${artist.name}`);
+    // if (ignoreUpperCase.includes(artist.name.toUpperCase())) writer.Debug(`getFollowedArtists Ignoring: ${artist.name}`);
     if (!ignoreUpperCase.includes(artist.name.toUpperCase())) artistsArr.push(artist.name);  
     // artistsArr.push(JSON.stringify(artist.name));
   });
@@ -192,7 +192,7 @@ const getPlaylistArtists = async (ignoreUpperCase, writer) =>
       let artists = item.track.album.artists;
       artists.forEach(artist =>
       { 
-        if (ignoreUpperCase.includes(artist.name.toUpperCase())) writer.Debug(`getPlayListArtists Ignoring: ${artist.name}`);
+        // if (ignoreUpperCase.includes(artist.name.toUpperCase())) writer.Debug(`getPlayListArtists Ignoring: ${artist.name}`);
         if (!ignoreUpperCase.includes(artist.name.toUpperCase())) artistsArr.push(artist.name);  
         // artistsArr.push(artist.name);
       });
@@ -272,7 +272,7 @@ const getTopData = async (term, offset, ignoreUpperCase, writer) => {
     
     data.forEach(artist =>
     { 
-      if (ignoreUpperCase.includes(artist.name.toUpperCase())) writer.Debug(`getTopData Ignoring: ${artist.name}`);
+      // if (ignoreUpperCase.includes(artist.name.toUpperCase())) writer.Debug(`getTopData Ignoring: ${artist.name}`);
       if (!ignoreUpperCase.includes(artist.name.toUpperCase())) artistsArr.push(artist.name);
     });
   } else 
