@@ -160,6 +160,7 @@ const ticketSearch = async (keyword, writer) =>
             // Logger.log(`venue: ${venueName}`);
             if (attractions.includes(keyword) || item.name.toUpperCase() == keyword.toUpperCase()) 
             {
+              let eventTime = Utilities.formatDate(eDate, "PST", "yyyy/MM/dd HH:mm");
               eventsArr[date] = 
               { 
                 "eName": item.name,
