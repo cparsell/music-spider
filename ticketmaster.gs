@@ -155,7 +155,7 @@ const ticketSearch = async (keyword, writer) =>
             // some list timeTBA = true, or noSpecificTime = true. if so, use localDate value
             if (item.dates.start.timeTBA || item.dates.start.noSpecificTime) 
             {
-              date = item.dates.start.localDate;
+              date = new Date(item.dates.start.localDate);
             }
             // Logger.log(`venue: ${venueName}`);
             if (attractions.includes(keyword) || item.name.toUpperCase() == keyword.toUpperCase()) 
