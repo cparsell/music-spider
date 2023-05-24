@@ -233,55 +233,60 @@ const deleteEmptyRows = (sheet, writer) =>
   // if(typeof sheet != `object`) return 1;
   try {
     if (sheet == undefined) sheet = SpreadsheetApp.getActiveSheet();
-    // Gets active selection and dimensions.
-    let activeRange = sheet.getRange(2,1,sheet.getLastRow()-1,sheet.getLastColumn());
-    let rowCount = activeRange.getHeight();
-    let firstActiveRow = activeRange.getRow();
-    let columnCount = sheet.getMaxColumns();
-
-    // Tests that the selection is a valid range.
-    if (rowCount < 1) {
-      Logger.log('Select a valid range.');
-      return;
-    }
-    // Tests active range isn't too large to process. Enforces limit set to 10k.
-    if (rowCount > 10000) {
-      Logger.log("Selected range too large. Select up to 10,000 rows at one time.");
-      return;
-    }
-
-    // Utilizes an array of values for efficient processing to determine blank rows.
-    let activeRangeValues = activeRange.getValues();
-
-    // Checks if array is all empty values.
-    let valueFilter = value => value !== '';
-    let isRowEmpty = (row) => {
-      return row.filter(valueFilter).length === 0;
-    }
-
-    // Maps the range values as an object with value (to test) and corresponding row index (with offset from selection).
-    let rowsToDelete = activeRangeValues.map((row, index) => ({ row, offset: index + activeRange.getRowIndex() }))
-      .filter(item => isRowEmpty(item.row)) // Test to filter out non-empty rows.
-      .map(item => item.offset); //Remap to include just the row indexes that will be removed.
-
-    // Combines a sorted, ascending list of indexes into a set of ranges capturing consecutive values as start/end ranges.
-    // Combines sequential empty rows for faster processing.
-    let rangesToDelete = rowsToDelete.reduce((ranges, index) => {
-      let currentRange = ranges[ranges.length - 1];
-      if (currentRange && index === currentRange[1] + 1) {
-        currentRange[1] = index;
-        return ranges;
+    if (sheet.getLastRow() > 1) {
+      // Gets active selection and dimensions.
+      let activeRange = sheet.getRange(2,1,sheet.getLastRow()-1,sheet.getLastColumn());
+      console.log(activeRange)
+      let rowCount = activeRange.getHeight();
+      let firstActiveRow = activeRange.getRow();
+      let columnCount = sheet.getMaxColumns();
+      
+      // Tests that the selection is a valid range.
+      if (rowCount < 1) {
+        Logger.log('Select a valid range.');
+        return;
       }
-      ranges.push([index, index]);
-      return ranges;
-    }, []);
+      // Tests active range isn't too large to process. Enforces limit set to 10k.
+      if (rowCount > 10000) {
+        Logger.log("Selected range too large. Select up to 10,000 rows at one time.");
+        return;
+      }
 
-    // Sends a list of row indexes to be deleted to the console.
-    writer.Debug(`ranges to delete`, rangesToDelete);
+      // Utilizes an array of values for efficient processing to determine blank rows.
+      let activeRangeValues = activeRange.getValues();
 
-    // Deletes the rows using REVERSE order to ensure proper indexing is used.
-    rangesToDelete.reverse().forEach(([start, end]) => sheet.deleteRows(start, end - start + 1));
-    SpreadsheetApp.flush();
+      // Checks if array is all empty values.
+      let valueFilter = value => value !== '';
+      let isRowEmpty = (row) => {
+        return row.filter(valueFilter).length === 0;
+      }
+
+      // Maps the range values as an object with value (to test) and corresponding row index (with offset from selection).
+      let rowsToDelete = activeRangeValues.map((row, index) => ({ row, offset: index + activeRange.getRowIndex() }))
+        .filter(item => isRowEmpty(item.row)) // Test to filter out non-empty rows.
+        .map(item => item.offset); //Remap to include just the row indexes that will be removed.
+
+      // Combines a sorted, ascending list of indexes into a set of ranges capturing consecutive values as start/end ranges.
+      // Combines sequential empty rows for faster processing.
+      let rangesToDelete = rowsToDelete.reduce((ranges, index) => {
+        let currentRange = ranges[ranges.length - 1];
+        if (currentRange && index === currentRange[1] + 1) {
+          currentRange[1] = index;
+          return ranges;
+        }
+        ranges.push([index, index]);
+        return ranges;
+      }, []);
+
+      // Sends a list of row indexes to be deleted to the console.
+      writer.Debug(`ranges to delete`, rangesToDelete);
+
+      // Deletes the rows using REVERSE order to ensure proper indexing is used.
+      rangesToDelete.reverse().forEach(([start, end]) => sheet.deleteRows(start, end - start + 1));
+      SpreadsheetApp.flush();
+    } else {
+      writer.Debug(`No text on the sheet - no empty rows to remove`)
+    }
   } catch (err) {
     console.error(`${err} : deleteEmptyRows failed - Sheet: ${sheet} ${err}`);
   }

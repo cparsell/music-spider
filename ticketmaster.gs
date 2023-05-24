@@ -150,7 +150,7 @@ const ticketSearch = async (keyword, writer) =>
             let venueAddress = venue.address.line1;
             let date;
             if (item.dates.start.dateTime) {
-              date = item.dates.start.dateTime;
+              date = new Date(item.dates.start.dateTime);
             }
             // some list timeTBA = true, or noSpecificTime = true. if so, use localDate value
             if (item.dates.start.timeTBA || item.dates.start.noSpecificTime) 
