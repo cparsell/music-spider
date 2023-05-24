@@ -73,7 +73,9 @@ const buildEventsArr = () =>
       let rowData = GetRowData(EVENT_SHEET, i+1);
       let { date } = rowData;
       // let formattedDate = Utilities.formatDate(newDate, `PST`,`MM-dd-yyyy hh:mm a`);
-      events[date] = rowData;
+      let eventDate = Utilities.formatDate(date, "PST", "yyyy/MM/dd HH:mm");
+      console.log(eventDate)
+      events[eventDate] = rowData;
     }
       // Sort by key, which is the date
     ordered = Object.keys(events).sort().reduce(
@@ -87,7 +89,7 @@ const buildEventsArr = () =>
   } else {
     console.warn("No events found- unable to build array of Events");
   }
-
+  
   return ordered;
 }
 
@@ -160,7 +162,7 @@ const ticketSearch = async (keyword, writer) =>
             // Logger.log(`venue: ${venueName}`);
             if (attractions.includes(keyword) || item.name.toUpperCase() == keyword.toUpperCase()) 
             {
-              let eventDate = Utilities.formatDate(eDate, "PST", "yyyy/MM/dd HH:mm");
+              let eventDate = Utilities.formatDate(date, "PST", "yyyy/MM/dd HH:mm");
               eventsArr[eventDate] = 
               { 
                 "eName": item.name,
