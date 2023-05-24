@@ -74,7 +74,6 @@ const buildEventsArr = () =>
       let { date } = rowData;
       // let formattedDate = Utilities.formatDate(newDate, `PST`,`MM-dd-yyyy hh:mm a`);
       let eventDate = Utilities.formatDate(date, "PST", "yyyy/MM/dd HH:mm");
-      console.log(eventDate)
       events[eventDate] = rowData;
     }
       // Sort by key, which is the date
