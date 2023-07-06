@@ -90,7 +90,6 @@ let getSpotifyData = async (accessToken, url, writer, getAllPages = false) =>
     writer.Info(`Response Code ${responseCode} - ${RESPONSECODES[responseCode]}`);
     if (responseCode == 200 || responseCode == 201) 
     {
-
       writer.Debug(Common.prettifyJson(firstPage));
       // Bail out if we only wanted the first page
       if (!getAllPages)
