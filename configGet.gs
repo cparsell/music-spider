@@ -1,0 +1,17 @@
+const Config = Object.freeze({
+  SPREADSHEET_ID: USER_PROPS.getProperty(`spreadsheetId`),
+  CLIENT_ID_SPOTIFY: USER_PROPS.getProperty(`clientIdSpotify`),
+  CLIENT_SECRET_SPOTIFY: USER_PROPS.getProperty(`clientSecretSpotify`),
+  KEY_TM: USER_PROPS.getProperty(`keyTM`),
+  LAT_LONG: USER_PROPS.getProperty(`latlong`),
+  RADIUS: Number(USER_PROPS.getProperty(`radius`)),
+  UNIT: USER_PROPS.getProperty(`unit`),
+  GET_TOP_ARTISTS: (USER_PROPS.getProperty(`getTopArtists`) === 'true'),
+  GET_FOLLOWING: (USER_PROPS.getProperty(`getFollowing`) === 'true'),
+  GET_ARTISTS_FROM_PLAYLIST: (USER_PROPS.getProperty(`getArtistsFromPlaylist`) === 'true'),
+  PLAYLIST_ID: USER_PROPS.getProperty(`playlistId`),
+  EMAIL: USER_PROPS.getProperty(`email`),
+  CREATE_CALENDAR_EVENTS: (USER_PROPS.getProperty(`createCalendarEvents`) === 'true'),
+  CALENDAR_ID: USER_PROPS.getProperty(`calendarId`),
+  DEBUG: (USER_PROPS.getProperty(`debug`) === 'true'),
+});
