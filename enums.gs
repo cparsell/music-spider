@@ -19,16 +19,15 @@ const SAVED_SHOWS_URL = BASE_URL + "/me/shows";
 const SAVED_EPISODERS_URL = BASE_URL + "/me/episodes";
 const TOP_ARTISTS_URL = BASE_URL + "/me/top/artists";
 
-const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "June",
-  "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
-const DAY_NAMES = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
+const MONTH_NAMES = Object.freeze(["Jan", "Feb", "Mar", "Apr", "May", "June",
+  "July", "Aug", "Sept", "Oct", "Nov", "Dec"]);
+const DAY_NAMES = Object.freeze(["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"]);
 
 // Playlist URLs
 const PLAYLISTS_URL = BASE_URL + "/me/playlists";
 
 const TICKETMASTER_URL = 'https://app.ticketmaster.com/discovery/v2/events.json'
-const HEADERNAMES = 
-{
+const HEADERNAMES = Object.freeze({
   eName : `Event Name`,	
   venue : `Venue`,	
   city : `City`,	
@@ -37,8 +36,8 @@ const HEADERNAMES =
   image : `Image`,	
 	acts: "Acts",
   address: "Address",
-}
-const RESPONSECODES = {
+});
+const RESPONSECODES = Object.freeze({
 	200 : `OK`,
 	201 : `Created`,
 	202 : `Accepted`,
@@ -105,5 +104,5 @@ const RESPONSECODES = {
 	511 : `Network Authentication Required`,
 	598 : `Network read timeout error`,
 	599 : `Network connect timeout error`,
-}
+});
 
