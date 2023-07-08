@@ -1,3 +1,9 @@
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * refreshArtists
+ * Trigger - reach out to Spotify API to get listening history.
+ * Writes the list artists to sheet
+ */
 const refreshArtists = async () => 
 {
   // Logs to 'Logger' sheet
@@ -69,6 +75,77 @@ const refreshArtists = async () =>
   }
   // Set alignment of column to 'left' - artist names that are just numbers get aligned right
   ARTIST_SHEET.getRange(1,1,ARTIST_SHEET.getLastRow(),1).setHorizontalAlignment('left');
+}
+
+/**
+   * ----------------------------------------------------------------------------------------------------------------
+   * Fetch data from Spotify API
+   * @param {array} array
+   * @returns {array} array
+   */
+let getSpotifyData = async (accessToken, url, getAllPages = false) =>
+{
+  let headers = 
+  {
+    "Authorization": "Bearer " + accessToken,
+    "Content-Type": "application/json"
+  };
+
+  let options = 
+  {
+    "muteHttpExceptions": true,
+    "headers": headers
+  };
+  try {
+    let response = await UrlFetchApp.fetch(url, options);
+    let firstPage = await response.getContentText();
+    let responseCode = await response.getResponseCode();
+    Log.Info(`Response Code ${responseCode} - ${RESPONSECODES[responseCode]}`);
+    if (responseCode == 200 || responseCode == 201) 
+    {
+      Log.Debug(Common.prettifyJson(firstPage));
+      // Bail out if we only wanted the first page
+      if (!getAllPages)
+      {
+        return [firstPage];
+      }
+
+      // Put first page in array for return with following pages
+      let data = [firstPage];
+
+      let pageObj = JSON.parse(firstPage);
+      // Strip any outer shell, if there is one
+      if (Object.values(pageObj).length == 1)
+      {
+        pageObj = Object.values(pageObj)[0];
+      }
+
+      // Retrieve URL for next page
+      let nextPageUrl = pageObj["next"];
+      while (nextPageUrl)
+      {
+        // Retrieve the next page
+        nextPage = UrlFetchApp.fetch(nextPageUrl, options).getContentText();
+        data.push(nextPage);
+
+        // Retrieve URL for next page
+        pageObj = JSON.parse(nextPage);
+        // Strip any outer shell, if there is one
+        if (Object.values(pageObj).length == 1)
+        {
+          pageObj = Object.values(pageObj)[0];
+        }
+        nextPageUrl = pageObj["next"];
+      }
+      return data;
+    } else {
+      Log.Error(`Failed to get data from ${url} - `);
+      return false;
+    }
+  } catch (err) {
+    Log.Error(`Failed to get data from ${url} - ${err}`);
+    return {};
+  }
 }
 
 /**

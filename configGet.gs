@@ -1,4 +1,11 @@
 // This grabs all of the API keys and preferences from the User Properties service
+/**
+ * Config object
+ * @type {{SPREADSHEET_ID: string, CLIENT_ID_SPOTIFY: string, CLIENT_SECRET_SPOTIFY: string, KEY_TM: string, 
+ * LAT_LONG: string, RADIUS: string, UNIT: string, GET_TOP_ARTISTS: string, GET_FOLLOWING: string, 
+ * GET_ARTISTS_FROM_PLAYLIST: string, PLAYLIST_ID: string, SEARCH_MANUALLY_ADDED: string, 
+ * SEARCH_MANUALLY_ADDED: string, EMAIL: string, CREATE_CALENDAR_EVENTS: string, CALENDAR_ID: string, DEBUG: string }}
+ */
 const Config = Object.freeze({
   SPREADSHEET_ID: USER_PROPS.getProperty(`spreadsheetId`),
   CLIENT_ID_SPOTIFY: USER_PROPS.getProperty(`clientIdSpotify`),
@@ -7,7 +14,8 @@ const Config = Object.freeze({
   LAT_LONG: USER_PROPS.getProperty(`latlong`),
   RADIUS: Number(USER_PROPS.getProperty(`radius`)),
   UNIT: USER_PROPS.getProperty(`unit`),
-  GET_TOP_ARTISTS: (USER_PROPS.getProperty(`getTopArtists`).toLowerCase()  === 'true'),
+  // these booleans get converted into strings by the Properties Service
+  GET_TOP_ARTISTS: (USER_PROPS.getProperty(`getTopArtists`).toLowerCase()  === 'true'), 
   GET_FOLLOWING: (USER_PROPS.getProperty(`getFollowing`).toLowerCase()  === 'true'),
   GET_ARTISTS_FROM_PLAYLIST: (USER_PROPS.getProperty(`getArtistsFromPlaylist`).toLowerCase()  === 'true'),
   PLAYLIST_ID: USER_PROPS.getProperty(`playlistId`),

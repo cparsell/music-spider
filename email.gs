@@ -1,12 +1,14 @@
 /**
  * ----------------------------------------------------------------------------------------------------------------
  * sendEmail
- * Send email newsletter listing any upcoming events
+ * Trigger - Send email newsletter listing any upcoming events. This function prepares the list of events and passes
+ * it off to an instance of the CreateMessage class, which generates the raw email content. Then it creates an
+ * instance of the Emailer class which sends the message. 
  */
 const sendEmail = () => 
 {
-  let eventsArr = buildEventsArr();
-  let msgSubjRaw = [];
+  let eventsArr = buildEventsArr(); // get the events from the sheet
+  let msgSubjRaw = []; // array of artists to be listed in subject line
   let msgSubj = `${SERVICE_NAME} - `;
   if (Object.keys(eventsArr).length === 0) 
   {
@@ -39,9 +41,10 @@ const sendEmail = () =>
 
 /**
  * -----------------------------------------------------------------------------------------------------------------
- * Send an Email
- * @required {string} Student Email
- * @required {string} Status
+ * class to send an Email
+ * @required {string} email
+ * @required {string} message
+ * @required {string} subject
  */
 class Emailer
 {
@@ -52,15 +55,27 @@ class Emailer
     subject: subject = `${SERVICE_NAME} : Event Update`,
   }) 
   {
+    /**
+     * @property {string} email recipient
+     */
     this.email = email;
+    /**
+     * @property {string} message contents of email
+     */
     this.message = message;
-    this.subject = subject.substring(0,249);
+    /**
+     * @property {string} subject subject of message
+     */
+    this.subject = subject.substring(0,249); // limits subject to 249 characters
     this.SendEmail();
   }
 
+  /**
+   * @property {Function} SendEmail send the message
+   * @returns {void}
+   */
   SendEmail () 
   {
-    // const staff = BuildStaff();
     try 
     {
       console.info(`Sending  email to ${this.email}.`);
@@ -68,8 +83,6 @@ class Emailer
       {
         htmlBody: this.message.defaultMessage,
         from: SUPPORT_ALIAS,
-        // cc: this.designspecialistemail,
-        // bcc: staff.Chris.email,
         name: SERVICE_NAME,
         noReply: true,
       });
@@ -83,19 +96,8 @@ class Emailer
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
- * Class for Creating Response Messages
+ * Class for Creating Email Message
  * Properties accessed via `this.receivedMessage` or `this.failedMessage`
- * @param {string} name
- * @param {string} projectname
- * @param {number} jobnumber
- * @param {string} mat1
- * @param {number} material1Quantity
- * @param {string} material1Name
- * @param {string} mat2
- * @param {number} material2Quantity
- * @param {string} material2Name
- * @param {string} designspecialist
- * @param {string} designspecialistemaillink
  */
 class CreateMessage
 {
@@ -103,9 +105,16 @@ class CreateMessage
     events : events
   }) 
   {
+    /**
+     * @property {object} events {{name: name, venue: venue...}{name: name,venue: venue...}}
+     */
     this.events = events;
   }
 
+  /**
+   * @property {Function} defaultMessage format the message
+   * @returns {string} message HTML contents of message
+   */
   get defaultMessage() 
   {
     let message = `<style type="text/css">

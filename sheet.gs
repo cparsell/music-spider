@@ -1,24 +1,63 @@
-  /**
-   * ----------------------------------------------------------------------------------------------------------------
-   * artistsList
-   * Remove duplictes from an array
-   * @param {array} array
-   * @returns {array} array
-   */
-  const artistsList = () => 
-  {
-    let artistRows = ARTIST_SHEET.getLastRow()-1;
-    if (artistRows==0) artistRows=1;
-    let artistsArr = ARTIST_SHEET.getRange(2,1,artistRows,1).getValues();
-    // if searchManuallyAdded = TRUE, include manually added artists in the search list
-    if (Config.SEARCH_MANUALLY_ADDED) {
-      let customArtistRows = CUSTOM_ARTIST_SHEET.getLastRow()-1;
-      let manualArtistsArr = CUSTOM_ARTIST_SHEET.getRange(2,1,customArtistRows,1).getValues();
-      artistsArr.push(...manualArtistsArr);
-    }
-    let filtered = artistsArr.filter(n => n);
-    return filtered;
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * Build array of artists
+ * Gets artists sheet  
+ * @returns {array} filtered array of artists
+ */
+const artistsList = () => 
+{
+  let artistRows = ARTIST_SHEET.getLastRow()-1;
+  if (artistRows==0) artistRows=1;
+  let artistsArr = ARTIST_SHEET.getRange(2,1,artistRows,1).getValues();
+  // if searchManuallyAdded = TRUE, include manually added artists in the search list
+  if (Config.SEARCH_MANUALLY_ADDED) {
+    let customArtistRows = CUSTOM_ARTIST_SHEET.getLastRow()-1;
+    let manualArtistsArr = CUSTOM_ARTIST_SHEET.getRange(2,1,customArtistRows,1).getValues();
+    artistsArr.push(...manualArtistsArr);
   }
+  
+  // let filtered = artistsArr.filter(n => n); // remove blank strings
+  let filtered = Common.arrayRemoveDupes(artistsArr); // remove duplicates and blank strings
+  return filtered;
+}
+
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * Build Events Array
+ * Remove duplictes from an array
+ * @param {array} array
+ * @returns {array} array
+ */
+const buildEventsArr = () => 
+{
+  let lastRow = EVENT_SHEET.getLastRow();
+  let events = {};
+  let ordered = {};
+  if (lastRow>1) 
+  {
+    for (i=1; i<lastRow;i++)
+    {
+      let rowData = GetRowData(EVENT_SHEET, i+1);
+      let { date } = rowData;
+      // let formattedDate = Utilities.formatDate(newDate, `PST`,`MM-dd-yyyy hh:mm a`);
+      let eventDate = Utilities.formatDate(date, "PST", "yyyy/MM/dd HH:mm");
+      events[eventDate] = rowData;
+    }
+      // Sort by key, which is the date
+    ordered = Object.keys(events).sort().reduce(
+      (obj, key) => 
+      { 
+        obj[key] = events[key]; 
+        return obj;
+      }, 
+      {}
+    );
+  } else {
+    console.warn("No events found- unable to build array of Events");
+  }
+  
+  return ordered;
+}
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
@@ -258,7 +297,6 @@ const deleteEmptyRows = (sheet) =>
     if (sheet.getLastRow() > 1) {
       // Gets active selection and dimensions.
       let activeRange = sheet.getRange(2,1,sheet.getLastRow()-1,sheet.getLastColumn());
-      console.log(activeRange)
       let rowCount = activeRange.getHeight();
       let firstActiveRow = activeRange.getRow();
       let columnCount = sheet.getMaxColumns();

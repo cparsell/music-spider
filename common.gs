@@ -1,13 +1,6 @@
 /**
  * ----------------------------------------------------------------------------------------------------------------
  * Common GAS functions - some functions written by https://github.com/nitemice
- * Common.parsePathParameters
- * Common.trim
- * Common.stripXml
- * Common.prettifyJson
- * Common.collateArrays
- * Common.arrayRemoveDupes
- * Common.isEven
  */
 const Common = {
   /**
@@ -27,10 +20,9 @@ const Common = {
   },
 
   /**
-   * ----------------------------------------------------------------------------------------------------------------
-   * Strip spaces, no-break spaces, zero-width spaces,
-   * & zero-width no-break spaces
+   * @property {Function} Strip spaces, no-break spaces, zero-width spaces, & zero-width no-break spaces
    * @param {string} string
+   * @returns {string}
    */
   trim: (string) =>
   {
@@ -40,7 +32,7 @@ const Common = {
   
   /**
    * ----------------------------------------------------------------------------------------------------------------
-   * Retrieve text from inside XML tags
+   * @property {Function} Retrieve text from inside XML tags
    * @param {string} input
    */
   stripXml: (input) =>
@@ -78,8 +70,9 @@ const Common = {
 
   /**
    * ----------------------------------------------------------------------------------------------------------------
-   * Convert a JSON string to a pretty-print JSON string
+   * @property {Function} Convert a JSON string to a pretty-print JSON string
    * @param {string} input
+   * @returns {json}
    */
   prettifyJson: function(input)
   {
@@ -88,9 +81,10 @@ const Common = {
 
   /**
    * ----------------------------------------------------------------------------------------------------------------
-   * Collate objects at given path, from array of JSON strings
+   * @property {Function} Collate objects at given path, from array of JSON strings
    * @param {array} path
    * @param {object} objects
+   * @returns {array}
    */
   collateArrays: (path, objects) =>
   {
@@ -114,8 +108,7 @@ const Common = {
 
   /**
    * ----------------------------------------------------------------------------------------------------------------
-   * arrayRemoveDupes
-   * Remove duplictes from an array
+   * @property {Function} Remove duplicates from an array
    * @param {array} array
    * @returns {array} array
    */
@@ -123,38 +116,44 @@ const Common = {
   {
     if (array.length < 1) 
     {
-      Logger.log("Array length 0 - Common.arrayRemoveDupes");
+      throw new Error("Array length 0");
       return [];
     }
     try 
     {
-      let outArray = [];
       array.sort();
-      outArray.push(array[0]);
-      for(let n in array)
-      {
-        if(outArray[outArray.length-1]!=array[n])
-        {
-          outArray.push(array[n]);
-        }
-      }
+      let unique = [...new Set(array)];
+      let filtered = unique.filter(n => n);
 
-      return outArray;
+      // let outArray = [];
+      
+      // outArray.push(array[0]);
+      // for(let n in array)
+      // {
+      //   if(outArray[outArray.length-1]!=array[n])
+      //   {
+      //     outArray.push(array[n]);
+      //   }
+      // }
+
+      return filtered;
     } catch (err) {
+      Log.Error(`Common.arrayRemoveDupes() - ${err}`)
       return [];
     }
   },
 
   /**
    * ----------------------------------------------------------------------------------------------------------------
-   * Return TRUE if number is even, FALSE if it is odd
+   * @property {Function} Return TRUE if number is even, FALSE if it is odd
    * @param {number} n
+   * @returns {bool}
    */
   isEven: (n) => n % 2 == 0,
 
   /**
    * ----------------------------------------------------------------------------------------------------------------
-   * Async await decorator to return its response time 
+   * @property {Function} Async await decorator to return its response time 
    * @param {function} fn
    */
   dataResponseTime: (fn) => {
@@ -166,20 +165,3 @@ const Common = {
     }
   },
 };
-
-
-
-/**
- * ----------------------------------------------------------------------------------------------------------------
- * Log a value to Execution Log if Config.debug = true
- * @param {string} valueName "variable"
- * @param {variable} value the variable itself
- */
-// const debugLog = (valueName, value) => 
-// {
-//   if (Config.DEBUG) 
-//   {
-//     console.info(`${valueName}: ${value}`);
-//   }
-// }
-

@@ -1,7 +1,7 @@
 /**
  * ----------------------------------------------------------------------------------------------------------------
  * refreshEvents
- * Main function for Ticketmaster search. Searches Ticketmaster for artists found in Spotify or added manually. 
+ * Trigger - Main function for Ticketmaster search. Searches Ticketmaster for artists found in Spotify or added manually. 
  * Any events returned that contain the artist's name are added to the sheet
  */
 const refreshEvents = async () => 
@@ -71,36 +71,7 @@ const writeEventsToSheet = async (eventsArr) =>
   }
 }
 
-const buildEventsArr = () => 
-{
-  let lastRow = EVENT_SHEET.getLastRow();
-  let events = {};
-  let ordered = {};
-  if (lastRow>1) 
-  {
-    for (i=1; i<lastRow;i++)
-    {
-      let rowData = GetRowData(EVENT_SHEET, i+1);
-      let { date } = rowData;
-      // let formattedDate = Utilities.formatDate(newDate, `PST`,`MM-dd-yyyy hh:mm a`);
-      let eventDate = Utilities.formatDate(date, "PST", "yyyy/MM/dd HH:mm");
-      events[eventDate] = rowData;
-    }
-      // Sort by key, which is the date
-    ordered = Object.keys(events).sort().reduce(
-      (obj, key) => 
-      { 
-        obj[key] = events[key]; 
-        return obj;
-      }, 
-      {}
-    );
-  } else {
-    console.warn("No events found- unable to build array of Events");
-  }
-  
-  return ordered;
-}
+
 
 /**
  * ----------------------------------------------------------------------------------------------------------------

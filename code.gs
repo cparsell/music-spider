@@ -28,9 +28,9 @@
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
- * Trigger 1 - Create menu when spreadsheet is opened
- * Reserved word: onFormSubmit() cannot be used here because it's reserved for simple triggers.
- * @param {Event} e
+ * BarMenu
+ * Trigger - Create menu when spreadsheet is opened
+ * @returns {void}
  */
 const BarMenu = () => 
 {
@@ -47,9 +47,11 @@ const BarMenu = () =>
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
- * 
- * 
- * @param {Event} e
+ * Add array to sheet
+ * @param {object} sheet
+ * @param {integer} column
+ * @param {array} values
+ * @returns {void}
  */
 const addArrayToSheet = (sheet, column, values) => 
 {
@@ -61,90 +63,6 @@ const addArrayToSheet = (sheet, column, values) =>
   sheet.getRange(range).setValues(values.map(fn));
 }
 
-/**
-   * ----------------------------------------------------------------------------------------------------------------
-   * getSpotifyData
-   * Fetch data from Spotify API
-   * @param {array} array
-   * @returns {array} array
-   */
-let getSpotifyData = async (accessToken, url, getAllPages = false) =>
-{
-  let headers = 
-  {
-    "Authorization": "Bearer " + accessToken,
-    "Content-Type": "application/json"
-  };
 
-  let options = 
-  {
-    "muteHttpExceptions": true,
-    "headers": headers
-  };
-  try {
-    let response = await UrlFetchApp.fetch(url, options);
-    let firstPage = await response.getContentText();
-    let responseCode = await response.getResponseCode();
-    Log.Info(`Response Code ${responseCode} - ${RESPONSECODES[responseCode]}`);
-    if (responseCode == 200 || responseCode == 201) 
-    {
-      Log.Debug(Common.prettifyJson(firstPage));
-      // Bail out if we only wanted the first page
-      if (!getAllPages)
-      {
-        return [firstPage];
-      }
 
-      // Put first page in array for return with following pages
-      let data = [firstPage];
-
-      let pageObj = JSON.parse(firstPage);
-      // Strip any outer shell, if there is one
-      if (Object.values(pageObj).length == 1)
-      {
-        pageObj = Object.values(pageObj)[0];
-      }
-
-      // Retrieve URL for next page
-      let nextPageUrl = pageObj["next"];
-      while (nextPageUrl)
-      {
-        // Retrieve the next page
-        nextPage = UrlFetchApp.fetch(nextPageUrl, options).getContentText();
-        data.push(nextPage);
-
-        // Retrieve URL for next page
-        pageObj = JSON.parse(nextPage);
-        // Strip any outer shell, if there is one
-        if (Object.values(pageObj).length == 1)
-        {
-          pageObj = Object.values(pageObj)[0];
-        }
-        nextPageUrl = pageObj["next"];
-      }
-      return data;
-    } else {
-      Log.Error(`Failed to get data from ${url} - `);
-      return false;
-    }
-  } catch (err) {
-    Log.Error(`Failed to get data from ${url} - ${err}`);
-    return {};
-  }
-
-  
-}
-
-// Just a wrapper function to simplify some code
-// const xmlElement = (type, text) =>
-// {
-//     return XmlService.createElement(type).setText(text);
-// }
-
-const main = () =>
-{
-  // await refreshArtists();
-  // await refreshEvents();
-  // await sendEmail();
-}
 
