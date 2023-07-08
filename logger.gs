@@ -17,7 +17,7 @@ class Log {
       if (obj) message = `${message}: ${JSON.stringify(obj)}`;
       let date = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
       let text = [date, "ERROR!", message, ];
-      OTHERSHEETS.Logger.appendRow(text);
+      LOGGER_SHEET.appendRow(text);
       console.error(`${text[0]}, ${text[1]} : ${message}`);
       this.prototype._PopItem();
       this.prototype._CleanupSheet();
@@ -38,7 +38,7 @@ class Log {
       if (obj) message = `${message}: ${JSON.stringify(obj)}`;
       let date = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
       let text = [date, "INFO", message];
-      OTHERSHEETS.Logger.appendRow(text);
+      LOGGER_SHEET.appendRow(text);
       console.warn(`${text[0]}, ${text[1]} : ${message}`);
       this.prototype._PopItem();
       this.prototype._CleanupSheet();
@@ -59,7 +59,7 @@ class Log {
       if (obj) message = `${message}: ${JSON.stringify(obj)}`;
       let date = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
       let text = [date, "INFO", message];
-      OTHERSHEETS.Logger.appendRow(text);
+      LOGGER_SHEET.appendRow(text);
       console.info(`${text[0]}, ${text[1]} : ${message}`);
       this.prototype._PopItem();
       this.prototype._CleanupSheet();
@@ -81,7 +81,7 @@ class Log {
         if (obj) message = `${message}: ${JSON.stringify(obj)}`;
         let date = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
         let text = [date, "DEBUG", message];
-        OTHERSHEETS.Logger.appendRow(text);
+        LOGGER_SHEET.appendRow(text);
         console.log(`${text[0]}, ${text[1]} : ${message}`);
         this.prototype._PopItem();
         this.prototype._CleanupSheet();
@@ -96,7 +96,7 @@ class Log {
   /** @private */
   _PopItem() {
     try {
-      if(OTHERSHEETS.Logger.getLastRow() >= 500) OTHERSHEETS.Logger.deleteRow(2);
+      if(LOGGER_SHEET.getLastRow() >= 500) LOGGER_SHEET.deleteRow(2);
       return 0;
     } catch(err) {
       console.error(`"PopItem()" failed : ${err}`);
@@ -107,7 +107,7 @@ class Log {
   /** @private */
   _CleanupSheet() {
     try {
-      if(OTHERSHEETS.Logger.getLastRow() > 2000) OTHERSHEETS.Logger.deleteRows(2, 1998);
+      if(LOGGER_SHEET.getLastRow() > 2000) LOGGER_SHEET.deleteRows(2, 1998);
       return 0;
     } catch(err) {
       console.error(`Whoops ---> ${err}`);

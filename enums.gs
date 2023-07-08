@@ -1,6 +1,7 @@
 const SPREADSHEET = SpreadsheetApp.openById(Config.SPREADSHEET_ID);
 const ARTIST_SHEET = SPREADSHEET.getSheetByName("Artists (Spotify)");
 const EVENT_SHEET = SPREADSHEET.getSheetByName("Events");
+const LOGGER_SHEET = SPREADSHEET.getSheetByName("Logger");
 const CUSTOM_ARTIST_SHEET = SPREADSHEET.getSheetByName("Custom Artists");
 
 
