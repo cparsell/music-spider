@@ -14,7 +14,7 @@ const Config = Object.freeze({
   LAT_LONG: USER_PROPS.getProperty(`latlong`),
   RADIUS: Number(USER_PROPS.getProperty(`radius`)),
   UNIT: USER_PROPS.getProperty(`unit`),
-  // these booleans get converted into strings by the Properties Service
+  // these booleans get converted into strings by the Properties Service - this will turn them back into booleans
   GET_TOP_ARTISTS: (USER_PROPS.getProperty(`getTopArtists`).toLowerCase()  === 'true'), 
   GET_FOLLOWING: (USER_PROPS.getProperty(`getFollowing`).toLowerCase()  === 'true'),
   GET_ARTISTS_FROM_PLAYLIST: (USER_PROPS.getProperty(`getArtistsFromPlaylist`).toLowerCase()  === 'true'),
