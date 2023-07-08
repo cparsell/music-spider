@@ -1,3 +1,25 @@
+  /**
+   * ----------------------------------------------------------------------------------------------------------------
+   * artistsList
+   * Remove duplictes from an array
+   * @param {array} array
+   * @returns {array} array
+   */
+  const artistsList = () => 
+  {
+    let artistRows = ARTIST_SHEET.getLastRow()-1;
+    if (artistRows==0) artistRows=1;
+    let artistsArr = ARTIST_SHEET.getRange(2,1,artistRows,1).getValues();
+    // if searchManuallyAdded = TRUE, include manually added artists in the search list
+    if (Config.SEARCH_MANUALLY_ADDED) {
+      let customArtistRows = CUSTOM_ARTIST_SHEET.getLastRow()-1;
+      let manualArtistsArr = CUSTOM_ARTIST_SHEET.getRange(2,1,customArtistRows,1).getValues();
+      artistsArr.push(...manualArtistsArr);
+    }
+    let filtered = artistsArr.filter(n => n);
+    return filtered;
+  }
+
 /**
  * ----------------------------------------------------------------------------------------------------------------
  * Clear a range of values
@@ -228,7 +250,7 @@ const writeArrayToColumn = (array, sheet, col) =>
  * Removes blank rows on a sheet
  * @param {sheet} sheet
  */
-const deleteEmptyRows = (sheet, writer) => 
+const deleteEmptyRows = (sheet) => 
 {
   // if(typeof sheet != `object`) return 1;
   try {
@@ -279,13 +301,13 @@ const deleteEmptyRows = (sheet, writer) =>
       }, []);
 
       // Sends a list of row indexes to be deleted to the console.
-      writer.Debug(`ranges to delete`, rangesToDelete);
+      Log.Debug(`ranges to delete`, rangesToDelete);
 
       // Deletes the rows using REVERSE order to ensure proper indexing is used.
       rangesToDelete.reverse().forEach(([start, end]) => sheet.deleteRows(start, end - start + 1));
       SpreadsheetApp.flush();
     } else {
-      writer.Debug(`No text on the sheet - no empty rows to remove`)
+      Log.Debug(`No text on the sheet - no empty rows to remove`)
     }
   } catch (err) {
     console.error(`${err} : deleteEmptyRows failed - Sheet: ${sheet} ${err}`);

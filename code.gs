@@ -61,16 +61,14 @@ const addArrayToSheet = (sheet, column, values) =>
   sheet.getRange(range).setValues(values.map(fn));
 }
 
-const artistsList = () => 
-{
-  let artistRows = ARTIST_SHEET.getLastRow()-1;
-  if (artistRows==0) artistRows=1;
-  let artistsArr = ARTIST_SHEET.getRange(2,1,artistRows,1).getValues();
-  let filtered = artistsArr.filter(n => n);
-  return filtered;
-}
-
-let getSpotifyData = async (accessToken, url, writer, getAllPages = false) =>
+/**
+   * ----------------------------------------------------------------------------------------------------------------
+   * getSpotifyData
+   * Fetch data from Spotify API
+   * @param {array} array
+   * @returns {array} array
+   */
+let getSpotifyData = async (accessToken, url, getAllPages = false) =>
 {
   let headers = 
   {
@@ -87,10 +85,10 @@ let getSpotifyData = async (accessToken, url, writer, getAllPages = false) =>
     let response = await UrlFetchApp.fetch(url, options);
     let firstPage = await response.getContentText();
     let responseCode = await response.getResponseCode();
-    writer.Info(`Response Code ${responseCode} - ${RESPONSECODES[responseCode]}`);
+    Log.Info(`Response Code ${responseCode} - ${RESPONSECODES[responseCode]}`);
     if (responseCode == 200 || responseCode == 201) 
     {
-      writer.Debug(Common.prettifyJson(firstPage));
+      Log.Debug(Common.prettifyJson(firstPage));
       // Bail out if we only wanted the first page
       if (!getAllPages)
       {
@@ -126,11 +124,11 @@ let getSpotifyData = async (accessToken, url, writer, getAllPages = false) =>
       }
       return data;
     } else {
-      writer.Error(`Failed to get data from ${url} - `);
+      Log.Error(`Failed to get data from ${url} - `);
       return false;
     }
   } catch (err) {
-    writer.Error(`Failed to get data from ${url} - ${err}`);
+    Log.Error(`Failed to get data from ${url} - ${err}`);
     return {};
   }
 

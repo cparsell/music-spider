@@ -40,7 +40,6 @@ const generateAuthUrl = () =>
 const getFreshAuth = (code) =>
 {
     // Retrieve refreshable auth info
-    // const writer = new WriteLogger();
     // Request refresh token
     let payload = {
         "grant_type": "authorization_code",
@@ -64,8 +63,8 @@ const getFreshAuth = (code) =>
 
     authInfo.accessToken = newTokens.access_token;
     authInfo.refreshToken = newTokens.refresh_token;
-    Logger.log(`Token: ${authInfo.accessToken}`);
-    // writer.Info(`Token: ${authInfo.accessToken}`);
+    Log.Debug(`Token: ${authInfo.accessToken}`);
+
     let now = Date.now() / 1000;
     authInfo.expiry = now + newTokens.expires_in;
     return authInfo;
@@ -135,8 +134,7 @@ const retrieveAuth = async () =>
     if (now > authInfo.expiry)
     {
         // Refresh the auth info
-        Logger.log("Access token expired. Refreshing authentication...");
-        // writer.Info("Access token expired. Refreshing authentication...");
+        Log.Info("Access token expired. Refreshing authentication...");
         authInfo = refreshAuth(authInfo.refreshToken);
 
         // Save the new auth info back to the user properties store

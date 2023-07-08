@@ -111,10 +111,13 @@ const Common = {
 
     return outArray;
   },
+
   /**
    * ----------------------------------------------------------------------------------------------------------------
+   * arrayRemoveDupes
    * Remove duplictes from an array
    * @param {array} array
+   * @returns {array} array
    */
   arrayRemoveDupes: (array) =>
   {
@@ -155,9 +158,9 @@ const Common = {
    * @param {function} fn
    */
   dataResponseTime: (fn) => {
-    return async (accessToken, url, writer, getAllPages) => {
+    return async (accessToken, url, getAllPages) => {
       console.time('fn');
-      const data = await fn(accessToken, url, writer, getAllPages);
+      const data = await fn(accessToken, url, getAllPages);
       console.timeEnd('fn');
       return data;
     }

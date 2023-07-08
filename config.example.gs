@@ -1,3 +1,5 @@
+// Here is where you provide API keys and set search preferences
+// These are stored in the User Properties to be retrieved by the code elsewhere
 const USER_PROPS = PropertiesService.getUserProperties();
 try {
   USER_PROPS.setProperties(
@@ -19,6 +21,7 @@ try {
     'getFollowing': true, 
     'getArtistsFromPlaylist': false,
     'playlistId': 'xxxxxxxxxxxxxxxxxxxxxxx',
+    'searchManuallyAdded': false, // If true, will search any artists added to called 'Artists (Manual)'
     // Email(s) to send newsletter to
     'email': 'somebody@somewhere.com',
     'createCalendarEvents': false,

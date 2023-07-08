@@ -3,74 +3,127 @@
  * ----------------------------------------------------------------------------------------------------------------
  * Class for Writing a Log
  */
-class WriteLogger
-{
+class Log {
   constructor() { 
-    this.sheet = SPREADSHEET.getSheetByName("Logger");
-    // this.sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Logger");
+
   }
-  Error(message) {
+
+  /**
+   * Error Message
+   * @param {string} message
+   */
+  static Error(message, obj = null) {
     try{
-      const text = [new Date().toUTCString(), "ERROR!", message, ];
-      this.sheet.appendRow(text);
+      if (obj) message = `${message}: ${JSON.stringify(obj)}`;
+      let date = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
+      let text = [date, "ERROR!", message, ];
+      OTHERSHEETS.Logger.appendRow(text);
       console.error(`${text[0]}, ${text[1]} : ${message}`);
-      this._PopItem();
-      this._CleanupSheet();
+      this.prototype._PopItem();
+      this.prototype._CleanupSheet();
+      return 0;
     } catch(err) {
-      console.error(`Whoops ---> ${err}`);
+      console.error(`"Error()" failed : ${err}`);
+      return 1;
     }
   }
-  Warning(message) {
+
+  /**
+   * Warning Message
+   * @param {string} message
+   * @param {object} obj optional object to be logged as a string
+   */
+  static Warning(message, obj = null) {
     try{
-      const text = [new Date().toUTCString(), "WARNING", message, ];
-      this.sheet.appendRow(text);
+      if (obj) message = `${message}: ${JSON.stringify(obj)}`;
+      let date = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
+      let text = [date, "INFO", message];
+      OTHERSHEETS.Logger.appendRow(text);
       console.warn(`${text[0]}, ${text[1]} : ${message}`);
-      this._PopItem();
-      this._CleanupSheet();
+      this.prototype._PopItem();
+      this.prototype._CleanupSheet();
+      return 0;
     } catch(err) {
-      console.error(`Whoops ---> ${err}`);
+      console.error(`"Warning()" failed : ${err}`);
+      return 1;
     }
   }
-  Info(message) {
+
+  /**
+   * Info Message
+   * @param {string} message
+   * @param {object} obj optional object to be logged as a string
+   */
+  static Info(message, obj = null) {
     try {
-      const text = [new Date().toUTCString(), "INFO", message, ];
-      this.sheet.appendRow(text);
+      if (obj) message = `${message}: ${JSON.stringify(obj)}`;
+      let date = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
+      let text = [date, "INFO", message];
+      OTHERSHEETS.Logger.appendRow(text);
       console.info(`${text[0]}, ${text[1]} : ${message}`);
-      this._PopItem();
-      this._CleanupSheet();
+      this.prototype._PopItem();
+      this.prototype._CleanupSheet();
+      return 0;
     } catch(err) {
-      console.error(`Whoops ---> ${err}`);
+      console.error(`"Info()" failed : ${err}`);
+      return 1;
     }
   }
-  Debug(message) {
-    if (Config.DEBUG)
-    {
+
+  /**
+   * Debug Message
+   * @param {string} message
+   * @param {object} obj optional object to be logged as a string
+   */
+  static Debug(message, obj = null) {
+    if (Config.DEBUG){
       try {
-        const text = [new Date().toUTCString(), "DEBUG", message, ];
-        this.sheet.appendRow(text);
+        if (obj) message = `${message}: ${JSON.stringify(obj)}`;
+        let date = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
+        let text = [date, "DEBUG", message];
+        OTHERSHEETS.Logger.appendRow(text);
         console.log(`${text[0]}, ${text[1]} : ${message}`);
-        this._PopItem();
-        this._CleanupSheet();
+        this.prototype._PopItem();
+        this.prototype._CleanupSheet();
+        return 0;
       } catch(err) {
-        console.error(`Whoops ---> ${err}`);
+        console.error(`"Debug()" failed : ${err}`);
+        return 1;
       }
     }
   }
+
+  /** @private */
   _PopItem() {
     try {
-      if(this.sheet.getLastRow() >= 500) this.sheet.deleteRow(2);
+      if(OTHERSHEETS.Logger.getLastRow() >= 500) OTHERSHEETS.Logger.deleteRow(2);
+      return 0;
     } catch(err) {
-      console.error(`Whoops ---> ${err}`);
+      console.error(`"PopItem()" failed : ${err}`);
+      return 1;
     }
   }
+  
+  /** @private */
   _CleanupSheet() {
     try {
-      if(this.sheet.getLastRow() > 2000) {
-        this.sheet.deleteRows(2, 1998);
-      } else return 1;
+      if(OTHERSHEETS.Logger.getLastRow() > 2000) OTHERSHEETS.Logger.deleteRows(2, 1998);
+      return 0;
     } catch(err) {
       console.error(`Whoops ---> ${err}`);
+      return 1;
     }
   }
   
 }
+
+
+const _testWrite = () => {
+  for(let i = 0; i < 2; i++) {
+    Log.Info(`${i} Some Info...`);
+    Log.Warning(`${i} Some Warning....`);
+    Log.Error(`${i} Some Error....`);
+    Log.Debug(`${i} Some Debug....`);
+  }
+}
+

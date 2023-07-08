@@ -1,3 +1,4 @@
+// This grabs all of the API keys and preferences from the User Properties service
 const Config = Object.freeze({
   SPREADSHEET_ID: USER_PROPS.getProperty(`spreadsheetId`),
   CLIENT_ID_SPOTIFY: USER_PROPS.getProperty(`clientIdSpotify`),

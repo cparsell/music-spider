@@ -1,3 +1,8 @@
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * sendEmail
+ * Send email newsletter listing any upcoming events
+ */
 const sendEmail = () => 
 {
   let eventsArr = buildEventsArr();

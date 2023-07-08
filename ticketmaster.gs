@@ -1,6 +1,11 @@
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * refreshEvents
+ * Main function for Ticketmaster search. Searches Ticketmaster for artists found in Spotify or added manually. 
+ * Any events returned that contain the artist's name are added to the sheet
+ */
 const refreshEvents = async () => 
 {
-  const writer = new WriteLogger();
   
   //get list of artists from sheet
   let artistsArr = artistsList();
@@ -9,7 +14,7 @@ const refreshEvents = async () =>
   removeExpiredEntries(EVENT_SHEET);
 
   // Clear any empty rows if something was manually deleted
-  deleteEmptyRows(EVENT_SHEET, writer);
+  deleteEmptyRows(EVENT_SHEET);
 
   //search each artist
   let eventsArr = {};
@@ -20,7 +25,7 @@ const refreshEvents = async () =>
   {
     for (let i=0;i<artistsArr.length;i++)
     {
-      await ticketSearch(artistsArr[i][0], writer).then(data => 
+      await ticketSearch(artistsArr[i][0]).then(data => 
       {
         for (const [index, [key]] of Object.entries(Object.entries(data))) 
         {
@@ -44,8 +49,7 @@ const refreshEvents = async () =>
     }
   } catch (e) 
   { 
-      Logger.log(e);
-      writer.Error(e);
+      Log.Error(e);
   }
   // Write new events to events sheet
   writeEventsToSheet(eventsArr);
@@ -54,6 +58,12 @@ const refreshEvents = async () =>
   if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(eventsArr);
 }
 
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * writeEventsToSheet
+ * Write an array of events to sheet
+ * @param {array} eventsArr [{name, date, city, venue, url, image, acts}]
+ */
 const writeEventsToSheet = async (eventsArr) => 
 {
   for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
@@ -92,10 +102,15 @@ const buildEventsArr = () =>
   return ordered;
 }
 
-const ticketSearch = async (keyword, writer) => 
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * ticketSearch
+ * Search Ticketmaster. Runs tmSearch function and parses response data.
+ * @param {string} keyword 
+ */
+const ticketSearch = async (keyword) => 
 {
   // keyword = "The Books" // for debugging, I uncomment this, specify something that returns a result, and run the function from Apps Script to see the Execution Log
-  // writer = new WriteLogger();  // and uncomment this
   if (keyword == undefined) {
     Logger.log("No keyword provided");
     return;
@@ -105,12 +120,12 @@ const ticketSearch = async (keyword, writer) =>
 
   try {
     // returns JSON response
-    await tmSearch(keyword, writer)
+    await tmSearch(keyword)
       .then(async(data) => {
-        writer.Debug(`tmSearch data: ${data}`)
+        Log.Debug(`tmSearch data: ${data}`)
         if (data.page.totalElements == 0) 
         {
-          writer.Debug(`No results for`, keyword);
+          Log.Debug(`No results for`, keyword);
           return false;
         }
         data?._embedded?.events?.forEach((item) =>
@@ -182,15 +197,20 @@ const ticketSearch = async (keyword, writer) =>
           return;
         }
         // Logger.log(eventsArr);
-        writer.Debug(`eventsArr: ${eventsArr}`);
+        Log.Debug(`eventsArr: ${eventsArr}`);
     });
     return await eventsArr;
   } catch (err) {
-    writer.Error(`ticketSearch failed - ${err}`);
+    Log.Error(`ticketSearch failed - ${err}`);
   }
 }
 
-
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * writeEvent
+ * Write an event
+ * @param {object} event {name, date, city, venue, url, image, acts} 
+ */
 const writeEvent = ({name, date, city, venue, url, image, acts}) => 
 {
   // let newData = new Array;
@@ -206,7 +226,14 @@ const writeEvent = ({name, date, city, venue, url, image, acts}) =>
   SetByHeader(EVENT_SHEET, "Image", lastRow+1, image);
   SetByHeader(EVENT_SHEET, "Acts", lastRow+1, acts.toString());
 }
-const tmSearch = async (keyword, writer) => 
+
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * tmSearch
+ * Fetch data from Ticketmaster API
+ * @param {object} event {name, date, city, venue, url, image, acts} 
+ */
+const tmSearch = async (keyword) => 
 {
   // Ticketmaster API
   // reference: https://developer.ticketmaster.com/products-and-docs/apis/discovery-api/v2/#search-events-v2
@@ -229,15 +256,15 @@ const tmSearch = async (keyword, writer) =>
     if (responseCode == 200 || responseCode == 201) 
     {
       let content = await response.getContentText();
-      writer.Debug(content);  // uncomment this to write raw JSON response to 'Logger' sheet
+      Log.Debug(content);  // uncomment this to write raw JSON response to 'Logger' sheet
       let parsed = JSON.parse(content);
       return parsed;
     } else {
-      writer.Error('Failed to search Ticketmaster');
+      Log.Error('Failed to search Ticketmaster');
       return false;
     }
   } catch (err) {
-    writer.Error(`Failed to search Ticketmaster ${err}`);
+    Log.Error(`Failed to search Ticketmaster ${err}`);
     return {};
   }
 }
