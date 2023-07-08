@@ -1,6 +1,8 @@
 const SPREADSHEET = SpreadsheetApp.openById(Config.SPREADSHEET_ID);
-const ARTIST_SHEET = SPREADSHEET.getSheetByName("Artists");
+const ARTIST_SHEET = SPREADSHEET.getSheetByName("Artists (Spotify)");
 const EVENT_SHEET = SPREADSHEET.getSheetByName("Events");
+const CUSTOM_ARTIST_SHEET = SPREADSHEET.getSheetByName("Custom Artists");
+
 
 const SERVICE_NAME = `Music Spider`;
 const SUPPORT_ALIAS = GmailApp.getAliases()[0];
