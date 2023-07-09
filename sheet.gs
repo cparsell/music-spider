@@ -17,7 +17,7 @@ const artistsList = () =>
   }
   
   // let filtered = artistsArr.filter(n => n); // remove blank strings
-  let filtered = Common.arrayRemoveDupes(artistsArr, true); // remove duplicates and blank strings
+  let filtered = CommonLib.arrayRemoveDupes(artistsArr, true); // remove duplicates and blank strings
   return filtered;
 }
 
@@ -37,7 +37,7 @@ const buildEventsArr = () =>
   {
     for (i=1; i<lastRow;i++)
     {
-      let rowData = GetRowData(EVENT_SHEET, i+1);
+      let rowData = CommonLib.getRowData(EVENT_SHEET, i+1);
       let { date } = rowData;
       // let formattedDate = Utilities.formatDate(newDate, `PST`,`MM-dd-yyyy hh:mm a`);
       let eventDate = Utilities.formatDate(date, "PST", "yyyy/MM/dd HH:mm");
@@ -57,22 +57,6 @@ const buildEventsArr = () =>
   }
   
   return ordered;
-}
-
-/**
- * ----------------------------------------------------------------------------------------------------------------
- * Clear a range of values
- * @param {sheet} sheet 
- * @param {number} startRow if row 1 is headers, then startRow=2
- */
-const clearSheetData = (sheet, startRow = 2) => 
-{
-  if(typeof sheet != `object`) return 1;
-  let numCols = sheet.getLastColumn();
-  let numRows = sheet.getLastRow() - startRow + 1; // The number of row to clear
-  if (numRows == 0) numRows = 1;
-  let range = sheet.getRange(startRow, 1, numRows,numCols);
-  range.clear();
 }
 
 /**
@@ -114,30 +98,6 @@ const removeExpiredEntries = (sheet,dateHeaderName="Date") =>
     return false;
   }
 }
-
-/**
- * ----------------------------------------------------------------------------------------------------------------
- * Return the value of a cell by column name and row number
- * @param {sheet} sheet
- * @param {string} colName
- * @param {number} row
- */
-const GetByHeader = (sheet, columnName, row) => 
-{
-  if(typeof sheet != `object`) return 1;
-  try {
-    let data = sheet.getDataRange().getValues();
-    let col = data[0].indexOf(columnName);
-    if (col != -1) return data[row - 1][col];
-    else {
-      console.error(`Getting data by header fucking failed...`);
-      return 1;
-    }
-  } catch (err) {
-    console.error(`${err} : GetByHeader failed - Sheet: ${sheet} Col Name specified: ${columnName} Row: ${row}`);
-    return 1;
-  }
-};
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
@@ -424,115 +384,21 @@ const deleteEmptyColumns = (sheet) =>
 }
 
 /**
- * Trims all of the unused rows and columns outside of selected data range.
- * 
- * Called from menu option.
- */
-const cropSheet = (sheet) => 
-{
-  try {
-    if (sheet == undefined) sheet = SpreadsheetApp.getActiveSheet();
-    let dataRange = sheet.getDataRange();
-    let sheet = dataRange.getSheet();
-
-    let numRows = dataRange.getNumRows();
-    let numColumns = dataRange.getNumColumns();
-
-    let maxRows = sheet.getMaxRows();
-    let maxColumns = sheet.getMaxColumns();
-
-    let numFrozenRows = sheet.getFrozenRows();
-    let numFrozenColumns = sheet.getFrozenColumns();
-
-    // If last data row is less than maximium row, then deletes rows after the last data row.
-    if (numRows < maxRows) {
-      numRows = Math.max(numRows, numFrozenRows + 1); // Don't crop empty frozen rows.
-      sheet.deleteRows(numRows + 1, maxRows - numRows);
-    }
-
-    // If last data column is less than maximium column, then deletes columns after the last data column.
-    if (numColumns < maxColumns) {
-      numColumns = Math.max(numColumns, numFrozenColumns + 1); // Don't crop empty frozen columns.
-      sheet.deleteColumns(numColumns + 1, maxColumns - numColumns);
-    }
-  } catch (err) {
-    console.error(`${err} : cropSheet failed - Sheet: ${sheet} ${err}`);
-  }
-}
-
-/**
- * Copies value of active cell to the blank cells beneath it. 
- * Stops at last row of the sheet's data range if only blank cells are encountered.
- * 
- * Called from menu option.
- */
-const fillDownData = (sheet) => 
-{
-  try {
-    if (sheet == undefined) sheet = SpreadsheetApp.getActiveSheet();
-    // let sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-
-    // Gets sheet's active cell and confirms it's not empty.
-    let activeCell = sheet.getActiveCell();
-    let activeCellValue = activeCell.getValue();
-
-    if (!activeCellValue) 
-    {
-      Logger.log("The active cell is empty. Nothing to fill.");
-      return;
-    }
-
-    // Gets coordinates of active cell.
-    let column = activeCell.getColumn();
-    let row = activeCell.getRow();
-
-    // Gets entire data range of the sheet.
-    let dataRange = sheet.getDataRange();
-    let dataRangeRows = dataRange.getNumRows();
-
-    // Gets trimmed range starting from active cell to the end of sheet data range.
-    let searchRange = dataRange.offset(row - 1, column - 1, dataRangeRows - row + 1, 1)
-    let searchValues = searchRange.getDisplayValues();
-
-    // Find the number of empty rows below the active cell.
-    let i = 1; // Start at 1 to skip the ActiveCell.
-    while (searchValues[i] && searchValues[i][0] == "") { i++; }
-
-    // If blanks exist, fill the range with values.
-    if (i > 1) {
-      let fillRange = searchRange.offset(0, 0, i, 1).setValue(activeCellValue)
-      //sheet.setActiveRange(fillRange) // Uncomment to test affected range.
-    }
-    else {
-      Logger.log("There are no empty cells below the Active Cell to fill.");
-    }
-  } catch (err) {
-    console.error(`${err} : fillDownData failed - Sheet: ${sheet} ${err}`);
-  }
-}
-
-/**
  * A helper function to display messages to user.
  * 
  * @param {string} message - Message to be displayed.
  * @param {string} caller - {Optional} text to append to title.
  */
-const showMessage = (message, caller) => 
+const showMessage = (message, title) => 
 {
   try {
-    // Sets the title using the APP_TITLE variable; adds optional caller string.
-    let title = APP_TITLE
-    if (caller != null) {
-      title += ` : ${caller}`
-    };
-
     let ui = SpreadsheetApp.getUi();
     ui.alert(title, message, ui.ButtonSet.OK);
   } catch (err) {
-    console.error(`${err} : showMessage failed - Message: ${message} optional caller: ${caller}`);
+    console.error(`${err} : showMessage failed - Message: "${message}", title: "${title}"`);
   }
 }
 
 const test = () => {
-  CommonLib.setByHeader(CUSTOM_ARTIST_SHEET, "Artist", 2, "Pooty");
+  
 }

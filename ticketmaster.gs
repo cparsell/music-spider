@@ -14,7 +14,7 @@ const refreshEvents = async () =>
   removeExpiredEntries(EVENT_SHEET);
 
   // Clear any empty rows if something was manually deleted
-  deleteEmptyRows(EVENT_SHEET);
+  CommonLib.deleteEmptyRows(EVENT_SHEET);
 
   //search each artist
   let eventsArr = {};
@@ -29,7 +29,7 @@ const refreshEvents = async () =>
       {
         for (const [index, [key]] of Object.entries(Object.entries(data))) 
         {
-          let exists = searchColForValue(EVENT_SHEET, "URL", data[key].url);
+          let exists = CommonLib.searchColForValue(EVENT_SHEET, "URL", data[key].url);
           if (!exists) {
             eventsArr[key] = 
             {
@@ -67,7 +67,7 @@ const refreshEvents = async () =>
 const writeEventsToSheet = async (eventsArr) => 
 {
   for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
-    SetRowData(EVENT_SHEET, eventsArr[key]);
+    CommonLib.setRowData(EVENT_SHEET, HEADERNAMES, eventsArr[key]);
   }
 }
 
@@ -176,27 +176,27 @@ const ticketSearch = async (keyword) =>
   }
 }
 
-/**
- * ----------------------------------------------------------------------------------------------------------------
- * writeEvent
- * Write an event
- * @param {object} event {name, date, city, venue, url, image, acts} 
- */
-const writeEvent = ({name, date, city, venue, url, image, acts}) => 
-{
-  // let newData = new Array;
-  // newData[0] = [eventName, eventVenue, eventCity,eventDate];
+// /**
+//  * ----------------------------------------------------------------------------------------------------------------
+//  * writeEvent
+//  * Write an event
+//  * @param {object} event {name, date, city, venue, url, image, acts} 
+//  */
+// const writeEvent = ({name, date, city, venue, url, image, acts}) => 
+// {
+//   // let newData = new Array;
+//   // newData[0] = [eventName, eventVenue, eventCity,eventDate];
 
-  let lastRow = EVENT_SHEET.getLastRow();
-  // EVENT_SHEET.getRange(lastRow+1,1,1,4).setValues(newData);
-  SetByHeader(EVENT_SHEET, "Event Name", lastRow+1, name);
-  SetByHeader(EVENT_SHEET, "City", lastRow+1, city);
-  SetByHeader(EVENT_SHEET, "Venue", lastRow+1, venue);
-  SetByHeader(EVENT_SHEET, "Date", lastRow+1, date);
-  SetByHeader(EVENT_SHEET, "URL", lastRow+1, url);
-  SetByHeader(EVENT_SHEET, "Image", lastRow+1, image);
-  SetByHeader(EVENT_SHEET, "Acts", lastRow+1, acts.toString());
-}
+//   let lastRow = EVENT_SHEET.getLastRow();
+//   // EVENT_SHEET.getRange(lastRow+1,1,1,4).setValues(newData);
+//   SetByHeader(EVENT_SHEET, "Event Name", lastRow+1, name);
+//   SetByHeader(EVENT_SHEET, "City", lastRow+1, city);
+//   SetByHeader(EVENT_SHEET, "Venue", lastRow+1, venue);
+//   SetByHeader(EVENT_SHEET, "Date", lastRow+1, date);
+//   SetByHeader(EVENT_SHEET, "URL", lastRow+1, url);
+//   SetByHeader(EVENT_SHEET, "Image", lastRow+1, image);
+//   SetByHeader(EVENT_SHEET, "Acts", lastRow+1, acts.toString());
+// }
 
 /**
  * ----------------------------------------------------------------------------------------------------------------

@@ -55,7 +55,7 @@ const refreshArtists = async () =>
   let combined = topArtists.concat(playlistArtists).concat(followedArtists);
   Log.Debug(`Artists combined: ${combined}`);
   // Remove duplicates
-  let artistsArr = Common.arrayRemoveDupes(combined);
+  let artistsArr = CommonLib.arrayRemoveDupes(combined);
   if (artistsArr.length == 0) 
   {
     Log.Warning(`Unable to retrieve a list of artists from Spotify playlist - check playlist ID, Spotify client ID, or client secret`);
@@ -65,10 +65,10 @@ const refreshArtists = async () =>
   if (artistsArr.length > 0) 
   {
     // Clear previous artist list
-    // CommonLib.clearSheetData(ARTIST_SHEET, 2);
-    clearSheetData(ARTIST_SHEET);
+    CommonLib.clearSheetData(ARTIST_SHEET, 2);
+    // clearSheetData(ARTIST_SHEET);
     // Write new artists to sheet
-    writeArrayToColumn(artistsArr, ARTIST_SHEET, 1);
+    CommonLib.writeArrayToColumn(artistsArr, ARTIST_SHEET, 1);
     Log.Debug(`Total Artists, duplicates removed: ${artistsArr}`);
   } else 
   {
@@ -105,7 +105,7 @@ let getSpotifyData = async (accessToken, url, getAllPages = false) =>
     Log.Info(`Response Code ${responseCode} - ${RESPONSECODES[responseCode]}`);
     if (responseCode == 200 || responseCode == 201) 
     {
-      Log.Debug(Common.prettifyJson(firstPage));
+      Log.Debug(CommonLib.prettifyJson(firstPage));
       // Bail out if we only wanted the first page
       if (!getAllPages)
       {
@@ -173,7 +173,7 @@ const getSavedTracksArtists = async (ignoreUpperCase) =>
   // Fold array of responses into single structure
   if (data) 
   {
-    data = Common.collateArrays("items", data);
+    data = CommonLib.collateArrays("items", data);
     let artistsArr = [];
     data.forEach(track =>
     {
@@ -184,7 +184,7 @@ const getSavedTracksArtists = async (ignoreUpperCase) =>
       });
     });
 
-    artistsArr = Common.arrayRemoveDupes(artistsArr);
+    artistsArr = CommonLib.arrayRemoveDupes(artistsArr);
     lastRow = sheet.getLastRow();
 
     Log.Debug(`Artists Array: ${artistsArr}`);
@@ -213,7 +213,7 @@ const getFollowedArtists = async (ignoreUpperCase) =>
   let data = await getSpotifyData(accessToken, FOLLOW_URL + params, true);
 
   // Fold array of responses into single structure
-  data = Common.collateArrays("artists.items", data);
+  data = CommonLib.collateArrays("artists.items", data);
 
   // Sort artists by name
   data.sort((first, second) =>
@@ -282,12 +282,10 @@ const getPlaylistArtists = async (ignoreUpperCase) =>
       });
     })
 
-    artistsArr = Common.arrayRemoveDupes(artistsArr);
-  //   lastRow = sheet.getLastRow();
-  //   Logger.log("Artist Array");
-  Log.Debug(`Playlist Artists: ${artistsArr}`);
-  //   Logger.log(`Artists Array length: ${artistsArr.length}`);
-  //   if (artistsArr.length > 0) writeArrayToColumn(artistsArr, sheet, 1);
+    artistsArr = CommonLib.arrayRemoveDupes(artistsArr);
+
+    Log.Debug(`Playlist Artists: ${artistsArr}`);
+
     return artistsArr;
   } else {
     write.Info("No data received from your watch playlist");
@@ -323,7 +321,7 @@ const getTopArtists = async (ignoreUpperCase) =>
     Logger.log(`Returned 0 top artists somehow`)
     return artistsArr;
   }
-  final = Common.arrayRemoveDupes(artistsArr);
+  final = CommonLib.arrayRemoveDupes(artistsArr);
   return final;
 }
 
@@ -348,14 +346,14 @@ const getTopData = async (term, offset, ignoreUpperCase) => {
   let resp = undefined;
   Logger.log(`Getting top artists (${term})...`)
 
-  // getSpotifyData = Common.dataResponseTime(getSpotifyData)
+  // getSpotifyData = CommonLib.dataResponseTime(getSpotifyData)
   resp = await getSpotifyData(accessToken, TOP_ARTISTS_URL + params, true);
 
   let artistsArr = new Array;
   // Fold array of responses into single structure
   if (resp[0]) 
   {
-    data = Common.collateArrays("items", resp);
+    data = CommonLib.collateArrays("items", resp);
     let ignoree = false;
     
     data.forEach(artist =>
