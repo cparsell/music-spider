@@ -17,7 +17,7 @@ const artistsList = () =>
   }
   
   // let filtered = artistsArr.filter(n => n); // remove blank strings
-  let filtered = Common.arrayRemoveDupes(artistsArr); // remove duplicates and blank strings
+  let filtered = Common.arrayRemoveDupes(artistsArr, true); // remove duplicates and blank strings
   return filtered;
 }
 
@@ -63,9 +63,9 @@ const buildEventsArr = () =>
  * ----------------------------------------------------------------------------------------------------------------
  * Clear a range of values
  * @param {sheet} sheet 
- * @param {number} startRow header title
+ * @param {number} startRow if row 1 is headers, then startRow=2
  */
-const clearData = (sheet, startRow = 2) => 
+const clearSheetData = (sheet, startRow = 2) => 
 {
   if(typeof sheet != `object`) return 1;
   let numCols = sheet.getLastColumn();
@@ -259,8 +259,8 @@ const SetRowData = (sheet,data) =>
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
- * Write array to a column on a sheet
- * @param {array} sheet
+ * Write a list (1D) vertically into a column on a sheet
+ * @param {array} array a 1D array
  * @param {object} sheet
  * @param {integer} col column number
  */
@@ -531,4 +531,8 @@ const showMessage = (message, caller) =>
   } catch (err) {
     console.error(`${err} : showMessage failed - Message: ${message} optional caller: ${caller}`);
   }
+}
+
+const test = () => {
+  CommonLib.setByHeader(CUSTOM_ARTIST_SHEET, "Artist", 2, "Pooty");
 }

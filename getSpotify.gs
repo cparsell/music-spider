@@ -1,3 +1,4 @@
+
 /**
  * ----------------------------------------------------------------------------------------------------------------
  * refreshArtists
@@ -64,7 +65,8 @@ const refreshArtists = async () =>
   if (artistsArr.length > 0) 
   {
     // Clear previous artist list
-    clearData(ARTIST_SHEET);
+    // CommonLib.clearSheetData(ARTIST_SHEET, 2);
+    clearSheetData(ARTIST_SHEET);
     // Write new artists to sheet
     writeArrayToColumn(artistsArr, ARTIST_SHEET, 1);
     Log.Debug(`Total Artists, duplicates removed: ${artistsArr}`);

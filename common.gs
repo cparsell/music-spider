@@ -110,9 +110,10 @@ const Common = {
    * ----------------------------------------------------------------------------------------------------------------
    * @property {Function} Remove duplicates from an array
    * @param {array} array
+   * @param {bool} removeBlanks if true, will remove empty array elements
    * @returns {array} array
    */
-  arrayRemoveDupes: (array) =>
+  arrayRemoveDupes: (array, removeBlanks=false) =>
   {
     if (array.length < 1) 
     {
