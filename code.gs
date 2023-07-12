@@ -36,6 +36,7 @@ const BarMenu = () =>
 {
   SpreadsheetApp.getUi()
     .createMenu(`Music Spider`)
+    .addItem(`Configure`, `configSidebar`)
     .addItem(`Refresh Artists`, `refreshArtists`)
     .addItem(`Refresh Events`, `refreshEvents`)
     .addItem(`Send Email Newsletter`, `sendEmail`)

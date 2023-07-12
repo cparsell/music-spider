@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <base target="_top">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+
+      const preventFormSubmit = () => {
+        let forms = document.querySelectorAll('form');
+        for (var i = 0; i < forms.length; i++) {
+          forms[i].addEventListener('submit', event => {
+            event.preventDefault();
+          });
+        }
+      }
+      window.addEventListener('load', preventFormSubmit);
+
+      // document.getElementById('getArtistsFromPlaylist').onChange = function() {
+      //   document.getElementById('playlistId').disabled = !this.checked;
+      // };
+
+      // $('#getArtistsFromPlaylist').change(function() {
+      //   $('playlistId').attr('disabled',!this.checked)
+      // });
+
+      const handleFailure = (e) => {
+        console.error(e.message);
+        const ui = SpreadsheetApp.getUi();
+        ui.alert(`Music Spider`, `Error: ${e.message}`, ui.ButtonSet.OK);
+      }
+
+      const handleClearForm = (form) => {
+        console.info(`Clearing form now....`);
+        document.getElementById("form").reset();
+        // clearing inputs
+        let inputs = form.getElementsByTagName('input');
+        for (let i = 0; i < inputs.length; i++) {
+          switch (inputs[i].type) {
+            case 'text':
+                inputs[i].value = '';
+                break;
+            case 'radio':
+            case 'checkbox':
+                inputs[i].checked = false;   
+          }
+        }
+
+        // clearing selects
+        let selects = form.getElementsByTagName('select');
+        for (let i = 0; i < selects.length; i++) {
+          selects[i].selectedIndex = 0;
+        }
+
+        // clearing textarea
+        let text = form.getElementsByTagName('textarea');
+        for (let i = 0; i < text.length; i++) {
+          text[i].innerHTML= '';
+        }
+        console.info(`Form cleared....`);
+        return false;
+      }
+
+      const handleFormSubmit = (formObject) => {
+        google.script.run
+          .withSuccessHandler(handleClearForm)
+          .withFailureHandler(handleFailure)
+          .ProcessForm(formObject)
+        // google.script.host.close()
+      }
+
+    </script>
+  </head>
+  <body>
+    <div class="shopping-cart">
+      <form onsubmit="handleFormSubmit(this)" name="form" id="form">
+        <!-- Title -->
+        <h5 style="padding-left:1em">Music Spider Setup</h5>
+
+        <!-- API Keys -->
+        <div class="input-field" style="padding-left:1em; padding-right:1em">
+          <textarea id="spreadsheetId" class="materialize-textarea" name="spreadsheetId" />
+          <label for="spreadsheetId" style="padding-left:1em; padding-right:1em">spreadsheetId</label>
+        </div>
+
+        <div class="input-field" style="padding-left:1em; padding-right:1em">
+          <textarea id="clientIdSpotify" class="materialize-textarea" name="clientIdSpotify"></textarea>
+          <label for="clientIdSpotify" style="padding-left:1em; padding-right:1em">clientIdSpotify</label>
+        </div>
+
+        <div class="input-field" style="padding-left:1em; padding-right:1em">
+          <textarea id="clientSecretSpotify" class="materialize-textarea" name="clientSecretSpotify" />
+          <label for="clientSecretSpotify" style="padding-left:1em; padding-right:1em">clientSecretSpotify</label>
+        </div>
+
+        <div class="input-field" style="padding-left:1em; padding-right:1em">
+          <textarea id="keyTM" class="materialize-textarea" name="keyTM" />
+          <label for="keyTM" style="padding-left:1em; padding-right:1em">keyTM</label>
+        </div>
+
+        <div class="input-field" style="padding-left:1em; padding-right:1em">
+          <textarea id="email" class="materialize-textarea" name="email" />
+          <label for="email" style="padding-left:1em; padding-right:1em">email</label>
+        </div>
+
+        <div class="input-field" style="padding-left:1em; padding-right:1em">
+          <textarea id="calendarId" class="materialize-textarea" name="calendarId" />
+          <label for="calendarId" style="padding-left:1em; padding-right:1em">calendarId</label>
+        </div>
+
+        <div class="input-field" style="padding-left:1em; padding-right:1em">
+          <textarea id="radius" class="materialize-textarea" name="radius" value="40" />
+          <label for="radius" style="padding-left:1em; padding-right:1em">Radius</label>
+        </div>
+
+        <!-- Preferences -->
+        <div class="col" style=""> 
+          <div class="" style="padding-left:1em; padding-right:1em">
+            <label for="getTopArtists" style="padding-left:1em; ">
+              <input type="checkbox" id="getTopArtists" class="checkbox" name="getTopArtists" />
+              <span>Get Top Artists</span>
+            </label>
+          </div>
+
+          <div class="" style="padding-left:1em; padding-right:1em">
+            <label for="getFollowing" style="padding-left:1em;">
+              <input type="checkbox" id="getFollowing" class="checkbox" name="getFollowing" />
+              <span>Get Following</span>
+            </label>
+          </div>
+
+          <div class="" style="padding-left:1em; padding-right:1em">
+            <label for="getArtistsFromPlaylist" style="padding-left:1em; ">
+              <input type="checkbox" id="getArtistsFromPlaylist" class="" name="getArtistsFromPlaylist" />
+              <span>Get Artists From Playlist</span>
+            </label>
+          </div>
+
+          <div class="input-field" style="padding-left:1em; padding-right:1em">
+            <input type="text" id="playlistId" class="materialize-textarea" name="playlistId" disabled />
+            <label for="playlistId" style="padding-left:1em; padding-right:1em">Playlist ID</label>
+          </div>
+
+          <div class="" style="padding-left:1em; padding-right:1em">
+            <label for="searchManuallyAdded" style="padding-left:1em;">
+              <input type="checkbox" id="searchManuallyAdded" class="checkbox" name="searchManuallyAdded" />
+              <span>searchManuallyAdded</span>
+            </label>
+          </div>
+
+          <div class="" style="padding-left:1em; padding-right:1em">
+            <label for="createCalendarEvents" style="padding-left:1em;">
+              <input type="checkbox" id="createCalendarEvents" class="checkbox" name="createCalendarEvents" />
+              <span>createCalendarEvents</span>
+            </label>
+          </div>
+
+        </div>
+
+        <div style="padding-left:1em">
+          <button class="btn waves-effect waves-light" type="submit" value="submit">Save</button>
+        </div>
+
+      </form>
+    </div>
+  </body>
+</html>
+
+
