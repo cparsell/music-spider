@@ -77,83 +77,104 @@
     <div class="shopping-cart">
       <form onsubmit="handleFormSubmit(this)" name="form" id="form">
         <!-- Title -->
-        <h5 style="padding-left:1em">Music Spider Setup</h5>
+        <h5 style="padding-left:1em"></h5>
 
         <!-- API Keys -->
-        <div class="input-field" style="padding-left:1em; padding-right:1em">
-          <textarea id="spreadsheetId" class="materialize-textarea" name="spreadsheetId" />
+        <div class="input-field" style="padding-left:1em; padding-right:1em;">
+          <textarea id="spreadsheetId" class="materialize-textarea" name="spreadsheetId" style="font-size:9pt;"><?= currentProps.SPREADSHEET_ID ?></textarea>
           <label for="spreadsheetId" style="padding-left:1em; padding-right:1em">spreadsheetId</label>
         </div>
 
-        <div class="input-field" style="padding-left:1em; padding-right:1em">
-          <textarea id="clientIdSpotify" class="materialize-textarea" name="clientIdSpotify"></textarea>
+        <div class="input-field" style="padding-left:1em; padding-right:1em;">
+          <input type="text" id="clientIdSpotify" class="materialize-textarea" name="clientIdSpotify" style="font-size:9pt;" value=<?= currentProps.CLIENT_ID_SPOTIFY ?> />
           <label for="clientIdSpotify" style="padding-left:1em; padding-right:1em">clientIdSpotify</label>
         </div>
 
-        <div class="input-field" style="padding-left:1em; padding-right:1em">
-          <textarea id="clientSecretSpotify" class="materialize-textarea" name="clientSecretSpotify" />
+        <div class="input-field" style="padding-left:1em; padding-right:1em;">
+          <input type="text" id="clientSecretSpotify" class="materialize-textarea" name="clientSecretSpotify" style="font-size:9pt;" value=<?= currentProps.CLIENT_SECRET_SPOTIFY ?> />
           <label for="clientSecretSpotify" style="padding-left:1em; padding-right:1em">clientSecretSpotify</label>
         </div>
 
-        <div class="input-field" style="padding-left:1em; padding-right:1em">
-          <textarea id="keyTM" class="materialize-textarea" name="keyTM" />
+        <div class="input-field" style="padding-left:1em; padding-right:1em;">
+          <input type="text" id="keyTM" class="materialize-textarea" name="keyTM" style="font-size:9pt;" value=<?= currentProps.KEY_TM ?> />
           <label for="keyTM" style="padding-left:1em; padding-right:1em">keyTM</label>
         </div>
 
-        <div class="input-field" style="padding-left:1em; padding-right:1em">
-          <textarea id="email" class="materialize-textarea" name="email" />
+        <div class="input-field" style="padding-left:1em; padding-right:1em;">
+          <input type="text" id="email" class="materialize-textarea" name="email" style="font-size:10pt;" value=<?= currentProps.EMAIL ?> />
           <label for="email" style="padding-left:1em; padding-right:1em">email</label>
         </div>
 
-        <div class="input-field" style="padding-left:1em; padding-right:1em">
-          <textarea id="calendarId" class="materialize-textarea" name="calendarId" />
+        <div class="input-field" style="padding-left:1em; padding-right:1em;">
+          <input type="text" id="calendarId" class="materialize-textarea" name="calendarId" style="font-size:9pt;" value=<?= currentProps.CALENDAR_ID ?> />
           <label for="calendarId" style="padding-left:1em; padding-right:1em">calendarId</label>
         </div>
 
-        <div class="input-field" style="padding-left:1em; padding-right:1em">
-          <textarea id="radius" class="materialize-textarea" name="radius" value="40" />
-          <label for="radius" style="padding-left:1em; padding-right:1em">Radius</label>
+        <div class="input-field" style="padding-left:1em; padding-right:1em;">
+          <input type="text" id="latlong" class="materialize-textarea" name="latlong" style="font-size:9pt;" value=<?= currentProps.LAT_LONG ?> />
+          <label for="latlong" style="padding-left:1em; padding-right:1em">Location Coordinates</label>
+        </div>
+
+        <div class="row">
+          <div class="input-field" style="padding-left:1em; padding-right:1em;width:40px;">
+            <input type="text" id="radius" class="materialize-textarea" style="width:40px;" name="radius" style="font-size:10pt;" value=<?= currentProps.RADIUS ?> />
+            <label for="radius" style="padding-left:1em; padding-right:1em">Radius</label>
+          </div>
+          <div class="input-field" style="padding-left:1em; padding-right:1em;width:60px;">
+            <select class="browser-default" name="unit" style="width:60px;" required>
+              <option id="unit" name="unit" style="width:60px;" value="miles" <? (currentProps.UNIT == "miles") ? "selected" : "" ?>  >miles</option>
+              <option id="unit" name="unit" style="width:60px;" value="km" <? (currentProps.UNIT == "km") ? "selected": "" ?> >km</option>
+            </select>
+            <label for="unit" style="padding-top:1em;padding-bottom:1em;">Units</label>
+          </div>
         </div>
 
         <!-- Preferences -->
-        <div class="col" style=""> 
+        <div class="col"> 
           <div class="" style="padding-left:1em; padding-right:1em">
             <label for="getTopArtists" style="padding-left:1em; ">
-              <input type="checkbox" id="getTopArtists" class="checkbox" name="getTopArtists" />
+              <input type="checkbox" id="getTopArtists" class="checkbox" name="getTopArtists" <?= (currentProps.GET_TOP_ARTISTS===true) ? "checked" : "" ?> />
               <span>Get Top Artists</span>
             </label>
           </div>
 
           <div class="" style="padding-left:1em; padding-right:1em">
             <label for="getFollowing" style="padding-left:1em;">
-              <input type="checkbox" id="getFollowing" class="checkbox" name="getFollowing" />
+              <input type="checkbox" id="getFollowing" class="checkbox" name="getFollowing" <?= (currentProps.GET_FOLLOWING===true) ? "checked" : "" ?> />
               <span>Get Following</span>
             </label>
           </div>
 
           <div class="" style="padding-left:1em; padding-right:1em">
             <label for="getArtistsFromPlaylist" style="padding-left:1em; ">
-              <input type="checkbox" id="getArtistsFromPlaylist" class="" name="getArtistsFromPlaylist" />
+              <input type="checkbox" id="getArtistsFromPlaylist" class="" name="getArtistsFromPlaylist" <?= (currentProps.GET_ARTISTS_FROM_PLAYLIST===true) ? "checked" : "" ?> />
               <span>Get Artists From Playlist</span>
             </label>
           </div>
 
           <div class="input-field" style="padding-left:1em; padding-right:1em">
-            <input type="text" id="playlistId" class="materialize-textarea" name="playlistId" disabled />
+            <input type="text" id="playlistId" class="materialize-textarea" name="playlistId" style="font-size:9pt;" value=<?= currentProps.PLAYLIST_ID ?> />
             <label for="playlistId" style="padding-left:1em; padding-right:1em">Playlist ID</label>
           </div>
 
           <div class="" style="padding-left:1em; padding-right:1em">
             <label for="searchManuallyAdded" style="padding-left:1em;">
-              <input type="checkbox" id="searchManuallyAdded" class="checkbox" name="searchManuallyAdded" />
-              <span>searchManuallyAdded</span>
+              <input type="checkbox" id="searchManuallyAdded" class="checkbox" name="searchManuallyAdded"  <?= (currentProps.SEARCH_MANUALLY_ADDED===true) ? "checked" : "" ?> />
+              <span>Search Artists (Custom) sheet</span>
             </label>
           </div>
 
           <div class="" style="padding-left:1em; padding-right:1em">
             <label for="createCalendarEvents" style="padding-left:1em;">
-              <input type="checkbox" id="createCalendarEvents" class="checkbox" name="createCalendarEvents" />
-              <span>createCalendarEvents</span>
+              <input type="checkbox" id="createCalendarEvents" class="checkbox" name="createCalendarEvents"  <?= (currentProps.CREATE_CALENDAR_EVENTS===true) ? "checked" : "" ?> />
+              <span>Create Calendar Events</span>
+            </label>
+          </div>
+
+          <div class="" style="padding-left:1em; padding-right:1em">
+            <label for="debug" style="padding-left:1em;">
+              <input type="checkbox" id="debug" class="checkbox" name="debug"  <?= (currentProps.DEBUG===true) ? checked : "" ?> />
+              <span>Debug</span>
             </label>
           </div>
 
