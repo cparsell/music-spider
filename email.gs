@@ -7,35 +7,39 @@
  */
 const sendEmail = () => 
 {
-  let eventsArr = buildEventsArr(); // get the events from the sheet
-  let msgSubjRaw = []; // array of artists to be listed in subject line
-  let msgSubj = `${SERVICE_NAME} - `;
-  if (Object.keys(eventsArr).length === 0) 
-  {
-    console.warn("No events to add to email.")
-    return;
-  }
-  for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) 
-  {
-    if (eventsArr[key].acts=="")
+  try {
+    let eventsArr = buildEventsArr(); // get the events from the sheet
+    let msgSubjRaw = []; // array of artists to be listed in subject line
+    let msgSubj = `${SERVICE_NAME} - `;
+    if (Object.keys(eventsArr).length === 0) 
     {
-      msgSubjRaw.push(eventsArr[key].eName);
-      continue;
+      console.warn("No events to add to email.")
+      return;
     }
-    let actsArr = eventsArr[key].acts.split(',');
-    msgSubjRaw.push(actsArr[0]);
-  }
-  // remove duplicates from list of acts
-  let uniq = [...new Set(msgSubjRaw)];
-  msgSubj += uniq.join(', ');
+    for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) 
+    {
+      if (eventsArr[key].acts=="")
+      {
+        msgSubjRaw.push(eventsArr[key].eName);
+        continue;
+      }
+      let actsArr = eventsArr[key].acts.split(',');
+      msgSubjRaw.push(actsArr[0]);
+    }
+    // remove duplicates from list of acts
+    let uniq = [...new Set(msgSubjRaw)];
+    msgSubj += uniq.join(', ');
 
-  let message = new CreateMessage({events: eventsArr});
-  new Emailer(
-  {
-    message: message,
-    email: Config.EMAIL,
-    subject: msgSubj,
-  });
+    let message = new CreateMessage({events: eventsArr});
+    new Emailer(
+    {
+      message: message,
+      email: Config.EMAIL,
+      subject: msgSubj,
+    });
+  } catch (err) {
+    console.error(`sendEmail() error - ${err}`);
+  }
 }
 
 

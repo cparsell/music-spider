@@ -30,33 +30,38 @@ const artistsList = () =>
  */
 const buildEventsArr = () => 
 {
-  let lastRow = EVENT_SHEET.getLastRow();
-  let events = {};
-  let ordered = {};
-  if (lastRow>1) 
-  {
-    for (i=1; i<lastRow;i++)
+  try {
+    let lastRow = EVENT_SHEET.getLastRow();
+    let events = {};
+    let ordered = {};
+    if (lastRow>1) 
     {
-      let rowData = CommonLib.getRowData(EVENT_SHEET, i+1);
-      let { date } = rowData;
-      // let formattedDate = Utilities.formatDate(newDate, `PST`,`MM-dd-yyyy hh:mm a`);
-      let eventDate = Utilities.formatDate(date, "PST", "yyyy/MM/dd HH:mm");
-      events[eventDate] = rowData;
+      for (i=1; i<lastRow;i++)
+      {
+        let rowData = CommonLib.getRowData(EVENT_SHEET, HEADERNAMES, i+1);
+        let { date } = rowData;
+        date = new Date (date);
+        // let formattedDate = Utilities.formatDate(newDate, `PST`,`MM-dd-yyyy hh:mm a`);
+        let eventDate = Utilities.formatDate(date, "PST", "yyyy/MM/dd HH:mm");
+        events[eventDate] = rowData;
+      }
+        // Sort by key, which is the date
+      ordered = Object.keys(events).sort().reduce(
+        (obj, key) => 
+        { 
+          obj[key] = events[key]; 
+          return obj;
+        }, 
+        {}
+      );
+    } else {
+      console.warn("No events found- unable to build array of Events");
     }
-      // Sort by key, which is the date
-    ordered = Object.keys(events).sort().reduce(
-      (obj, key) => 
-      { 
-        obj[key] = events[key]; 
-        return obj;
-      }, 
-      {}
-    );
-  } else {
-    console.warn("No events found- unable to build array of Events");
+    
+    return ordered;
+  } catch (err) {
+    console.error(`buildEventsArr() error - ${err}`);
   }
-  
-  return ordered;
 }
 
 /**

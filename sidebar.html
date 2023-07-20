@@ -34,13 +34,13 @@
 
       const handleClearForm = (form) => {
         console.info(`Clearing form now....`);
-        document.getElementById("form").reset();
+        // document.getElementById("form").reset();
         // clearing inputs
         let inputs = form.getElementsByTagName('input');
         for (let i = 0; i < inputs.length; i++) {
           switch (inputs[i].type) {
             case 'text':
-                inputs[i].value = '';
+                inputs[i].value = "";
                 break;
             case 'radio':
             case 'checkbox':
@@ -112,7 +112,7 @@
 
         <div class="input-field" style="padding-left:1em; padding-right:1em;">
           <input type="text" id="latlong" class="materialize-textarea" name="latlong" style="font-size:9pt;" value=<?= currentProps.LAT_LONG ?> />
-          <label for="latlong" style="padding-left:1em; padding-right:1em">Location Coordinates</label>
+          <label for="latlong" style="padding-left:1em; padding-right:1em">Location (see <a href="https://www.latlong.net" target="_blank" rel="noopener noreferrer">latlong.net</a>)</label>
         </div>
 
         <div class="row">
@@ -188,5 +188,3 @@
     </div>
   </body>
 </html>
-
-
