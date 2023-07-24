@@ -158,7 +158,7 @@ class CreateMessage
     message += `<table class="tg" align="center" style="border-collapse: collapse;border-spacing: 0px;background-color: #ffffff;width: 750px;"><thead>`
     message += `<tr><td colspan=2><div style="text-align: center;"><br/><br/>`
     message += `<a href="https://github.com/cparsell/music-spider">`
-    message += `<img src="https://i.postimg.cc/HkVc4bCq/music-spider-logo-nobg.png" height="22%" width="22%"/></a><br>`;
+    message += `<img src="https://i.postimg.cc/xjv4nbBV/music-spider-logo-nobg.png" height="22%" width="22%"/></a><br>`;
     message += `<span style="font-family:helvetica, sans-serif;font-size:30px;color:#e9e9e9;">`;
     message += `<strong>${SERVICE_NAME.toLowerCase()}</strong><br><br></span></div></td></tr></thead>`;
     message += `<tbody>`
