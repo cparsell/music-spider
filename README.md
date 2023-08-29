@@ -45,8 +45,7 @@ Then it sends an email (e.g. weekly) listing these events.
 - Rename Config.example.gs to `config.gs`
 - Replace values in `Config.gs` to match your API keys ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/))
 - Set `latlong` to coordinates of your rough location using (latlong.net)[https://www.latlong.net/]
-- If want to get artist names from a Spotify playlist, use the share link to get the playlist ID.
-  - If the share link is https://open.spotify.com/playlist/2323bn4n2324nb224b2442?si=3568n535n85685685n then the ID is 2323bn4n2324nb224b2442
+- If want to get artist names from a Spotify playlist, get a share link from Spotify to get the playlist ID. If the link looks like `https://open.spotify.com/playlist/2323bn4n2324nb224b2442?si=3568n535n85685685n` then the ID is `2323bn4n2324nb224b2442`. Past this into the value for `playlistId` in `config.gs`.
 
 ### 2. Spotify Authorization:
 - Go to Apps Script from the sheet (**Extensions > Apps Script**)
