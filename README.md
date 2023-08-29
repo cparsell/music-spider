@@ -18,7 +18,7 @@ It can gather the names of artists from Spotify's API from three sources:
 - **Artists you follow**
 - **Artists in a specified playlist**
 
-These are all optional and you can configure it to gather these from any or all of these in the **Config.gs** file. It writes the artist's names to the Artist Sheet.
+These are all optional and you can configure it to gather these from any or all of these in the `config.gs` file. It writes the artist's names to the Artist Sheet.
 
 It then searches Ticketmaster's API for events with these artist's names as keywords and in the area you specify. It writes any event matches into the Event Sheet.
 
@@ -63,6 +63,8 @@ Then it sends an email (e.g. weekly) listing these events.
 This will set up Apps Script to regularly update artists, events, and send you an email. Change the timing of these to your preference. If you do not want an email, just don't create this trigger.
 
 - In the Apps Script project, go to **Triggers** on the left sidebar
+
+### Gathers artist history
 - Click **Add Trigger**
   - Function to run: **refreshArtists**   (the function that updates your Spotify artists)
   - Event source: **Time-driven**
@@ -71,13 +73,15 @@ This will set up Apps Script to regularly update artists, events, and send you a
   - **2am to 3am**
   - Save.
 
+### Event refresh trigger
 - Click **Add Trigger**
   - Function to run: **refreshEvents**   (the function that looks for new events on Ticketmaster)
   - Event source: **Time-driven**
   - **Week timer** (or your preference)
   - **4am to 5am**
   - Save.
-
+    
+### Email Trigger
 - Click **Add Trigger**
   - Function to run: **sendEmail**    (send out a regular email with events)
   - Event source: **Time-driven**
@@ -86,6 +90,7 @@ This will set up Apps Script to regularly update artists, events, and send you a
   - **6am to 7am**
   - Save.
 
+### Add menu to the spreadsheet
 - Click **Add Trigger**
   - Function to run: **barMenu**    (adds a menu in the spreadsheet)
   - Event source: **From Spreadsheet**
