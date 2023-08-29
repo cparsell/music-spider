@@ -31,24 +31,28 @@ Then it sends an email (e.g. weekly) listing these events.
 - Ticketmaster API account
 
 
-## TL;DR Setup
+## Setup Outline
 1. Copy [template Google Spreadsheet](https://docs.google.com/spreadsheets/d/1H4pvSK4jpRikHO11PtpJGSdycpVmM566XLQzRot4E_g/edit?usp=sharing) to your drive
-2. Set up API keys for ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/)). Put keys in config file. In the config file, you can also change settings to your liking.
+2. Set up API keys for ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/)). Put keys in `config.gs` file. In the config file, you can also change settings to your liking.
 3. Deploy as web app. Run it in browser. 
 4. Copy URI **given IN BOLD in web app** into Spotiy App settings under Redirect URI (STEP 3) NOTE: Do NOT use URL! It is different for me at least. Save.
 3. Set up triggers in Apps Script
 
-## Step by step setup
+## Setup, step by step
 
 ### 1. Template file
 - Go to the  [template Google Spreadsheet](https://docs.google.com/spreadsheets/d/1H4pvSK4jpRikHO11PtpJGSdycpVmM566XLQzRot4E_g/edit?usp=sharing) and make a copy of it on your Google Drive. This will copy the Apps Script code with it.
-- Rename Config.example.gs to **Config.gs**
-- Replace values in **Config.gs** to match your API keys ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/)) and set other settings
-  - If you use a Spotify playlist, get the playlist ID from the end of the playlist URL but before the ? character
+- Rename Config.example.gs to `config.gs`
+- Replace values in `Config.gs` to match your API keys ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/))
+- Set `latlong` to coordinates of your rough location using (latlong.net)[https://www.latlong.net/]
+- If want to get artist names from a Spotify playlist, use the share link to get the playlist ID.
+  - If the share link is https://open.spotify.com/playlist/2323bn4n2324nb224b2442?si=3568n535n85685685n then the ID is 2323bn4n2324nb224b2442
 
 ### 2. Spotify Authorization:
-- Go to Apps Script from the sheet (**Extensions > Apps Script**), then click **Deploy > New Deployment > Web app** and copy the link.
-- Go to this link in your browser. This page will give you further instructions to:
+- Go to Apps Script from the sheet (**Extensions > Apps Script**)
+- Click **Deploy > New Deployment > Web app** and it will provide a link to the deployed web app.
+- Copy the link and go to this address in your web browser.
+- This page will give you further instructions to:
     1. Navigate to your app via the **[Spotify App Dashboard](https://developer.spotify.com/dashboard/applications)**
     2. Add the given URI **(the one given on this page, don't use the URL you went to)** to the **Redirect URIs** field, found under "Edit Settings"
     3. Go to the given URL, log into the desired user's Spotify account, and approve access.
