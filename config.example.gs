@@ -1,9 +1,7 @@
 // Get script properties, which holds all of the API keys and configuration settings
 const SCRIPT_PROPS = PropertiesService.getUserProperties();
 
-/* THIS SECTION IS COMMENTED OUT IF YOU ARE CONFIGURING USING THE MENU CONFIGURATION SIDEBAR */
-/* If you prefer to provide your API keys/etc here, uncomment this try-catch block */
-/*
+/* This is where you put your API keys and preferences */
 try {
   SCRIPT_PROPS.setProperties(
   {
@@ -35,8 +33,6 @@ try {
 } catch (err) {
     console.log(`Failed with error: ${err.message}`);
 }
-*/
-/* END OF COMMENTED OUT BIT*/
 
 // Artists that may show up in Spotify but will not be added to the Artists sheet
 // because they're long deceased, you're not interested in their concert, etc.
@@ -48,21 +44,3 @@ const ARTISTS_TO_IGNORE =
   'The Beatles',
   'J Dilla',
 ];
-
-const Config = {
-  SPREADSHEET_ID: USER_PROPS.getProperty(`spreadsheetId`),
-  CLIENT_ID_SPOTIFY: USER_PROPS.getProperty(`clientIdSpotify`),
-  CLIENT_SECRET_SPOTIFY: USER_PROPS.getProperty(`clientSecretSpotify`),
-  KEY_TM: USER_PROPS.getProperty(`keyTM`),
-  LAT_LONG: USER_PROPS.getProperty(`latlong`),
-  RADIUS: Number(USER_PROPS.getProperty(`radius`)),
-  UNIT: USER_PROPS.getProperty(`unit`),
-  GET_TOP_ARTISTS: (USER_PROPS.getProperty(`getTopArtists`) === 'true'),
-  GET_FOLLOWING: (USER_PROPS.getProperty(`getFollowing`) === 'true'),
-  GET_ARTISTS_FROM_PLAYLIST: (USER_PROPS.getProperty(`getArtistsFromPlaylist`) === 'true'),
-  PLAYLIST_ID: USER_PROPS.getProperty(`playlistId`),
-  EMAIL: USER_PROPS.getProperty(`email`),
-  CREATE_CALENDAR_EVENTS: (USER_PROPS.getProperty(`createCalendarEvents`) === 'true'),
-  CALENDAR_ID: USER_PROPS.getProperty(`calendarId`),
-  DEBUG: (USER_PROPS.getProperty(`debug`) === 'true'),
-};
