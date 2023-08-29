@@ -1,8 +1,11 @@
-// Here is where you provide API keys and set search preferences
-// These are stored in the User Properties to be retrieved by the code elsewhere
-const USER_PROPS = PropertiesService.getUserProperties();
+// Get script properties, which holds all of the API keys and configuration settings
+const SCRIPT_PROPS = PropertiesService.getUserProperties();
+
+/* THIS SECTION IS COMMENTED OUT IF YOU ARE CONFIGURING USING THE MENU CONFIGURATION SIDEBAR */
+/* If you prefer to provide your API keys/etc here, uncomment this try-catch block */
+/*
 try {
-  USER_PROPS.setProperties(
+  SCRIPT_PROPS.setProperties(
   {
     // Spreadsheet ID is in the spreadsheet URL:
     // https://docs.google.com/spreadsheets/d/THIS_IS_THE_ID/edit#gid=0
@@ -32,6 +35,8 @@ try {
 } catch (err) {
     console.log(`Failed with error: ${err.message}`);
 }
+*/
+/* END OF COMMENTED OUT BIT*/
 
 // Artists that may show up in Spotify but will not be added to the Artists sheet
 // because they're long deceased, you're not interested in their concert, etc.
