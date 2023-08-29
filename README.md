@@ -40,11 +40,16 @@ Then it sends an email (e.g. weekly) listing these events.
 
 ## Setup, step by step
 
-### 1. Template file
-- Go to the  [template Google Spreadsheet](https://docs.google.com/spreadsheets/d/1H4pvSK4jpRikHO11PtpJGSdycpVmM566XLQzRot4E_g/edit?usp=sharing) and make a copy of it on your Google Drive. This will copy the Apps Script code with it.
-- Rename Config.example.gs to `config.gs`
-- Replace values in `Config.gs` to match your API keys ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/))
-- Set `latlong` to coordinates of your rough location using (latlong.net)[https://www.latlong.net/]
+### 1. Configuration
+- In the Apps Script project, go to **Triggers** on the left sidebar
+  - Click **Add Trigger**
+  - Function to run: **barMenu**    (adds a menu in the spreadsheet)
+  - Event source: **From Spreadsheet**
+  - Event type: **On Open**
+  - Save and then reload the spreadsheet.
+- Under **Music Spider** menu, select **Configure**
+- Paste your API keys from ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/)) accordingly
+- Paste your `latlong` to coordinates of your rough location using (latlong.net)[https://www.latlong.net/]
 - If you want to get artists from your listening history (the artists you most listen to), leave `getTopArtists` set to `true`. Otherwise change it to `false`.
 - If you want to use artists that you follow, leave `getFollowing` set to `true`. Otherwise change it to `false`.
 - If want to get artist names from a Spotify playlist, leave `getArtistsFromPlaylist` set to `true` and get a share link from Spotify to find the ID. If the link looks like `https://open.spotify.com/playlist/2323bn4n2324nb224b2442?si=3568n535n85685685n` then the ID is `2323bn4n2324nb224b2442`. Past this into the value for `playlistId` in `config.gs`.
@@ -92,12 +97,7 @@ This will set up Apps Script to regularly update artists, events, and send you a
   - **6am to 7am**
   - Save.
 
-### Add menu to the spreadsheet
-- Click **Add Trigger**
-  - Function to run: **barMenu**    (adds a menu in the spreadsheet)
-  - Event source: **From Spreadsheet**
-  - Event type: **On Open**
-  - Save.
+
 
 ### Updating:
 Your copy of this code may not be up-to-date if I have updated the repository after you made your copy. There are two ways to update the code in Apps Script:
