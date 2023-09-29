@@ -1,8 +1,10 @@
 /**
  * ----------------------------------------------------------------------------------------------------------------
  * Send fetch requests to Resident Advisor - multiple if getting all pages
+ * Returns each event combined in one array
  * @param {string} area which page of results to fetch 
  * @param {boolean} getAllPages if false will only return 1 page (18 results max)
+ * @returns {array} results [{eventdata}, {eventdata}...]
  */
 const getRAData = async (area=218, getAllPages = true) => {
   const pageSize = 18; // 18 is teh max number of results RA will send in one page
@@ -22,16 +24,15 @@ const getRAData = async (area=218, getAllPages = true) => {
       // Log.Debug("results", firstPage);
       let data = JSON.parse(firstPage).data.eventListings;
       let totalResults = data.totalResults;
-      //Logger.log(CommonLib.prettifyJson(firstPage));
 
       results.push(...data.data);
-      // Bail out if we only wanted the first page
+      // Return only one page if that's what's asked for
       if (!getAllPages)
       {
         
         return results;
       }
-      Logger.log("Total results: " + totalResults);
+      Logger.log("getRAData() - Total results according to API: " + totalResults);
       running = pageSize;
       for (let pg=2;pg<=Math.ceil(totalResults/pageSize);pg++) {
         let pgSize = pageSize;
@@ -45,11 +46,10 @@ const getRAData = async (area=218, getAllPages = true) => {
       }
       return results;
     } else {
-      Log.Error(`Failed to get data from ${url} - `);
-      return [];
+      throw new Error(`response code ${responseCode} - ${RESPONSECODES[responseCode]}`);
     }
   } catch (err) {
-    Log.Error(`Failed to get data from ${url} - ${err}`);
+    Log.Error(`getRAData() - Failed to get data from ${url} - ${err}`);
     return [];
   }
 }
@@ -102,24 +102,29 @@ const returnRAOptions = (page, area) => {
 const searchRA = async (artistList) => {
   let results = new Array;
   try {
-    let listings = await getRAData();
-    Logger.log("searchRA() - TOTAL events returned: " + listings.length);
+    // Fetch all Resident Advisor events in the next 8 months in your region
+    let listings = await getRAData(Math.floor(Config.REGION_RA));
+    Logger.log("searchRA() - TOTAL events parsed: " + listings.length);
+    // Run through each result to see if they match any artists in the Artist Sheet
     for (let i=0; i<listings.length;i++){
       let listing = listings[i].event;
-      Logger.log(listing);
+      Log.Debug(listing);
       if (listing) {
         let title = listing?.title;
         let acts = [];
         let venue = listing?.venue?.name
+        // if there are artists listed, create an array with their names 
+        // (most of RA events don't seem to have artists listed here though)
         if (listing.artists.name) {
           for (let index=0; index<listings.length;artist++){
             acts.push(listing.artists[index].name);
           }
         }
+        // For each artist in the Artist Sheet, check the result for 
         for (let j=0; j<artistList.length;j++) {
           acts.forEach(function(res) {
             if(res.toUpperCase() == artistList[j].toUpperCase()) {
-              Logger.log(`Found a match in the listed acts for ${artistList[j]}`);
+              Logger.log(`searchRA() - Found a match in the listed acts for ${artistList[j]}`);
               let event = {
                 date: Utilities.formatDate(new Date(listing.startTime), "PST", "yyyy/MM/dd HH:mm"),
                 eName: title,
@@ -134,7 +139,7 @@ const searchRA = async (artistList) => {
             } 
           });
           if (title.toUpperCase().indexOf(artistList[j].toString().toUpperCase()) > -1) {
-            Log.Debug(`${title} match for ${artistList[j]}`);
+            Log.Debug(`searchRA() - ${title} match for ${artistList[j]}`);
             let event = {
               date: Utilities.formatDate(new Date(listing.startTime), "PST", "yyyy/MM/dd HH:mm"),
               eName: title,
@@ -183,11 +188,12 @@ const searchRAMain = async (artistsArr) => {
       // Check event sheet to see if it was already found previously (if name, venue, and date all match)
       for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
         let thisEvent = eventsArr[key];
+        // make sure the date on the sheet and the date in this result are formatted the same, for comparison
         let thisEventDate = Utilities.formatDate(new Date(thisEvent.date), "PST", "yyyy/MM/dd HH:mm");
         let resultDate = Utilities.formatDate(new Date(results[j].date), "PST", "yyyy/MM/dd HH:mm");
-        // if (results[j].venue != thisEvent.venue && results[j].eName != thisEvent.eName) Logger.log("Same venue and name")
+        // if the names are the same, the venues are the same, AND the dates are the same then it's considered the same event - and ignores it
         if ((results[j].eName.indexOf(thisEvent.eName) > -1 || thisEvent.eName.indexOf(results[j].eName)) && results[j].venue == thisEvent.venue && thisEventDate == resultDate) {
-          Logger.log(results[j].eName+" is already in the list - ignoring");
+          Logger.log(`searchRAMain() - ${results[j].eName} is already in the list - ignoring`);
           exists = true;
         } 
       }
@@ -211,6 +217,6 @@ const searchRAMain = async (artistsArr) => {
     return [];
   }
 
-  Logger.log(JSON.stringify(newEvents));
+  Log.Debug(JSON.stringify(newEvents));
   return newEvents;
 }

@@ -6,7 +6,6 @@
  */
 const refreshEvents = async () => 
 {
-  
   //get list of artists from sheet
   let artistsArr = artistsList();
   let existingEvents = buildEventsArr();
@@ -76,8 +75,11 @@ const refreshEvents = async () =>
   
   // Write new events to events sheet
   writeEventsToSheet(eventsArr);
-  let eventsRA = await searchRAMain(artistsArr);
-  writeEventsToSheet(eventsRA);
+  // If searchRA set to TRUE in config.gs then search Resident Advisor too
+  if (Config.SEARCH_RA) {
+    let eventsRA = await searchRAMain(artistsArr);
+    writeEventsToSheet(eventsRA);
+  }
   // Write Calendar Event for new events
   // if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(eventsArr);
   // if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(eventsRA);

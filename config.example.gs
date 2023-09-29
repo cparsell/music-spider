@@ -17,6 +17,10 @@ try {
     'latlong': '34.052235,-118.243683',  // get your latlong from a website like https://www.latlong.net/
     'radius': 40,
     'unit': 'miles',
+    // Resident Advisor settings
+    'searchRA': true, 
+    // see resAdv_enums for known region codes, 218 is Bay Area, 8 is New York, 23 is Los Angeles
+    'regionRA': 23, 
     // Spotify preferances
     'getTopArtists': true,
     'getFollowing': true, 

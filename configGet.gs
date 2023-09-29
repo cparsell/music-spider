@@ -15,6 +15,8 @@ const Config = Object.freeze({
   RADIUS: Number(SCRIPT_PROPS.getProperty(`radius`)),
   UNIT: SCRIPT_PROPS.getProperty(`unit`),
   // these booleans get converted into strings by the Properties Service - this will turn them back into booleans
+  SEARCH_RA: (SCRIPT_PROPS.getProperty(`searchRA`).toLowerCase()  === 'true'), 
+  REGION_RA: SCRIPT_PROPS.getProperty(`regionRA`), 
   GET_TOP_ARTISTS: (SCRIPT_PROPS.getProperty(`getTopArtists`).toLowerCase()  === 'true'), 
   GET_FOLLOWING: (SCRIPT_PROPS.getProperty(`getFollowing`).toLowerCase()  === 'true'),
   GET_ARTISTS_FROM_PLAYLIST: (SCRIPT_PROPS.getProperty(`getArtistsFromPlaylist`).toLowerCase()  === 'true'),
