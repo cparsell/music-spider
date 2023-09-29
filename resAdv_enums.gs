@@ -2,7 +2,7 @@
 // I found this query in a StackOverflow post: https://stackoverflow.com/questions/34182163/how-to-get-residentadvisor-api-work
 // This is what led me to believe it would be possible to reach out to Resident Advisor's GraphQL API
 //--data '{"query":"query GET_POPULAR_EVENTS($filters: FilterInputDtoInput, $pageSize: Int) { eventListings(filters: $filters, pageSize: $pageSize, page: 1, sort: { attending: { priority: 1, order: DESCENDING } }) {   data {     id     listingDate     event {       ...eventFields       __typename     }     __typename   }   __typename }\r\n}\r\n\r\nfragment eventFields on Event { id title attending date contentUrl flyerFront queueItEnabled newEventForm images {   id   filename   alt   type   crop   __typename } venue {   id   name   contentUrl   live   __typename } __typename\r\n}","variables":{"filters":{"areas":{"eq":229},"listingDate":{"gte":"2023-06-01","lte":"2023-08-04"},"listingPosition":{"eq":1}},"pageSize":10}}'
- // 7: 
+  // 7: 
   // 8: New York
   // 17: Chicago
   // 19: Detroit
