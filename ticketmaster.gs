@@ -78,7 +78,7 @@ const refreshEvents = async () =>
   // If searchRA set to TRUE in config.gs then search Resident Advisor too
   if (Config.SEARCH_RA) {
     let eventsRA = await searchRAMain(artistsArr);
-    writeEventsToSheet(eventsRA);
+    // writeEventsToSheet(eventsRA);
   }
   // Write Calendar Event for new events
   // if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(eventsArr);

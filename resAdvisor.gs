@@ -14,22 +14,22 @@ const getRAData = async (area=218, getAllPages = true) => {
   
   let results = new Array;
   try { 
-    let options = returnRAOptions(page, area);
+    let options = returnRAOptions(page, area, queryRAEventListings);
     let response = await UrlFetchApp.fetch(url, options);
     let firstPage = await response.getContentText();
     let responseCode = await response.getResponseCode();
     Log.Info(`Response Code ${responseCode} - ${RESPONSECODES[responseCode]}`);
     if (responseCode == 200 || responseCode == 201) 
     {
-      // Log.Debug("results", firstPage);
-      let data = JSON.parse(firstPage).data.eventListings;
-      let totalResults = data.totalResults;
+      // Log.Debug("results", JSON.parse(firstPage));
+      let data = await JSON.parse(firstPage);
+      let newData = await data.data.eventListings
+      let totalResults = newData.totalResults;
 
-      results.push(...data.data);
+      results.push(...newData.data);
       // Return only one page if that's what's asked for
       if (!getAllPages)
       {
-        
         return results;
       }
       Logger.log("getRAData() - Total results according to API: " + totalResults);
@@ -44,6 +44,7 @@ const getRAData = async (area=218, getAllPages = true) => {
         let nextPageParsed = JSON.parse(nextPage).data.eventListings.data;
         results.push(...nextPageParsed);
       }
+      Log.Debug("results", results);
       return results;
     } else {
       throw new Error(`response code ${responseCode} - ${RESPONSECODES[responseCode]}`);
@@ -59,8 +60,10 @@ const getRAData = async (area=218, getAllPages = true) => {
  * Returns the headers and variables formatted for the API fetch request
  * @param {string} page which page of results to fetch 
  * @param {string} area which locality to search in (see list in resAdv_enums) 
+ * @param {string} theQuery optional, defaults to queryRAEventListings if not provided
+ * @returns {object} options {filters:{...}, pageSize, page}
  */
-const returnRAOptions = (page, area) => {
+const returnRAOptions = (page, area, theQuery=queryRAEventListings) => {
   let variables = {
     "filters":{
       "areas":{"eq": area},
@@ -76,7 +79,7 @@ const returnRAOptions = (page, area) => {
   }
 
   let query = {
-    "query": queryRAEventListings,
+    "query": theQuery, 
     "variables": variables
   }
   const headers = {
@@ -101,52 +104,81 @@ const returnRAOptions = (page, area) => {
  */
 const searchRA = async (artistList) => {
   let results = new Array;
-  try {
+  // try {
     // Fetch all Resident Advisor events in the next 8 months in your region
     let listings = await getRAData(Math.floor(Config.REGION_RA));
     Logger.log("searchRA() - TOTAL events parsed: " + listings.length);
     // Run through each result to see if they match any artists in the Artist Sheet
     for (let i=0; i<listings.length;i++){
-      let listing = listings[i].event;
+      let listing = listings[i]?.event;
       Log.Debug(listing);
       if (listing) {
         let title = listing?.title;
         let acts = [];
         let venue = listing?.venue?.name
+        let images = listing?.images;
+        let imageUrl = "";
+        // Logger.log(title);
+        // Logger.log(images.length);
+        imageUrl = listing?.images[0]?.filename;
+        // listing?.images?.forEach(item => {
+        //   if (item.type == "FLYERFRONT") imageUrl = item.filename;
+        //   if (item.type == "FLYERFRONT" && title == "Portola Festival 2023") {
+        //     imageUrl = item.filename;
+        //     Logger.log(imageUrl);
+        //   }
+        // })
+          // imageUrl = images[0].filename;
+          // for (let k=0;k<images?.length;k++)
+          // {
+          //   if (images[k]?.type == "FLYERFRONT") {
+          //     imageUrl = images[k]?.filename;
+          //     Logger.log(title);
+          //     Logger.log(imageUrl);
+              
+          //   }
+          // }
+        // } 
+        // Logger.log(imageUrl);
         // if there are artists listed, create an array with their names 
         // (most of RA events don't seem to have artists listed here though)
-        if (listing.artists.name) {
-          for (let index=0; index<listings.length;artist++){
-            acts.push(listing.artists[index].name);
+        let artists = listing?.artists;
+        if (artists.length > 0) {
+          for (let index=0; index<artists.length;index++){
+            acts.push(artists[index].name);
           }
         }
+
+        // Logger.log(acts);
         // For each artist in the Artist Sheet, check the result for 
         for (let j=0; j<artistList.length;j++) {
+          // check artist against list of acts in this result
           acts.forEach(function(res) {
-            if(res.toUpperCase() == artistList[j].toUpperCase()) {
-              Logger.log(`searchRA() - Found a match in the listed acts for ${artistList[j]}`);
+            if(res.toUpperCase() == artistList[j].toString().toUpperCase()) {
+              Log.Debug(`searchRA() - Found a match for artist: ${artistList[j]} in list of acts`);
               let event = {
                 date: Utilities.formatDate(new Date(listing.startTime), "PST", "yyyy/MM/dd HH:mm"),
                 eName: title,
                 city: "",
                 venue: venue,
                 url: 'https://ra.co' + listing.contentUrl,
-                image: listing.images.filename,
+                images: imageUrl,
                 acts: acts.toString(),
                 address: listing.venue.address
               }
               results.push(event);
             } 
           });
-          if (title.toUpperCase().indexOf(artistList[j].toString().toUpperCase()) > -1) {
-            Log.Debug(`searchRA() - ${title} match for ${artistList[j]}`);
+          // check artist against title of this result
+          if ((title.toString().toUpperCase().indexOf(artistList[j].toString().toUpperCase()) > -1) || (artistList[j].toString().toUpperCase().indexOf(title.toString().toUpperCase()) > -1) ) {
+            Log.Debug(`searchRA() - Found a match for artist ${artistList[j]} in title: ${title}`);
             let event = {
               date: Utilities.formatDate(new Date(listing.startTime), "PST", "yyyy/MM/dd HH:mm"),
               eName: title,
               city: "",
               venue: venue,
               url: 'https://ra.co' + listing.contentUrl,
-              image: listing.images.filename,
+              image: imageUrl,
               acts: acts.toString(),
               address: listing.venue.address
             }
@@ -158,10 +190,10 @@ const searchRA = async (artistList) => {
     
     if (results.length > 0) results = CommonLib.arrayRemoveDupes(results);
     return results;
-  } catch (err) {
-    Log.Error(`searchRA() error - ${err}`);
-    return [];
-  }
+  // } catch (err) {
+  //   Log.Error(`searchRA() error - ${err}`);
+  //   return [];
+  // }
 }
 
 /**
@@ -173,7 +205,7 @@ const searchRA = async (artistList) => {
 const searchRAMain = async (artistsArr) => {
   let newEvents = {};
 
-  try {
+  // try {
     if (!artistsArr) artistsArr = artistsList();
     const eventsArr = buildEventsArr();
     // returns events that match your artists
@@ -199,6 +231,7 @@ const searchRAMain = async (artistsArr) => {
       }
       if (exists === false) {
         Log.Debug(`searchRAMain() - Found new RA event: ${results[j].eName}`);
+
         newEvents[results[j].date] = {
           date: results[j].date,
           eName: results[j].eName,
@@ -212,11 +245,12 @@ const searchRAMain = async (artistsArr) => {
       }
       exists = false;
     }
-  } catch (err) {
-    Log.Error(`searchRAMain () error - ${err}`);
-    return [];
-  }
+  // } catch (err) {
+  //   Log.Error(`searchRAMain () error - ${err}`);
+  //   return [];
+  // }
 
   Log.Debug(JSON.stringify(newEvents));
+  writeEventsToSheet(newEvents);
   return newEvents;
 }

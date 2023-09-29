@@ -205,11 +205,12 @@ const queryRAPopularEvents = `query GET_POPULAR_EVENTS($filters: FilterInputDtoI
       id     
       listingDate     
       event {       
-        ...eventFields       
+        ...eventFields artists {id name __typename}        
         __typename     
       }     
       __typename   
-    }   
+    }
+    totalResults    
     __typename 
   }
 }
@@ -233,7 +234,8 @@ fragment eventFields on Event
     } 
   venue {  
     id   
-    name   
+    name  
+    address 
     contentUrl  
     live    
     __typename 
