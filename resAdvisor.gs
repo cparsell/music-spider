@@ -64,12 +64,16 @@ const getRAData = async (area=218, getAllPages = true) => {
  * @returns {object} options {filters:{...}, pageSize, page}
  */
 const returnRAOptions = (page, area, theQuery=queryRAEventListings) => {
+  let today = new Date();
+  let date = Utilities.formatDate(today, "PST", "yyyy/MM/dd")
+  let addTime = new Date(today.setMonth(today.getMonth() + 8));
+  let nextYear  = Utilities.formatDate(addTime, "PST", "yyyy/MM/dd");
   let variables = {
     "filters":{
       "areas":{"eq": area},
       // "id": 1731004,
       // "addressRegion":"San Francisco/Oakland",
-      "listingDate":{"gte":Utilities.formatDate(new Date(), "PST", "yyyy/MM/dd"),"lte":"2024-04-25"},
+      "listingDate":{"gte": date, "lte": nextYear},
       // "event": {"title": "Playxland: Trans Pride Beach Party!" },
       //"artists": { "name": "Four Tet" },
       "listingPosition":{"eq":1}
@@ -117,10 +121,10 @@ const searchRA = async (artistList) => {
         let acts = [];
         let venue = listing?.venue?.name
         let images = listing?.images;
-        let imageUrl = "";
+        let imageUrl = listing?.images[0]?.filename;
         // Logger.log(title);
         // Logger.log(images.length);
-        imageUrl = listing?.images[0]?.filename;
+        
         // listing?.images?.forEach(item => {
         //   if (item.type == "FLYERFRONT") imageUrl = item.filename;
         //   if (item.type == "FLYERFRONT" && title == "Portola Festival 2023") {
@@ -148,47 +152,36 @@ const searchRA = async (artistList) => {
             acts.push(artists[index].name);
           }
         }
-
+        let event = {
+          date: Utilities.formatDate(new Date(listing.startTime), "PST", "yyyy/MM/dd HH:mm"),
+          eName: title,
+          city: "",
+          venue: venue,
+          url: 'https://ra.co' + listing.contentUrl,
+          image: imageUrl,
+          acts: acts.toString(),
+          address: listing.venue.address
+        }
         // Logger.log(acts);
         // For each artist in the Artist Sheet, check the result for 
         for (let j=0; j<artistList.length;j++) {
           // check artist against list of acts in this result
           acts.forEach(function(res) {
             if(res.toUpperCase() == artistList[j].toString().toUpperCase()) {
-              Log.Debug(`searchRA() - Found a match for artist: ${artistList[j]} in list of acts`);
-              let event = {
-                date: Utilities.formatDate(new Date(listing.startTime), "PST", "yyyy/MM/dd HH:mm"),
-                eName: title,
-                city: "",
-                venue: venue,
-                url: 'https://ra.co' + listing.contentUrl,
-                images: imageUrl,
-                acts: acts.toString(),
-                address: listing.venue.address
-              }
+              Log.Debug(`searchRA() - Found a match for artist: ${artistList[j]} in list of acts - title: ${title}`);
               results.push(event);
             } 
           });
           // check artist against title of this result
           if ((title.toString().toUpperCase().indexOf(artistList[j].toString().toUpperCase()) > -1) || (artistList[j].toString().toUpperCase().indexOf(title.toString().toUpperCase()) > -1) ) {
             Log.Debug(`searchRA() - Found a match for artist ${artistList[j]} in title: ${title}`);
-            let event = {
-              date: Utilities.formatDate(new Date(listing.startTime), "PST", "yyyy/MM/dd HH:mm"),
-              eName: title,
-              city: "",
-              venue: venue,
-              url: 'https://ra.co' + listing.contentUrl,
-              image: imageUrl,
-              acts: acts.toString(),
-              address: listing.venue.address
-            }
             results.push(event);
           }
         }
       }
     }
-    
-    if (results.length > 0) results = CommonLib.arrayRemoveDupes(results);
+    //Log.Info(JSON.stringify(results));
+    //if (results.length > 0) results = CommonLib.arrayRemoveDupes(results);
     return results;
   // } catch (err) {
   //   Log.Error(`searchRA() error - ${err}`);
@@ -210,22 +203,32 @@ const searchRAMain = async (artistsArr) => {
     const eventsArr = buildEventsArr();
     // returns events that match your artists
     const results = await searchRA(artistsArr); 
-    let exists = false;
+    
     // Check if the events already are on your events list
     for (let j=0; j<results.length;j++) {
+      
       // if same URL exist in the event sheet don't add this result to the list
       let urlExists = CommonLib.searchColForValue(EVENT_SHEET, "URL", results[j].url);
       if (urlExists) continue;
-      
+      let exists = false;
       // Check event sheet to see if it was already found previously (if name, venue, and date all match)
       for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
+        
         let thisEvent = eventsArr[key];
         // make sure the date on the sheet and the date in this result are formatted the same, for comparison
         let thisEventDate = Utilities.formatDate(new Date(thisEvent.date), "PST", "yyyy/MM/dd HH:mm");
         let resultDate = Utilities.formatDate(new Date(results[j].date), "PST", "yyyy/MM/dd HH:mm");
         // if the names are the same, the venues are the same, AND the dates are the same then it's considered the same event - and ignores it
-        if ((results[j].eName.indexOf(thisEvent.eName) > -1 || thisEvent.eName.indexOf(results[j].eName)) && results[j].venue == thisEvent.venue && thisEventDate == resultDate) {
-          Logger.log(`searchRAMain() - ${results[j].eName} is already in the list - ignoring`);
+        if ((results[j].eName.indexOf(thisEvent.eName) > -1 || thisEvent.eName.indexOf(results[j].eName) > -1) && results[j].venue == thisEvent.venue && thisEventDate == resultDate) {
+          // Logger.log(results[j].eName);
+          // Logger.log(thisEvent.eName);
+          // Logger.log(thisEvent.venue);
+          // Logger.log(results[j].venue);
+          // Logger.log(thisEventDate);
+          // Logger.log(resultDate);
+          // Logger.log(results[j].eName.indexOf(thisEvent.eName));
+          // Logger.log(thisEvent.eName.indexOf(results[j].eName));
+          Log.Info(`searchRAMain() - ${results[j].eName} is already in the list - ignoring`);
           exists = true;
         } 
       }
@@ -250,7 +253,7 @@ const searchRAMain = async (artistsArr) => {
   //   return [];
   // }
 
-  Log.Debug(JSON.stringify(newEvents));
+  //Log.Info(JSON.stringify(newEvents));
   writeEventsToSheet(newEvents);
   return newEvents;
 }
