@@ -9,7 +9,7 @@ const refreshEvents = async () =>
   
   //get list of artists from sheet
   let artistsArr = artistsList();
-
+  let existingEvents = buildEventsArr();
   //Clean expired events
   removeExpiredEntries(EVENT_SHEET);
 
@@ -29,20 +29,42 @@ const refreshEvents = async () =>
       {
         for (const [index, [key]] of Object.entries(Object.entries(data))) 
         {
-          let exists = CommonLib.searchColForValue(EVENT_SHEET, "URL", data[key].url);
-          if (!exists) {
-            eventsArr[key] = 
-            {
-              date: data[key].date,
-              eName: data[key].eName,
-              city: data[key].city,
-              venue: data[key].venue, 
-              url: data[key].url, 
-              image: data[key].image,
-              acts: data[key].acts.toString(),
-              address: data[key].address,
+          let newEvent = data[key];
+          let urlExists = CommonLib.searchColForValue(EVENT_SHEET, "URL", newEvent.url);
+          if (urlExists) {
+            Logger.log("URL exists for " + newEvent.eName);
+            continue;
             }
+          for (const [indexb, [keyb]] of Object.entries(Object.entries(existingEvents))) {
+            if (results[j].eName != newEvent.eName && existingEvents[keyb].venue != newEvent.venue && new Date(existingEvents[keyb].date) != new Date(newEvent.date)) {
+              Logger.log("Found new event")
+              eventsArr[key] = 
+              {
+                date: data[key].date,
+                eName: data[key].eName,
+                city: data[key].city,
+                venue: data[key].venue, 
+                url: data[key].url, 
+                image: data[key].image,
+                acts: data[key].acts.toString(),
+                address: data[key].address,
+              }
+            }
+
           }
+          // if (!exists) {
+          //   eventsArr[key] = 
+          //   {
+          //     date: data[key].date,
+          //     eName: data[key].eName,
+          //     city: data[key].city,
+          //     venue: data[key].venue, 
+          //     url: data[key].url, 
+          //     image: data[key].image,
+          //     acts: data[key].acts.toString(),
+          //     address: data[key].address,
+          //   }
+          // }
         }
         Utilities.sleep(200);
       });
@@ -51,11 +73,15 @@ const refreshEvents = async () =>
   { 
       Log.Error(e);
   }
+  
   // Write new events to events sheet
   writeEventsToSheet(eventsArr);
-
+  let eventsRA = await searchRAMain(artistsArr);
+  writeEventsToSheet(eventsRA);
   // Write Calendar Event for new events
-  if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(eventsArr);
+  // if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(eventsArr);
+  // if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(eventsRA);
+  
 }
 
 /**
