@@ -4,23 +4,26 @@
 Finds concerts near you based on your Spotify listening history and emails them to you. It can also create Google Calendar events for the concerts it finds.
 
 This was made so that I can find out when artists I love are in town. I want something that just focuses on the artists I listen to. No artists recommended by an AI. No newsletters listing concerts I'm not interested in.
-
-
+  
+  
 Developed by [cparsell](https://github.com/cparsell)
 
 Made for [Google Apps Script](https://developers.google.com/apps-script/)
   
-  
-  
+## Recent Changes
+- Added ability to search results from **Resident Advisor**'s API. One has to specify the region to search with a code(e.g. 218 is the Bay Area, 8 is New York...) so that's not well integrated but it works.
+- 
+
+
 ## What it does:
 It can gather the names of artists from Spotify's API from three sources:
-- **Top Artists** - Spotify keeps a list of the artists you listen to the most. The API will return this list based on long-term, medium-term, and short-term listening history
+- **Top Artists** - Spotify keeps a list of the artists you listen to the most. The API will return this list based on *long-term*, *medium-term*, and *short-term* listening history
 - **Artists you follow**
 - **Artists in a specified playlist**
 
 These are all optional and you can configure it to gather these from any or all of these in the `config.gs` file. It writes the artist's names to the Artist Sheet.
 
-It then searches Ticketmaster's API for events with these artist's names as keywords and in the area you specify. It writes any event matches into the Event Sheet.
+It then searches **Ticketmaster**'s and **Resident Advisor**'s API for events with these artist's names as keywords and in the area you specify. It writes any event matches into the Event Sheet.
 
 Then it sends an email (e.g. weekly) listing these events.
   
