@@ -731,40 +731,46 @@
     // artistsArr = artistsList();
     const eventsArr = buildEventsArr();
     const results = await searchRA(artistsArr); 
-    let newEvents = [];
-  
-    if (Object.keys(eventsArr).length > 0) {
-      for (let j=0; j<results.length;j++) {
-        let urlExists = CommonLib.searchColForValue(EVENT_SHEET, "URL", results[j].url);
-        if (urlExists) continue;
-        for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
-          let thisEvent = eventsArr[key];
-          let thisEventDate = Utilities.formatDate(new Date(thisEvent.date), "PST", "yyyy/MM/dd HH:mm");
-          let resultDate = Utilities.formatDate(new Date(results[j].date), "PST", "yyyy/MM/dd HH:mm");
-          if (results[j].eName != thisEvent.eName && results[j].venue != thisEvent.venue && thisEventDate != resultDate) {
-            Logger.log("Found new RA event");
-            Logger.log(results[j].eName);
-            newEvents[results[j].date] = {
-              date: results[j].date,
-              eName: results[j].eName,
-              city: results[j].city,
-              venue: results[j].venue,
-              url: results[j].url,
-              image: results[j].image,
-              acts: results[j].acts,
-              address: results[j].address,
-             }
-          }
-        }
+    let newEvents = {};
+    let exists = false;
+
+    for (let j=0; j<results.length;j++) {
+      let urlExists = CommonLib.searchColForValue(EVENT_SHEET, "URL", results[j].url);
+      if (urlExists) continue;
+
+      // Check existing events to see if it was already found on Ticketmaster or RA previously
+      for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
+        let thisEvent = eventsArr[key];
+        let thisEventDate = Utilities.formatDate(new Date(thisEvent.date), "PST", "yyyy/MM/dd HH:mm");
+        let resultDate = Utilities.formatDate(new Date(results[j].date), "PST", "yyyy/MM/dd HH:mm");
+        // if (results[j].venue != thisEvent.venue && results[j].eName != thisEvent.eName) Logger.log("Same venue and name")
+        if (results[j].eName == thisEvent.eName && results[j].venue == thisEvent.venue && thisEventDate == resultDate) {
+          Logger.log(results[j].eName+" is already in the list - ignoring");
+          exists = true;
+        } 
       }
-    } else {
-      for (let j=0; j<results.length;j++) {
-        newEvents[results[j].date] = {...results[j] }
+      if (exists === false) {
+        // Logger.log("Found new RA event: " + results[j].eName);
+          // Logger.log(results[j].eName);
+        newEvents[results[j].date] = {
+          date: results[j].date,
+          eName: results[j].eName,
+          city: results[j].city,
+          venue: results[j].venue,
+          url: results[j].url,
+          image: results[j].image,
+          acts: results[j].acts,
+          address: results[j].address,
+        } 
+        Logger.log(newEvents);
       }
+      exists = false;
     }
-    for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
-      Logger.log(`${eventsArr[key].eName}, ${eventsArr[key].venue}, ${eventsArr[key].date}`);
-    }
+
+    // for (const [index, [key]] of Object.entries(Object.entries(newEvents))) {
+    //   Logger.log(`${newEvents[key].eName}, ${newEvents[key].venue}, ${newEvents[key].date}`);
+    // }
+    Logger.log(JSON.stringify(newEvents));
     return newEvents;
-    // Logger.log(eventsArr);
+    
   }

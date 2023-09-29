@@ -32,12 +32,12 @@ const refreshEvents = async () =>
           let newEvent = data[key];
           let urlExists = CommonLib.searchColForValue(EVENT_SHEET, "URL", newEvent.url);
           if (urlExists) {
-            Logger.log("URL exists for " + newEvent.eName);
+            Logger.log("URL exists already for Ticketmaster event: " + newEvent.eName);
             continue;
             }
           for (const [indexb, [keyb]] of Object.entries(Object.entries(existingEvents))) {
             if (results[j].eName != newEvent.eName && existingEvents[keyb].venue != newEvent.venue && new Date(existingEvents[keyb].date) != new Date(newEvent.date)) {
-              Logger.log("Found new event")
+              Logger.log("Found new Ticketmaster event")
               eventsArr[key] = 
               {
                 date: data[key].date,
