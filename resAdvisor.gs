@@ -181,7 +181,7 @@ const searchRA = async (artistList) => {
       }
     }
     //Log.Info(JSON.stringify(results));
-    //if (results.length > 0) results = CommonLib.arrayRemoveDupes(results);
+    if (results.length > 0) results = CommonLib.arrayRemoveDupes(results);
     return results;
   // } catch (err) {
   //   Log.Error(`searchRA() error - ${err}`);
@@ -198,62 +198,57 @@ const searchRA = async (artistList) => {
 const searchRAMain = async (artistsArr) => {
   let newEvents = {};
 
-  // try {
+  try {
     if (!artistsArr) artistsArr = artistsList();
     const eventsArr = buildEventsArr();
-    // returns events that match your artists
-    const results = await searchRA(artistsArr); 
-    
-    // Check if the events already are on your events list
-    for (let j=0; j<results.length;j++) {
-      
-      // if same URL exist in the event sheet don't add this result to the list
-      let urlExists = CommonLib.searchColForValue(EVENT_SHEET, "URL", results[j].url);
-      if (urlExists) continue;
-      let exists = false;
-      // Check event sheet to see if it was already found previously (if name, venue, and date all match)
-      for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
-        
-        let thisEvent = eventsArr[key];
-        // make sure the date on the sheet and the date in this result are formatted the same, for comparison
-        let thisEventDate = Utilities.formatDate(new Date(thisEvent.date), "PST", "yyyy/MM/dd HH:mm");
-        let resultDate = Utilities.formatDate(new Date(results[j].date), "PST", "yyyy/MM/dd HH:mm");
-        // if the names are the same, the venues are the same, AND the dates are the same then it's considered the same event - and ignores it
-        if ((results[j].eName.indexOf(thisEvent.eName) > -1 || thisEvent.eName.indexOf(results[j].eName) > -1) && results[j].venue == thisEvent.venue && thisEventDate == resultDate) {
-          // Logger.log(results[j].eName);
-          // Logger.log(thisEvent.eName);
-          // Logger.log(thisEvent.venue);
-          // Logger.log(results[j].venue);
-          // Logger.log(thisEventDate);
-          // Logger.log(resultDate);
-          // Logger.log(results[j].eName.indexOf(thisEvent.eName));
-          // Logger.log(thisEvent.eName.indexOf(results[j].eName));
-          Log.Info(`searchRAMain() - ${results[j].eName} is already in the list - ignoring`);
-          exists = true;
-        } 
-      }
-      if (exists === false) {
-        Log.Debug(`searchRAMain() - Found new RA event: ${results[j].eName}`);
-
-        newEvents[results[j].date] = {
-          date: results[j].date,
-          eName: results[j].eName,
-          city: results[j].city,
-          venue: results[j].venue,
-          url: results[j].url,
-          image: results[j].image,
-          acts: results[j].acts,
-          address: results[j].address,
-        } 
-      }
-      exists = false;
+    let events = new Array;
+    for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
+      events.push(eventsArr[key]);
     }
-  // } catch (err) {
-  //   Log.Error(`searchRAMain () error - ${err}`);
-  //   return [];
-  // }
+    // returns events that match your artists
+    const results = await searchRA(artistsArr);
+    
+    // let test = [
+    //   { eName: "Poodles", venue: "Bathroom", date: "tomorrow", something: "dandy"},
+    //   { eName: "Arnold", venue: "House", date: "yesterday", something: "stuffed"},
+    //   { eName: "Bundy", venue: "Club", date: "next week", something: "bunk"},
+    // ]
+    // let newTest = [
+    //   { eName: "Poodles", venue: "Bathroom", date: "tomorrow", something: "dandy"},
+    //   { eName: "Arnold", venue: "House", date: "yesterday", something: "stupid"},
+    //   { eName: "Junk", venue: "Crabhouse", date: "next year", something: "feverdream"},
+    // ]
 
-  //Log.Info(JSON.stringify(newEvents));
+    function mergeNewEvents(a, b, prop1, prop2, prop3) {
+      var reduced = a.filter(aitem => !b.find(bitem => { 
+        let aDate = Utilities.formatDate(new Date(aitem[prop3]), "PST", "yyyy/MM/dd HH:mm");
+        let bDate = Utilities.formatDate(new Date(bitem[prop3]), "PST", "yyyy/MM/dd HH:mm");
+        return aitem[prop1] == bitem[prop1] && aitem[prop2] == bitem[prop2] && aDate == bDate
+        }));
+      return reduced;
+    }
+
+    newEvents = mergeNewEvents(results, events, "eName", "venue", "date");
+
+    // const filterEvents = (results, events) => {
+    //   return results.filter(o =>
+    //     Object.keys(o).some(
+    //       k => o[k].eName.includes()
+    //       ));
+    // }
+    // Check if the events already are on your events list
+
+    
+    // let newEvents = results.filter(element => {
+    //   return eventsArr.indexOf(element.className) !== -1;
+    // });
+
+  } catch (err) {
+    Log.Error(`searchRAMain () error - ${err}`);
+    return [];
+  }
+
+  Log.Info(JSON.stringify(newEvents));
   writeEventsToSheet(newEvents);
   return newEvents;
 }
