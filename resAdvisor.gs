@@ -122,28 +122,6 @@ const searchRA = async (artistList) => {
         let venue = listing?.venue?.name
         let images = listing?.images;
         let imageUrl = listing?.images[0]?.filename;
-        // Logger.log(title);
-        // Logger.log(images.length);
-        
-        // listing?.images?.forEach(item => {
-        //   if (item.type == "FLYERFRONT") imageUrl = item.filename;
-        //   if (item.type == "FLYERFRONT" && title == "Portola Festival 2023") {
-        //     imageUrl = item.filename;
-        //     Logger.log(imageUrl);
-        //   }
-        // })
-          // imageUrl = images[0].filename;
-          // for (let k=0;k<images?.length;k++)
-          // {
-          //   if (images[k]?.type == "FLYERFRONT") {
-          //     imageUrl = images[k]?.filename;
-          //     Logger.log(title);
-          //     Logger.log(imageUrl);
-              
-          //   }
-          // }
-        // } 
-        // Logger.log(imageUrl);
         // if there are artists listed, create an array with their names 
         // (most of RA events don't seem to have artists listed here though)
         let artists = listing?.artists;
@@ -160,7 +138,7 @@ const searchRA = async (artistList) => {
           url: 'https://ra.co' + listing.contentUrl,
           image: imageUrl,
           acts: acts.toString(),
-          address: listing.venue.address
+          address: listing.venue.address,
         }
         // Logger.log(acts);
         // For each artist in the Artist Sheet, check the result for 
@@ -199,56 +177,41 @@ const searchRAMain = async (artistsArr) => {
   let newEvents = {};
 
   try {
+    // Get list of artists from Artists Sheet
     if (!artistsArr) artistsArr = artistsList();
-    const eventsArr = buildEventsArr();
-    let events = new Array;
-    for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
-      events.push(eventsArr[key]);
-    }
+    // Get existing list of events from events sheet
+    const events = buildEventsArr();
+
     // returns events that match your artists
     const results = await searchRA(artistsArr);
     
     // let test = [
-    //   { eName: "Poodles", venue: "Bathroom", date: "tomorrow", something: "dandy"},
-    //   { eName: "Arnold", venue: "House", date: "yesterday", something: "stuffed"},
-    //   { eName: "Bundy", venue: "Club", date: "next week", something: "bunk"},
+    //   { eName: "Poodles", venue: "Bathroom", date: "tomorrow", something: "dandy", url: "https://ra.co/events/177234"},
+    //   { eName: "Arnold", venue: "House", date: "yesterday", something: "stuffed", url: "https://ra.co/events/177235"},
+    //   { eName: "Bundy", venue: "Club", date: "next week", something: "bunk", url: "https://ra.co/events/177236"},
+    //   { eName: "Bandy With a diff", venue: "Doghouse", date: "sometime", something: "fgdfg", url: "https://ra.co/events/172354"},
     // ]
     // let newTest = [
-    //   { eName: "Poodles", venue: "Bathroom", date: "tomorrow", something: "dandy"},
-    //   { eName: "Arnold", venue: "House", date: "yesterday", something: "stupid"},
-    //   { eName: "Junk", venue: "Crabhouse", date: "next year", something: "feverdream"},
+    //   { eName: "Arnold", venue: "House", date: "yesterday", something: "stupid", url: "https://ra.co/events/177235"},
+    //   { eName: "Bandy", venue: "Doghouse", date: "sometime", something: "fgdfg", url: "https://ra.co/events/172354"},
+    //   { eName: "Poodles", venue: "Bathroom", date: "tomorrow", something: "dandy", url: "https://ra.co/events/177234"},
+    //   { eName: "Junk", venue: "Crabhouse", date: "next year", something: "feverdream", url: "https://ra.co/events/173456"},
+    //   { eName: "stuff", venue: "vet clinic", date: "centuries ago", something: "dumbstuff", url: "https://ra.co/events/123434"},
     // ]
-
-    function mergeNewEvents(a, b, prop1, prop2, prop3) {
-      var reduced = a.filter(aitem => !b.find(bitem => { 
-        let aDate = Utilities.formatDate(new Date(aitem[prop3]), "PST", "yyyy/MM/dd HH:mm");
-        let bDate = Utilities.formatDate(new Date(bitem[prop3]), "PST", "yyyy/MM/dd HH:mm");
-        return aitem[prop1] == bitem[prop1] && aitem[prop2] == bitem[prop2] && aDate == bDate
-        }));
-      return reduced;
-    }
-
-    newEvents = mergeNewEvents(results, events, "eName", "venue", "date");
-
-    // const filterEvents = (results, events) => {
-    //   return results.filter(o =>
-    //     Object.keys(o).some(
-    //       k => o[k].eName.includes()
-    //       ));
-    // }
-    // Check if the events already are on your events list
-
     
-    // let newEvents = results.filter(element => {
-    //   return eventsArr.indexOf(element.className) !== -1;
-    // });
+    // Filter out results that match existing ones - 
+    // checks if URLs match OR if name, venue, and date match
+
+    // run function that filters out resutls that are already on the events sheet
+    newEvents = filterNewEvents(results, events, "eName", "venue", "date", "url");
 
   } catch (err) {
     Log.Error(`searchRAMain () error - ${err}`);
     return [];
   }
 
-  Log.Info(JSON.stringify(newEvents));
-  writeEventsToSheet(newEvents);
+  Log.Debug("New Events", newEvents);
+  // Write newly found events onto the Events Sheet
+  // writeEventsToSheet(newEvents);
   return newEvents;
 }

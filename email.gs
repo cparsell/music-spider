@@ -11,12 +11,13 @@ const sendEmail = () =>
     let eventsArr = buildEventsArr(); // get the events from the sheet
     let msgSubjRaw = []; // array of artists to be listed in subject line
     let msgSubj = `${SERVICE_NAME} - `;
-    if (Object.keys(eventsArr).length === 0) 
+    if (eventsArr.length === 0) 
     {
       console.warn("No events to add to email.")
       return;
     }
-    for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) 
+    // for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) 
+    for (let key=0;key<eventsArr.length; key++)
     {
       if (eventsArr[key].acts=="")
       {
@@ -165,7 +166,8 @@ class CreateMessage
     // for (const key of Object.keys(this.events)) { 
 
     // iterate through list of events
-    for (const [index, [key]] of Object.entries(Object.entries(this.events))) 
+    // for (const [index, [key]] of Object.entries(Object.entries(this.events))) 
+    for (let key=0;key<this.events.length;key++)
     {
       const {date, city, venue, url, image, eName, acts} = this.events[key];
       let actsArr = new Array;
@@ -187,7 +189,7 @@ class CreateMessage
       let eventYear = eDate.getFullYear();
       let eventTime = Utilities.formatDate(eDate, "PST", "h a");
       // Start a new table row every even event
-      if (CommonLib.isEven(index)) 
+      if (CommonLib.isEven(key)) 
       {
         message += `<tr>`;
       }
@@ -213,7 +215,7 @@ class CreateMessage
       message += `<span style="color:#696969;font-size:12px;font-family:georgia,times,times new roman,serif;">at ${venue}, ${city}<br/> `;
       message += `<strong>${DAY_NAMES[eventDay]}, ${MONTH_NAMES[eventMonth]} ${eventDayNum} ${eventYear}</strong> ${eventTime}</span></span></div>`;
       message += `<br/></td>`;
-      if (!CommonLib.isEven(index)) message += `</tr><br/>`; // End table row every odd event
+      if (!CommonLib.isEven(key)) message += `</tr><br/>`; // End table row every odd event
     };
     message += `<br/></tbody></table>`; 
     message += `</td></tr></tbody></table>`;

@@ -6,18 +6,26 @@
  */
 const artistsList = () => 
 {
+  let results = new Array;
   let artistRows = ARTIST_SHEET.getLastRow()-1;
   if (artistRows==0) artistRows=1;
   let artistsArr = ARTIST_SHEET.getRange(2,1,artistRows,1).getValues();
   // if searchManuallyAdded = TRUE, include manually added artists in the search list
+  for (let i=0;i<artistsArr.length; i++) {
+    results.push(artistsArr[i][0]);
+  }
+
   if (Config.SEARCH_MANUALLY_ADDED) {
     let customArtistRows = CUSTOM_ARTIST_SHEET.getLastRow()-1;
     let manualArtistsArr = CUSTOM_ARTIST_SHEET.getRange(2,1,customArtistRows,1).getValues();
-    artistsArr.push(...manualArtistsArr);
+    for (let i=0;i<manualArtistsArr.length; i++) {
+      results.push(manualArtistsArr[i][0]);
+    }
+    // artistsArr.push(...manualArtistsArr);
   }
   
   // let filtered = artistsArr.filter(n => n); // remove blank strings
-  let filtered = CommonLib.arrayRemoveDupes(artistsArr, true); // remove duplicates and blank strings
+  let filtered = CommonLib.arrayRemoveDupes(results, true); // remove duplicates and blank strings
   return filtered;
 }
 
@@ -32,8 +40,8 @@ const buildEventsArr = () =>
 {
   try {
     let lastRow = EVENT_SHEET.getLastRow();
-    let events = {};
-    let ordered = {};
+    let events = new Array
+
     if (lastRow>1) 
     {
       for (i=1; i<lastRow;i++)
@@ -43,22 +51,32 @@ const buildEventsArr = () =>
         date = new Date (date);
         // let formattedDate = Utilities.formatDate(newDate, `PST`,`MM-dd-yyyy hh:mm a`);
         let eventDate = Utilities.formatDate(date, "PST", "yyyy/MM/dd HH:mm");
-        events[eventDate] = rowData;
+        rowData.date = eventDate;
+        events.push(rowData);
+        // events[eventDate] = rowData;
       }
+      // Log.Info(JSON.stringify(events));
         // Sort by key, which is the date
-      ordered = Object.keys(events).sort().reduce(
-        (obj, key) => 
-        { 
-          obj[key] = events[key]; 
-          return obj;
-        }, 
-        {}
-      );
+      let ordered = events.sort(function(a, b) {
+        return (a.date < b.date) ? -1 : (a.date > b.date) ? 1 : 0;
+        // return a.date.localeCompare(b.date);
+      });
+
+      // ordered = Object.keys(events).sort().reduce(
+      //   (obj, key) => 
+      //   { 
+      //     obj[key] = events[key]; 
+      //     return obj;
+      //   }, 
+      //   {}
+      // );
+      // Log.Info(JSON.stringify(ordered));
+      return ordered;
     } else {
       console.warn("No events found- unable to build array of Events");
     }
     
-    return ordered;
+    return []
   } catch (err) {
     console.error(`buildEventsArr() error - ${err}`);
   }
@@ -135,6 +153,33 @@ const GetRowData = (sheet, row) =>
     console.error(`${err} : GetRowData failed - Sheet: ${sheet} Row: ${row}`);
     return 1;
   }
+}
+
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * Filter list of new events to exclude ones that already exist on the Events Sheet
+ * @param {array} newArray list of new results
+ * @param {array} existingArray list of existing events
+ * @param {string} name parameter "eName" in quotes
+ * @param {string} venue parameter "venue" in quotes
+ * @param {string} date parameter "date" in quotes
+ * @param {string} url parameter "url" in quotes
+ * @returns {array} [{}]
+ */
+const filterNewEvents = (newArray, existingArray, name, venue, date, url) => {
+  var reduced = newArray.filter(aItem => !existingArray.find(bItem => { 
+    let aDate = Utilities.formatDate(new Date(aItem[date]), "PST", "yyyy/MM/dd HH:mm");
+    let bDate = Utilities.formatDate(new Date(bItem[date]), "PST", "yyyy/MM/dd HH:mm");
+    let aName = aItem[name].toString().toUpperCase();
+    let bName = bItem[name].toString().toUpperCase();
+    let aVenue = aItem[venue].toString().toUpperCase();
+    let bVenue = bItem[venue].toString().toUpperCase();
+    let aUrl = aItem[url].toString().toUpperCase();
+    let bUrl = bItem[url].toString().toUpperCase();
+    return ((aUrl == bUrl) || (aName == bName && aVenue == bVenue && aDate == bDate))  //|| aItem[url] == bItem[url]
+    }));
+    Log.Debug("filterNewEvents() filtered array", reduced);
+  return reduced;
 }
 
 /**

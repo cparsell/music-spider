@@ -6,7 +6,7 @@
  */
 const refreshEvents = async () => 
 {
-  //get list of artists from sheet
+  // get list of artists from sheets
   let artistsArr = artistsList();
   let existingEvents = buildEventsArr();
   //Clean expired events
@@ -14,76 +14,58 @@ const refreshEvents = async () =>
 
   // Clear any empty rows if something was manually deleted
   CommonLib.deleteEmptyRows(EVENT_SHEET);
-
-  //search each artist
-  let eventsArr = {};
-  
-  let i = 0;
-  
-  try 
-  {
-    for (let i=0;i<artistsArr.length;i++)
-    {
-      await ticketSearch(artistsArr[i][0]).then(data => 
-      {
-        for (const [index, [key]] of Object.entries(Object.entries(data))) 
-        {
-          let newEvent = data[key];
-          let urlExists = CommonLib.searchColForValue(EVENT_SHEET, "URL", newEvent.url);
-          if (urlExists) {
-            Logger.log("URL exists already for Ticketmaster event: " + newEvent.eName);
-            continue;
-            }
-          for (const [indexb, [keyb]] of Object.entries(Object.entries(existingEvents))) {
-            if (results[j].eName != newEvent.eName && existingEvents[keyb].venue != newEvent.venue && new Date(existingEvents[keyb].date) != new Date(newEvent.date)) {
-              Logger.log("Found new Ticketmaster event")
-              eventsArr[key] = 
-              {
-                date: data[key].date,
-                eName: data[key].eName,
-                city: data[key].city,
-                venue: data[key].venue, 
-                url: data[key].url, 
-                image: data[key].image,
-                acts: data[key].acts.toString(),
-                address: data[key].address,
-              }
-            }
-
-          }
-          // if (!exists) {
-          //   eventsArr[key] = 
-          //   {
-          //     date: data[key].date,
-          //     eName: data[key].eName,
-          //     city: data[key].city,
-          //     venue: data[key].venue, 
-          //     url: data[key].url, 
-          //     image: data[key].image,
-          //     acts: data[key].acts.toString(),
-          //     address: data[key].address,
-          //   }
-          // }
-        }
-        Utilities.sleep(200);
-      });
-    }
-  } catch (e) 
-  { 
-      Log.Error(e);
-  }
-  
+  // start loop that searches Ticketmaster for every artist in Artists Sheets
+  let eventsArr = await searchTMLoop(artistsArr, existingEvents);
+  Log.Info("New TM events", eventsArr);
   // Write new events to events sheet
   writeEventsToSheet(eventsArr);
+  // Write Calendar Event for new events
+  if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(eventsArr);
   // If searchRA set to TRUE in config.gs then search Resident Advisor too
   if (Config.SEARCH_RA) {
     let eventsRA = await searchRAMain(artistsArr);
-    // writeEventsToSheet(eventsRA);
-  }
-  // Write Calendar Event for new events
-  // if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(eventsArr);
-  // if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(eventsRA);
+    Log.Info("New TM events", eventsRA);
+    writeEventsToSheet(eventsRA);
+    // Write Calendar Event for new events
+    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(eventsRA);
+  } 
+}
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * Search Ticketmaster for every artist in Artists Sheets 
+ * Trigger - Main function for Ticketmaster search. Searches Ticketmaster for artists found in Spotify or added manually. 
+ * Any events returned that contain the artist's name are added to the sheet
+ */
+const searchTMLoop = async (artistsArr, existingEvents) => {
+//search each artist in TM
+  let eventsArr = new Array;
+  try {
+    for (let i=0;i<artistsArr.length;i++) {
+      await ticketSearch(artistsArr[i]).then(data => 
+      {
+        for (let i=0; i<data.length;i++) {
+          eventsArr.push({
+            date: data[i].date,
+            eName: data[i].eName,
+            city: data[i].city,
+            venue: data[i].venue, 
+            url: data[i].url, 
+            image: data[i].image,
+            acts: data[i].acts.toString(),
+            address: data[i].address,
+          });
+        }
+      })
+      Utilities.sleep(180);
+    }
+    // get rid of any results that are already on the Events Sheet
+  eventsArr = filterNewEvents(eventsArr,existingEvents, "eName", "venue", "date", "url");
   
+  } catch (e) 
+  { 
+      Log.Error(`SearchTMLoop() error - ${e}`);
+  }
+  return eventsArr;
 }
 
 /**
@@ -115,7 +97,7 @@ const ticketSearch = async (keyword) =>
     return;
   }
   let artist = ARTIST_SHEET.getRange(2,1);
-  let eventsArr = {};
+  let eventsArr = new Array;
 
   try {
     // returns JSON response
@@ -132,7 +114,7 @@ const ticketSearch = async (keyword) =>
           let url = item.url;
           let image = [[0,0]];
           // Loop through image URLs in JSON response. Find the one with the largest filesize
-          for (i=0;i<item.images.length;i++)
+          for (let i=0;i<item.images.length;i++)
           {
             // let img = new Images();
             let img = UrlFetchApp.fetch(item.images[i].url).getBlob();
@@ -150,9 +132,9 @@ const ticketSearch = async (keyword) =>
           });
           // if other artists in my list are in this event, move them to front of list
           let artistsArr = artistsList();
-          for (i=0;i<artistsArr.length;i++)
+          for (let j=0;j<artistsArr.length;j++)
           {
-            let artist = artistsArr[i][0];
+            let artist = artistsArr[j];
             if (attractions.includes(artist) && artist != keyword) {
               attractions = attractions.sort(function(x,y){ return x == artist ? -1 : y == artist ? 1 : 0; });
             }
@@ -176,7 +158,8 @@ const ticketSearch = async (keyword) =>
             if (attractions.includes(keyword) || item.name.toUpperCase() == keyword.toUpperCase()) 
             {
               let eventDate = Utilities.formatDate(date, "PST", "yyyy/MM/dd HH:mm");
-              eventsArr[eventDate] = 
+              Logger.log(`Found event: ${item.name}`);
+              eventsArr.push( 
               { 
                 "eName": item.name,
                 "acts": attractions,
@@ -186,11 +169,11 @@ const ticketSearch = async (keyword) =>
                 "url": url, 
                 "image": item.images[image[0][0]].url,
                 "address": `${venueAddress}, ${venue.city.name}, ${venue.state.name}`
-              }
+              });
             }
           });
         });
-        if (Object.keys(eventsArr)==0) 
+        if (eventsArr.length==0) 
         {
           Logger.log(`No events found for ${keyword}`);
           return;
@@ -248,7 +231,7 @@ const tmSearch = async (keyword) =>
   params += `&radius=${Config.RADIUS}`; // radius only seems to work with latlong
   params += `&unit=${Config.UNIT}`;
   params += `&keyword=${encodeURIComponent(keyword)}`;
-  Logger.log(`Searching Ticketmaster for ${keyword}`);
+  Log.Debug(`Searching Ticketmaster for ${keyword}`);
   try {
     let response = await UrlFetchApp.fetch(TICKETMASTER_URL+params, options);
     let responseCode = response.getResponseCode();
