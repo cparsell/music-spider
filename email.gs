@@ -43,7 +43,6 @@ const sendEmail = () =>
   }
 }
 
-
 /**
  * -----------------------------------------------------------------------------------------------------------------
  * class to send an Email
@@ -195,7 +194,7 @@ class CreateMessage
       }
       message += `<td class="tg-0lax" style="height:300px;vertical-align:top;"><div style="text-align: left;margin-left: 10px;">`;
       message += `<div class="" style=""><a href='${url}'>`;
-      message += `<img src='${image}' class="" style="width:90%;float:center;width:350px;height:200px;object-fit:cover;"/></div>`;
+      message += `<img src='${image}' class="" style="width:90%;float:center;object-position:top;width:350px;height:200px;object-fit:cover;"/></div>`;
       message += `<span style="font-family: Averta,Helvetica Neue,Helvetica,Arial,sans-serif;">`;
       message += `<a href='${url}' style="text-decoration:none;"><span style="color:#44494c;font-size:20px;"><strong>${eName}</strong></span></a><br/>`;
       let actsUpper = actsB.map(function(x){ return x.toUpperCase(); })
