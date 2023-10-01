@@ -1,7 +1,9 @@
 /**
  * ----------------------------------------------------------------------------------------------------------------
  * Build array of artists
- * Gets artists sheet  
+ * Gets artist names from Artists (Spotify) sheet 
+ * and 'Artists (Custom)' sheet if searchManuallyAdded = TRUE
+ * in the config.gs file
  * @returns {array} filtered array of artists
  */
 const artistsList = () => 
@@ -10,11 +12,11 @@ const artistsList = () =>
   let artistRows = ARTIST_SHEET.getLastRow()-1;
   if (artistRows==0) artistRows=1;
   let artistsArr = ARTIST_SHEET.getRange(2,1,artistRows,1).getValues();
-  // if searchManuallyAdded = TRUE, include manually added artists in the search list
+  
   for (let i=0;i<artistsArr.length; i++) {
     results.push(artistsArr[i][0]);
   }
-
+  // if searchManuallyAdded = TRUE, include artists in 'Artists (Custom)' sheet in the search
   if (Config.SEARCH_MANUALLY_ADDED) {
     let customArtistRows = CUSTOM_ARTIST_SHEET.getLastRow()-1;
     let manualArtistsArr = CUSTOM_ARTIST_SHEET.getRange(2,1,customArtistRows,1).getValues();
