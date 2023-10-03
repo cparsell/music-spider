@@ -178,7 +178,7 @@ const filterNewEvents = (newArray, existingArray, name, venue, date, url) => {
     let bVenue = bItem[venue].toString().toUpperCase();
     let aUrl = aItem[url].toString().toUpperCase();
     let bUrl = bItem[url].toString().toUpperCase();
-    return ((aUrl == bUrl) || (aName == bName && aVenue == bVenue && aDate == bDate))  //|| aItem[url] == bItem[url]
+    return ((aUrl == bUrl) || ((aName.indexOf(bName > -1) || bName.indexOf(aName) > -1) && aVenue == bVenue && aDate == bDate))  //|| aItem[url] == bItem[url]
     }));
     Log.Debug("filterNewEvents() filtered array", reduced);
   return reduced;

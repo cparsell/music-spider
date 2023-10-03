@@ -110,7 +110,7 @@ const returnRAOptions = (page, area, theQuery=queryRAEventListings) => {
  */
 const searchRA = async (artistList) => {
   let results = new Array;
-  // try {
+  try {
     // Fetch all Resident Advisor events in the next 8 months in your region
     let listings = await getRAData(Math.floor(Config.REGION_RA));
     Logger.log("searchRA() - TOTAL events parsed: " + listings.length);
@@ -142,19 +142,18 @@ const searchRA = async (artistList) => {
           acts: acts.toString(),
           address: listing.venue.address,
         }
-        // Logger.log(acts);
         // For each artist in the Artist Sheet, check the result for 
         for (let j=0; j<artistList.length;j++) {
           // check artist against list of acts in this result
           acts.forEach(function(res) {
             if(res.toUpperCase() === artistList[j].toString().toUpperCase()) {
-              Log.Info(`searchRA() - Found a match for artist: ${artistList[j]} in list of acts - title: ${title}`);
+              Log.Debug(`searchRA() - Found a match for artist: ${artistList[j]} in list of acts - title: ${title}`);
               results.push(event);
             } 
           });
           // check artist against title of this result
           if ((title.toString().indexOf(artistList[j].toString()) > -1) || (artistList[j].toString().indexOf(title.toString()) > -1) ) {
-            Log.Info(`searchRA() - Found a match for artist ${artistList[j]} in title: ${title}`);
+            Log.Debug(`searchRA() - Found a match for artist ${artistList[j]} in title: ${title}`);
             results.push(event);
           }
         }
@@ -163,10 +162,10 @@ const searchRA = async (artistList) => {
     //Log.Info(JSON.stringify(results));
     if (results.length > 0) results = CommonLib.arrayRemoveDupes(results);
     return results;
-  // } catch (err) {
-  //   Log.Error(`searchRA() error - ${err}`);
-  //   return [];
-  // }
+  } catch (err) {
+    Log.Error(`searchRA() error - ${err}`);
+    return [];
+  }
 }
 
 /**
@@ -200,9 +199,6 @@ const searchRAMain = async (artistsArr) => {
     //   { eName: "Junk", venue: "Crabhouse", date: "next year", something: "feverdream", url: "https://ra.co/events/173456"},
     //   { eName: "stuff", venue: "vet clinic", date: "centuries ago", something: "dumbstuff", url: "https://ra.co/events/123434"},
     // ]
-    
-    // Filter out results that match existing ones - 
-    // checks if URLs match OR if name, venue, and date match
 
     // run function that filters out resutls that are already on the events sheet
     newEvents = filterNewEvents(results, events, "eName", "venue", "date", "url");
@@ -212,7 +208,7 @@ const searchRAMain = async (artistsArr) => {
     return [];
   }
 
-  Log.Debug("New Events", newEvents);
+  Log.Info("New RA Events", newEvents);
   // Write newly found events onto the Events Sheet
   // writeEventsToSheet(newEvents);
   return newEvents;
