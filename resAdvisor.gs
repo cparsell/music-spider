@@ -209,7 +209,5 @@ const searchRAMain = async (artistsArr) => {
   }
 
   Log.Info("New RA Events", newEvents);
-  // Write newly found events onto the Events Sheet
-  // writeEventsToSheet(newEvents);
   return newEvents;
 }
