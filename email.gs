@@ -181,7 +181,7 @@ class CreateMessage
           actsB.push(actsArr[i]);
         }
       }
-      let eDate = new Date(key);
+      let eDate = new Date(this.events[key].date);
       let eventDay = eDate.getDay();
       let eventDayNum = eDate.getDate();
       let eventMonth = eDate.getMonth();

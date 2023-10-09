@@ -59,13 +59,15 @@ const searchTMLoop = async (artistsArr, existingEvents) => {
       Utilities.sleep(180);
     }
     // get rid of any results that are already on the Events Sheet
-  eventsArr = filterNewEvents(eventsArr,existingEvents, "eName", "venue", "date", "url");
-  
+    let filteredEventsArr = filterNewEvents(eventsArr,existingEvents, "eName", "venue", "date", "url");
+    Log.Debug("searchTMLoop() - filtered Events", filteredEventsArr);
+    return filteredEventsArr;
   } catch (e) 
   { 
-      Log.Error(`SearchTMLoop() error - ${e}`);
+    Log.Error(`SearchTMLoop() error - ${e}`);
+    return []
   }
-  return eventsArr;
+  
 }
 
 /**
@@ -103,7 +105,7 @@ const ticketSearch = async (keyword) =>
     // returns JSON response
     await tmSearch(keyword)
       .then(async(data) => {
-        Log.Debug(`tmSearch data: ${data}`)
+        // Log.Debug(`ticketSearch() - data received`, data)
         if (data.page.totalElements == 0) 
         {
           Log.Debug(`No results for`, keyword);
@@ -238,7 +240,7 @@ const tmSearch = async (keyword) =>
     if (responseCode == 200 || responseCode == 201) 
     {
       let content = await response.getContentText();
-      Log.Debug(content);  // uncomment this to write raw JSON response to 'Logger' sheet
+      Log.Debug("tmSearch() - response", content);  // uncomment this to write raw JSON response to 'Logger' sheet
       let parsed = JSON.parse(content);
       return parsed;
     } else {

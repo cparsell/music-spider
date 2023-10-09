@@ -147,13 +147,13 @@ const searchRA = async (artistList) => {
           // check artist against list of acts in this result
           acts.forEach(function(res) {
             if(res.toUpperCase() === artistList[j].toString().toUpperCase()) {
-              Log.Debug(`searchRA() - Found a match for artist: ${artistList[j]} in list of acts - title: ${title}`);
+              Log.Info(`searchRA() - Found a match for artist: ${artistList[j]} in list of acts - title: ${title}`);
               results.push(event);
             } 
           });
           // check artist against title of this result
           if ((title.toString().indexOf(artistList[j].toString()) > -1) || (artistList[j].toString().indexOf(title.toString()) > -1) ) {
-            Log.Debug(`searchRA() - Found a match for artist ${artistList[j]} in title: ${title}`);
+            Log.Info(`searchRA() - Found a match for artist ${artistList[j]} in title: ${title}`);
             results.push(event);
           }
         }

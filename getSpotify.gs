@@ -37,7 +37,7 @@ const refreshArtists = async () =>
       Log.Debug(`plastlistArtists: ${playlistArtists}`);
     } catch (err) 
     {
-      Log.Error(`${err} : getArtistsFromPlaylist failed`);
+      Log.Error(`getPlaylistArtists() error - ${err}`);
     }
   }
   if (Config.GET_FOLLOWING) 
@@ -87,8 +87,10 @@ const refreshArtists = async () =>
    * @param {array} array
    * @returns {array} array
    */
-let getSpotifyData = async (accessToken, url, getAllPages = false) =>
+let getSpotifyData = async (url, getAllPages = false) =>
 {
+  const accessToken = await retrieveAuth();
+  Log.Debug(`getSpotifyData() Access token: ${JSON.stringify(accessToken)}`);
   let headers = 
   {
     "Authorization": "Bearer " + accessToken,
@@ -104,7 +106,7 @@ let getSpotifyData = async (accessToken, url, getAllPages = false) =>
     let response = await UrlFetchApp.fetch(url, options);
     let firstPage = await response.getContentText();
     let responseCode = await response.getResponseCode();
-    Log.Info(`Response Code ${responseCode} - ${RESPONSECODES[responseCode]}`);
+    Log.Info(`getSpotifyData() - Response Code ${responseCode} - ${RESPONSECODES[responseCode]}`);
     if (responseCode == 200 || responseCode == 201) 
     {
       Log.Debug(CommonLib.prettifyJson(firstPage));
@@ -143,11 +145,11 @@ let getSpotifyData = async (accessToken, url, getAllPages = false) =>
       }
       return data;
     } else {
-      Log.Error(`Failed to get data from ${url} - `);
+      Log.Error(`getSpotifyData() Failed - Response Code ${responseCode} - ${RESPONSECODES[responseCode]} from ${url}`);
       return false;
     }
   } catch (err) {
-    Log.Error(`Failed to get data from ${url} - ${err}`);
+    Log.Error(`getSpotifyData() Failed to get data from ${url} - ${err}`);
     return {};
   }
 }
@@ -164,13 +166,13 @@ const getSavedTracksArtists = async (ignoreUpperCase) =>
 {
   const sheet = ARTIST_SHEET;
   // Retrieve auth
-  let accessToken = await retrieveAuth();
+
   Log.Debug(`Access token: ${JSON.stringify(accessToken)}`);
   
   // Retrieve data
   let params = "?limit=50";
   Log.Info(`Getting artists from saved tracks`);
-  let data = await getSpotifyData(accessToken, SAVED_TRACKS_URL + params, true);
+  let data = await getSpotifyData(SAVED_TRACKS_URL + params, true);
 
   // Fold array of responses into single structure
   if (data) 
@@ -189,11 +191,11 @@ const getSavedTracksArtists = async (ignoreUpperCase) =>
     artistsArr = CommonLib.arrayRemoveDupes(artistsArr);
     lastRow = sheet.getLastRow();
 
-    Log.Debug(`Artists Array: ${artistsArr}`);
+    Log.Debug(`getSavedTracksArtists() Artists Array: ${artistsArr}`);
     // if (artistsArr.length > 0) writeArrayToColumn(artistsArr, sheet, 1);
     return artistsArr;
   } else {
-    Log.Warning("Unable to get artists from saved tracks");
+    Log.Warning("getSavedTracksArtists() Unable to get artists from saved tracks");
   }
 }
 
@@ -205,14 +207,11 @@ const getSavedTracksArtists = async (ignoreUpperCase) =>
  */
 const getFollowedArtists = async (ignoreUpperCase) =>
 {
-  // Retrieve auth
-  let accessToken = await retrieveAuth();
-  
   // API reference: https://developer.spotify.com/documentation/web-api/reference/get-followed
   let params = "?type=artist&limit=50";
   
   // Retrieve data
-  let data = await getSpotifyData(accessToken, FOLLOW_URL + params, true);
+  let data = await getSpotifyData(FOLLOW_URL + params, true);
 
   // Fold array of responses into single structure
   data = CommonLib.collateArrays("artists.items", data);
@@ -254,21 +253,19 @@ const getPlaylistArtists = async (ignoreUpperCase) =>
 {
   const playlistId = Config.PLAYLIST_ID;
   // Retrieve auth
-  let accessToken = await retrieveAuth();
-  Log.Debug(`Access token: ${JSON.stringify(accessToken)}`);
+  
 
   // Retrieve data
   let params = "?playlist_id=" + playlistId;
   params += `&limit=50`
   Logger.log("Getting artists from playlists")
-  let data = await getSpotifyData(accessToken, `${PLAYLIST_URL}/${playlistId}${params}`, true);
-
+  let data = await getSpotifyData(`${PLAYLIST_URL}/${playlistId}${params}`, true);
 
   // Fold array of responses into single structure
   if (data[0]) 
   {
-    let newData = JSON.parse(data);
-    let items = newData.tracks.items;
+    const newData = JSON.parse(data);
+    const items = newData.tracks.items;
     // Logger.log(newData.tracks.items);
     // Log.Info(JSON.stringify(newData.tracks.items));
     let artistsArr = [];
@@ -286,13 +283,13 @@ const getPlaylistArtists = async (ignoreUpperCase) =>
 
     artistsArr = CommonLib.arrayRemoveDupes(artistsArr);
 
-    Log.Debug(`Playlist Artists: ${artistsArr}`);
+    Log.Debug(`getPlaylistArtists() Playlist Artists: ${artistsArr}`);
 
     return artistsArr;
   } else {
-    write.Info("No data received from your watch playlist");
+    Log.Info("getPlaylistArtists() No data received from your watch playlist");
+    return [];
   }
-  
 }
 
 /**
@@ -306,6 +303,7 @@ const getTopArtists = async (ignoreUpperCase) =>
 {
   let artistsArr = new Array;
   // Request for LONG TERM top artists
+  try {
   artistsArr = artistsArr.concat(await getTopData("long_term", 0, ignoreUpperCase));
   
   // Request for LONG TERM top artists OFFSET +48
@@ -319,12 +317,14 @@ const getTopArtists = async (ignoreUpperCase) =>
   
   let final = new Array;
 
-  if (artistsArr.length == 0) {
-    Logger.log(`Returned 0 top artists somehow`)
-    return artistsArr;
-  }
+  if (artistsArr.length == 0) throw new Error(`Returned 0 top artists somehow`);
+
   final = CommonLib.arrayRemoveDupes(artistsArr);
   return final;
+  } catch (err) {
+    Log.Error(`getTopArtists() error - ${err}`)
+    return []
+  }
 }
 
 /**
@@ -337,7 +337,7 @@ const getTopArtists = async (ignoreUpperCase) =>
  */
 const getTopData = async (term, offset, ignoreUpperCase) => {
   // Retrieve auth
-  let accessToken = await retrieveAuth();
+  const accessToken = await retrieveAuth();
   Log.Debug(`Access token: ${JSON.stringify(accessToken)}`);
   // params for Top Artists 
   // reference: https://developer.spotify.com/documentation/web-api/reference/get-users-top-artists-and-tracks
@@ -345,18 +345,17 @@ const getTopData = async (term, offset, ignoreUpperCase) => {
   params += `&limit=50`;
   params += `&offset=${offset}`;
 
-  let resp = undefined;
-  Logger.log(`Getting top artists (${term})...`)
+
+  Log.Debug(`getTopData() Getting data(${term})...`);
 
   // getSpotifyData = CommonLib.dataResponseTime(getSpotifyData)
-  resp = await getSpotifyData(accessToken, TOP_ARTISTS_URL + params, true);
+  const resp = await getSpotifyData(TOP_ARTISTS_URL + params, true);
 
   let artistsArr = new Array;
   // Fold array of responses into single structure
   if (resp[0]) 
   {
     data = CommonLib.collateArrays("items", resp);
-    let ignoree = false;
     
     data.forEach(artist =>
     { 
@@ -365,7 +364,7 @@ const getTopData = async (term, offset, ignoreUpperCase) => {
     });
   } else 
   {
-    Logger.log(`No data received (${term})`);
+    Logger.log(`getTopData() - No data received (${term})`);
   }
   return artistsArr;
 }

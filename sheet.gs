@@ -115,7 +115,7 @@ const removeExpiredEntries = (sheet,dateHeaderName="Date") =>
     }
     for (let i=0;i<rowsToDel.length;i++)
     {
-      Logger.log(`Removing expired event: ${data[i+1][0]}, Date: ${range[rowsToDel[i]-2]}`);
+      Log.Info(`Removing expired event: ${data[i+1][0]}, Date: ${range[rowsToDel[i]-2]}`);
       sheet.deleteRow(rowsToDel[i]);
     }
   } catch (err) {
@@ -180,7 +180,7 @@ const filterNewEvents = (newArray, existingArray, name, venue, date, url) => {
     let bUrl = bItem[url].toString().toUpperCase();
     return ((aUrl == bUrl) || ((aName.indexOf(bName > -1) || bName.indexOf(aName) > -1) && aVenue == bVenue && aDate == bDate))  //|| aItem[url] == bItem[url]
     }));
-    Log.Debug("filterNewEvents() filtered array", reduced);
+    Log.Info("filterNewEvents() filtered array", reduced);
   return reduced;
 }
 
