@@ -8,23 +8,28 @@ const EVENT_SHEET = SPREADSHEET.getSheetByName("Events");
 const LOGGER_SHEET = SPREADSHEET.getSheetByName("Logger");
 const CUSTOM_ARTIST_SHEET = SPREADSHEET.getSheetByName("Artists (Custom)");
 
-
 const SERVICE_NAME = `Music Spider`;
 const SUPPORT_ALIAS = GmailApp.getAliases()[0];
 
-const BASE_URL = "https://api.spotify.com/v1";
+// SEAT GEEK
+const SEAT_GEEK_URL = 'https://api.seatgeek.com/2'
+const SEAT_GEEK_EVENTS = SEAT_GEEK_URL + '/events'
 
-// Profile URLs
-const PROFILE_URL = BASE_URL + "/me";
 
-// Library URLs
-const FOLLOW_URL = BASE_URL + "/me/following";
-const SAVED_TRACKS_URL = BASE_URL + "/me/tracks";
-const PLAYLIST_URL = BASE_URL + "/playlists";
-const SAVED_ALBUMS_URL = BASE_URL + "/me/albums";
-const SAVED_SHOWS_URL = BASE_URL + "/me/shows";
-const SAVED_EPISODERS_URL = BASE_URL + "/me/episodes";
-const TOP_ARTISTS_URL = BASE_URL + "/me/top/artists";
+// Spotify URLs
+const SPOTIFY_BASE_URL = "https://api.spotify.com/v1";
+// Spotify Endpoints
+const PLAYLIST_URL = SPOTIFY_BASE_URL + "/playlists";
+// Spotify Profile URL
+const PROFILE_URL = SPOTIFY_BASE_URL + "/me";
+// Your saved libraries
+const FOLLOW_URL = SPOTIFY_BASE_URL + "/me/following";
+const SAVED_TRACKS_URL = SPOTIFY_BASE_URL + "/me/tracks";
+const SAVED_ALBUMS_URL = SPOTIFY_BASE_URL + "/me/albums";
+const SAVED_SHOWS_URL = SPOTIFY_BASE_URL + "/me/shows";
+const SAVED_EPISODERS_URL = SPOTIFY_BASE_URL + "/me/episodes";
+const TOP_ARTISTS_URL = SPOTIFY_BASE_URL + "/me/top/artists";
+const PLAYLISTS_URL = SPOTIFY_BASE_URL + "/me/playlists";
 
 
 /**
@@ -35,8 +40,6 @@ const MONTH_NAMES = Object.freeze(["Jan", "Feb", "Mar", "Apr", "May", "June",
   "July", "Aug", "Sept", "Oct", "Nov", "Dec"]);
 const DAY_NAMES = Object.freeze(["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"]);
 
-// Playlist URLs
-const PLAYLISTS_URL = BASE_URL + "/me/playlists";
 
 const TICKETMASTER_URL = 'https://app.ticketmaster.com/discovery/v2/events.json'
 

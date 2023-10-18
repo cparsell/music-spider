@@ -41,7 +41,7 @@ const getRAData = async (area=218, getAllPages = true) => {
         page = pg;
         let options = returnRAOptions(page, area);
         if (totalResults - running < pageSize) pgSize = totalResults - pg;
-        running += pageSize;
+        running += pgSize;
         nextPage = await UrlFetchApp.fetch(url, options).getContentText();
         let nextPageParsed = JSON.parse(nextPage).data.eventListings.data;
         results.push(...nextPageParsed);
@@ -201,7 +201,7 @@ const searchRAMain = async (artistsArr) => {
     // ]
 
     // run function that filters out resutls that are already on the events sheet
-    newEvents = filterNewEvents(results, events, "eName", "venue", "date", "url");
+    newEvents = filterNewEvents(results, events);
 
   } catch (err) {
     Log.Error(`searchRAMain () error - ${err}`);

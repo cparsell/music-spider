@@ -1,5 +1,24 @@
 /**
  * ----------------------------------------------------------------------------------------------------------------
+ * Add array to sheet
+ * @param {object} sheet
+ * @param {integer} column
+ * @param {array} values
+ * @returns {void}
+ */
+const addArrayToSheet = (sheet, column, values) => 
+{
+  if(typeof sheet != `object`) return 1;
+  let range = [column, "1:", column, values.length].join("");
+  let fn = function(v) 
+  {
+    return [ v ];
+  };
+  sheet.getRange(range).setValues(values.map(fn));
+}
+
+/**
+ * ----------------------------------------------------------------------------------------------------------------
  * Build array of artists
  * Gets artist names from Artists (Spotify) sheet 
  * and 'Artists (Custom)' sheet if searchManuallyAdded = TRUE
@@ -168,17 +187,32 @@ const GetRowData = (sheet, row) =>
  * @param {string} url parameter "url" in quotes
  * @returns {array} [{}]
  */
-const filterNewEvents = (newArray, existingArray, name, venue, date, url) => {
+const filterNewEvents = (newArray, existingArray) => {
   var reduced = newArray.filter(aItem => !existingArray.find(bItem => { 
-    let aDate = Utilities.formatDate(new Date(aItem[date]), "PST", "yyyy/MM/dd HH:mm");
-    let bDate = Utilities.formatDate(new Date(bItem[date]), "PST", "yyyy/MM/dd HH:mm");
-    let aName = aItem[name].toString().toUpperCase();
-    let bName = bItem[name].toString().toUpperCase();
-    let aVenue = aItem[venue].toString().toUpperCase();
-    let bVenue = bItem[venue].toString().toUpperCase();
-    let aUrl = aItem[url].toString().toUpperCase();
-    let bUrl = bItem[url].toString().toUpperCase();
-    return ((aUrl == bUrl) || ((aName.indexOf(bName > -1) || bName.indexOf(aName) > -1) && aVenue == bVenue && aDate == bDate))  //|| aItem[url] == bItem[url]
+    let aDate = Utilities.formatDate(new Date(aItem["date"]), "PST", "yyyy/MM/dd");
+    let bDate = Utilities.formatDate(new Date(bItem["date"]), "PST", "yyyy/MM/dd");
+    let aName = aItem["eName"].toString().toUpperCase();
+    let bName = bItem["eName"].toString().toUpperCase();
+    let aAddress = aItem["address"].toString().toUpperCase();
+    let bAddress = bItem["address"].toString().toUpperCase();
+    // Split addresses at the first comma or semicolon
+    // Returns something like: 1290 Sutter Street
+    // This reduces false negatives if Ticketmaster shows CA but another shows it as California
+    let aAddressSplit = aAddress.split(/[s,s;]+/)[0];
+    let bAddressSplit = bAddress.split(/[s,s;]+/)[0];
+    let aVenue = aItem["venue"].toString().toUpperCase();
+    let bVenue = bItem["venue"].toString().toUpperCase();
+
+    let aUrl = aItem["url"].toString().toUpperCase();
+    let bUrl = bItem["url"].toString().toUpperCase();
+    // if ((aAddressSplit.indexOf(bAddress) > -1 || bAddressSplit.indexOf(aAddress) > -1) || (aVenue.indexOf(bVenue) > -1 || bVenue.indexOf(aVenue) > -1)) Logger.log(`Address match or Venue Match: ${aName}, ${bName}`)
+    return (
+      (aUrl == bUrl) || 
+      (
+        (aName.indexOf(bName > -1) || bName.indexOf(aName) > -1) && 
+        ((aAddressSplit.indexOf(bAddress) > -1 || bAddressSplit.indexOf(aAddress) > -1) || (aVenue.indexOf(bVenue) > -1 || bVenue.indexOf(aVenue) > -1)) && 
+        aDate == bDate
+      ))  //|| aItem[url] == bItem[url]
     }));
     Log.Info("filterNewEvents() filtered array", reduced);
   return reduced;

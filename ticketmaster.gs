@@ -6,10 +6,12 @@
  */
 const refreshEvents = async () => 
 {
-  // get list of artists from sheets
+  // get list of artists from Artist Sheets
   let artistsArr = artistsList();
+  // get list of known events from Events Sheet
   let existingEvents = buildEventsArr();
-  //Clean expired events
+
+  // Clean expired events (ones that have happened already)
   removeExpiredEntries(EVENT_SHEET);
 
   // Clear any empty rows if something was manually deleted
@@ -17,17 +19,19 @@ const refreshEvents = async () =>
   // start loop that searches Ticketmaster for every artist in Artists Sheets
   let eventsArr = await searchTMLoop(artistsArr, existingEvents);
   Log.Info("New TM events", eventsArr);
+
   // Write new events to events sheet
   writeEventsToSheet(eventsArr);
+
   // Write Calendar Event for new events
-  if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(eventsArr);
+  // if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(eventsArr);
   // If searchRA set to TRUE in config.gs then search Resident Advisor too
   if (Config.SEARCH_RA) {
     let eventsRA = await searchRAMain(artistsArr);
     Log.Info("New TM events", eventsRA);
     writeEventsToSheet(eventsRA);
     // Write Calendar Event for new events
-    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(eventsRA);
+    // if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(eventsRA);
   } 
 }
 /**
@@ -59,7 +63,7 @@ const searchTMLoop = async (artistsArr, existingEvents) => {
       Utilities.sleep(180);
     }
     // get rid of any results that are already on the Events Sheet
-    let filteredEventsArr = filterNewEvents(eventsArr,existingEvents, "eName", "venue", "date", "url");
+    let filteredEventsArr = filterNewEvents(eventsArr,existingEvents);
     Log.Debug("searchTMLoop() - filtered Events", filteredEventsArr);
     return filteredEventsArr;
   } catch (e) 
@@ -98,7 +102,7 @@ const ticketSearch = async (keyword) =>
     Logger.log("No keyword provided");
     return;
   }
-  let artist = ARTIST_SHEET.getRange(2,1);
+  // let artist = ARTIST_SHEET.getRange(2,1);
   let eventsArr = new Array;
 
   try {

@@ -23,6 +23,12 @@
  * - Now the script should have authorization to get your user's info (playlists, top artists, etc)
  * - Create triggers for the functions refreshArtists, refreshEvents, and sendEmail
  * - NOTE: Use the address given in the text of the web app page, not the one you copied from Google Script. For me at least, they were slightly different.
+ * 
+ * Other APIs:
+ * - SeatGeek (in the works) (https://platform.seatgeek.com/)
+ * - StubHub (not implemeneted yet, https://developer.stubhub.com/docs/overview/introduction/)
+ * - SeeTickets API (not public afaik)
+ * - Songkick (paid only last I checked)
  */
 
 
@@ -47,23 +53,7 @@ const BarMenu = () =>
 };
 
 
-/**
- * ----------------------------------------------------------------------------------------------------------------
- * Add array to sheet
- * @param {object} sheet
- * @param {integer} column
- * @param {array} values
- * @returns {void}
- */
-const addArrayToSheet = (sheet, column, values) => 
-{
-  let range = [column, "1:", column, values.length].join("");
-  let fn = function(v) 
-  {
-    return [ v ];
-  };
-  sheet.getRange(range).setValues(values.map(fn));
-}
+
 
 
 

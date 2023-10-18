@@ -17,6 +17,9 @@ const Config = Object.freeze({
   // these booleans get converted into strings by the Properties Service - this will turn them back into booleans
   SEARCH_RA: (SCRIPT_PROPS.getProperty(`searchRA`).toLowerCase()  === 'true'), 
   REGION_RA: SCRIPT_PROPS.getProperty(`regionRA`), 
+  SEARCH_SEAT_GEEK: (SCRIPT_PROPS.getProperty(`searchSeatGeek`).toLowerCase()  === 'true'), 
+  SEAT_GEEK_CLIENT_ID: SCRIPT_PROPS.getProperty(`seatGeekClientID`), 
+  SEAT_GEEK_CLIENT_SECRET: SCRIPT_PROPS.getProperty(`seatGeekClientSecret`), 
   GET_TOP_ARTISTS: (SCRIPT_PROPS.getProperty(`getTopArtists`).toLowerCase()  === 'true'), 
   GET_FOLLOWING: (SCRIPT_PROPS.getProperty(`getFollowing`).toLowerCase()  === 'true'),
   GET_ARTISTS_FROM_PLAYLIST: (SCRIPT_PROPS.getProperty(`getArtistsFromPlaylist`).toLowerCase()  === 'true'),
