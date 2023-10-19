@@ -7,6 +7,7 @@ try {
   {
     // Spreadsheet ID is in the spreadsheet URL:
     // https://docs.google.com/spreadsheets/d/THIS_IS_THE_ID/edit#gid=0
+    'searchTicketmaster': true,
     'spreadsheetId': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
     // Spotify API keys (create at https://developer.spotify.com/dashboard/applications)
     'clientIdSpotify': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx',
@@ -15,22 +16,37 @@ try {
     'keyTM': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
     // Ticketmaster search params
     'latlong': '34.052235,-118.243683',  // get your latlong from a website like https://www.latlong.net/
-    'radius': 40,
+    'radius': 30,
     'unit': 'miles',
-    // Resident Advisor settings
+
+    // Resident Advisor settings - note: RA needs no API key
     'searchRA': true, 
     // see resAdv_enums for known region codes, 218 is Bay Area, 8 is New York, 23 is Los Angeles
     'regionRA': 23, 
+
+    // Seat Geek preferences
+    // Seat Geek API key can be created at https://seatgeek.com/account/develop  - you must have a Seat Geek account to make one
+    'searchSeatGeek': false,
+    'seatGeekClientID': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+    'seatGeekClientSecret': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+
     // Spotify preferances
     'getTopArtists': true,
     'getFollowing': true, 
+    
+    // To pull artists from multiple playlists, separate IDs by commas eg. 1d128df3123,23kh34jkjk45
     'getArtistsFromPlaylist': false,
     'playlistId': 'xxxxxxxxxxxxxxxxxxxxxxx',
-    'searchManuallyAdded': false, // If true, will search any artists added to called 'Artists (Manual)'
+
+    // If true, will search any artists directly added to the sheet to called 'Artists (Manual)'
+    'searchManuallyAdded': false, 
+
     // Email(s) to send newsletter to
     'email': 'somebody@somewhere.com',
+    // Create an event in a Google Calendar?
     'createCalendarEvents': false,
     'calendarId': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx@group.calendar.google.com',
+
     // enable debug for verbose logging in Apps Script Executions log
     'debug': false,
   });
