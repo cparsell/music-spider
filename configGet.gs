@@ -7,6 +7,7 @@
  * SEARCH_MANUALLY_ADDED: string, EMAIL: string, CREATE_CALENDAR_EVENTS: string, CALENDAR_ID: string, DEBUG: string }}
  */
 const Config = Object.freeze({
+  SEARCH_TICKETMASTER: (SCRIPT_PROPS.getProperty(`searchTicketmaster`).toLowerCase()  === 'true'),
   SPREADSHEET_ID: SCRIPT_PROPS.getProperty(`spreadsheetId`),
   CLIENT_ID_SPOTIFY: SCRIPT_PROPS.getProperty(`clientIdSpotify`),
   CLIENT_SECRET_SPOTIFY: SCRIPT_PROPS.getProperty(`clientSecretSpotify`),

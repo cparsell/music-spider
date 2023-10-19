@@ -1,39 +1,4 @@
-/**
- * ----------------------------------------------------------------------------------------------------------------
- * refreshEvents
- * Trigger - Main function for Ticketmaster search. Searches Ticketmaster for artists found in Spotify or added manually. 
- * Any events returned that contain the artist's name are added to the sheet
- */
-const refreshEvents = async () => 
-{
-  // get list of artists from Artist Sheets
-  let artistsArr = artistsList();
-  // get list of known events from Events Sheet
-  let existingEvents = buildEventsArr();
 
-  // Clean expired events (ones that have happened already)
-  removeExpiredEntries(EVENT_SHEET);
-
-  // Clear any empty rows if something was manually deleted
-  CommonLib.deleteEmptyRows(EVENT_SHEET);
-  // start loop that searches Ticketmaster for every artist in Artists Sheets
-  let eventsArr = await searchTMLoop(artistsArr, existingEvents);
-  Log.Info("New TM events", eventsArr);
-
-  // Write new events to events sheet
-  writeEventsToSheet(eventsArr);
-
-  // Write Calendar Event for new events
-  // if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(eventsArr);
-  // If searchRA set to TRUE in config.gs then search Resident Advisor too
-  if (Config.SEARCH_RA) {
-    let eventsRA = await searchRAMain(artistsArr);
-    Log.Info("New TM events", eventsRA);
-    writeEventsToSheet(eventsRA);
-    // Write Calendar Event for new events
-    // if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(eventsRA);
-  } 
-}
 /**
  * ----------------------------------------------------------------------------------------------------------------
  * Search Ticketmaster for every artist in Artists Sheets 
@@ -198,7 +163,7 @@ const ticketSearch = async (keyword) =>
         });
         if (eventsArr.length==0) 
         {
-          Logger.log(`ticketSearch() - No events found for ${keyword}`);
+          Log.Debug(`ticketSearch() - No events found for ${keyword}`);
           return;
         }
         // Logger.log(eventsArr);

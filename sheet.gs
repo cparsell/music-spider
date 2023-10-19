@@ -45,7 +45,7 @@ const artistsList = () =>
     // artistsArr.push(...manualArtistsArr);
   }
   
-  // let filtered = artistsArr.filter(n => n); // remove blank strings
+  // let filtered = artistsArr.filter(n => n); // removes blank strings
   let filtered = CommonLib.arrayRemoveDupes(results, true); // remove duplicates and blank strings
   return filtered;
 }

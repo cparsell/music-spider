@@ -225,22 +225,29 @@ const searchSeatGeekLoop = async (artistsArr, existingEvents) => {
   
 }
 
-const seatGeekTrigger = async () => {
+const seatGeekTrigger = async (artistsArr) => {
+  let trigger = new Array;
   if (Config.SEARCH_SEAT_GEEK) {
-    let artistsArr = artistsList();
+    if (!artistsArr) {
+      artistsArr = artistsList();
+      trigger.push(true);
+    }
     let existingEvents = buildEventsArr();
     // Return list of events in vicinity
     let results = await searchSeatGeek("", artistsArr, existingEvents);
 
     // get rid of any results that are already on the Events Sheet
     let filteredEventsArr = filterNewEvents(results, existingEvents);
-    Log.Info("searchSeatGeekLoop() - filtered Events", filteredEventsArr);
-    Log.Info("New SeatGeek events", filteredEventsArr);
+    Log.Info("seatGeekTrigger() - New SeatGeek events", filteredEventsArr);
 
-    // Write events to Sheet
-    // writeEventsToSheet(results);
+    // Write events to Sheet and calendar if this triggered on its own - not through RefreshEvents main function
+    if (trigger.length > 0) {
+      writeEventsToSheet(results); 
 
-    // Write Calendar Event for new events
-    // if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(results);
+      // Write Calendar Event for new events
+      if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(results);
+    }
+
+    return filteredEventsArr;
   }
 }

@@ -31,8 +31,6 @@
  * - Songkick (paid only last I checked)
  */
 
-
-
 /**
  * ----------------------------------------------------------------------------------------------------------------
  * BarMenu
@@ -44,17 +42,63 @@ const BarMenu = () =>
   SpreadsheetApp.getUi()
     .createMenu(`Music Spider`)
     // .addItem(`Configure`, `configSidebar`)
-    .addItem(`Refresh Artists`, `refreshArtists`)
+    .addItem(`Refresh Artists from Spotify`, `refreshArtists`)
     .addItem(`Refresh Events`, `refreshEvents`)
     .addItem(`Send Email Newsletter`, `sendEmail`)
     .addSeparator()
-    .addItem(`Delete Blank Rows`, `deleteEmptyRows`)
+    .addItem(`Clear Blank Rows`, `deleteEmptyRows`)
     .addToUi();
 };
 
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * refreshEvents
+ * Trigger - Main function for Ticketmaster search. Searches Ticketmaster for artists found in Spotify or added manually. 
+ * Any events returned that contain the artist's name are added to the sheet
+ */
+const refreshEvents = async () => 
+{
+  // Clear any empty rows if something was manually deleted
+  CommonLib.deleteEmptyRows(EVENT_SHEET);
+  // Remove events that have happened already
+  removeExpiredEntries(EVENT_SHEET);
+  
+  // get current list of artists from Artist Sheets
+  let artistsArr = artistsList();
+  // get list of known events from Events Sheet
+  let existingEvents = buildEventsArr();
 
+  // Start Ticketmaster search loop
+  // Ticketmaster API stops you if we try to get too many pages of data
+  // So we can't just get all the events in an area and filter out the artists one likes (less requests)
+  // Instead this sends a request for each artist - not very efficient but seems to be
+  // the way it has to be done
+  if (Config.SEARCH_TICKETMASTER) {
+    const tmEvents = await searchTMLoop(artistsArr, existingEvents);
+    Log.Info("New TM events", tmEvents);
+      // Write new events to events sheet
+    writeEventsToSheet(tmEvents);
+    // Write Calendar Event for new events if configured to
+    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(tmEvents);
+  }
 
+  // If searchRA set to TRUE in config.gs then search Resident Advisor too
+  if (Config.SEARCH_RA) {
+    const raEvents = await searchRAMain(artistsArr);
+    Log.Info("New Resident Advisor events", raEvents);
+    writeEventsToSheet(raEvents);
+    // Write Calendar Event for new events if configured to
+    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(raEvents);
+  } 
 
+  if (Config.SEARCH_SEAT_GEEK) {
+    const sgEvents = seatGeekTrigger(artistsArr);
+    Log.Info("New SeatGeek events", sgEvents);
+    writeEventsToSheet(sgEvents);
+    // Write Calendar Event for new events if configured to
+    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(sgEvents);
+  }
+}
 
 
 
