@@ -249,47 +249,50 @@ const getFollowedArtists = async (ignoreUpperCase) =>
  * Playlist ID is supplied in Config.gs
  * @param {bool} ignoreUpperCase
  */
-const getPlaylistArtists = async (ignoreUpperCase) => 
+const getPlaylistArtists = async (ignoreUpperCase = true) => 
 {
-  const playlistId = Config.PLAYLIST_ID;
-  // Retrieve auth
-  
+  // If multiple IDs are separated with commas, it will pull from each playlist
+  const playlistId = Config.PLAYLIST_ID.split(',');
+  Log.Info('Getting artists from playlists', playlistId);
 
-  // Retrieve data
-  let params = "?playlist_id=" + playlistId;
-  params += `&limit=50`
-  Logger.log("Getting artists from playlists")
-  let data = await getSpotifyData(`${PLAYLIST_URL}/${playlistId}${params}`, true);
+  let artistsArr = new Array;
 
-  // Fold array of responses into single structure
-  if (data[0]) 
-  {
-    const newData = JSON.parse(data);
-    const items = newData.tracks.items;
-    // Logger.log(newData.tracks.items);
-    // Log.Info(JSON.stringify(newData.tracks.items));
-    let artistsArr = [];
+  for (let i=0; i<playlistId.length; i++) {
+    // Retrieve data
+    Log.Debug(`Pulling from playlist ${playlistId[i]}`);
+    let params = "?playlist_id=" + playlistId[i];
+    params += `&limit=50`
+    
+    let data = await getSpotifyData(`${PLAYLIST_URL}/${playlistId[i]}${params}`, true);
 
-    items.forEach(item => 
+    if (data[0]) 
     {
-      let artists = item.track.album.artists;
-      artists.forEach(artist =>
-      { 
-        // if (ignoreUpperCase.includes(artist.name.toUpperCase())) Log.Debug(`getPlayListArtists Ignoring: ${artist.name}`);
-        if (!ignoreUpperCase.includes(artist.name.toUpperCase())) artistsArr.push(artist.name);  
-        // artistsArr.push(artist.name);
-      });
-    })
+      const newData = await JSON.parse(data);
+      const items = newData?.tracks?.items;
 
-    artistsArr = CommonLib.arrayRemoveDupes(artistsArr);
+      // For each track, loop through the listed artists for the track and push the arist names to an array
+      items.forEach(item => 
+      {
+        let artists = item?.track?.album?.artists;
+        artists.forEach(artist =>
+        { 
+          // if (ignoreUpperCase.includes(artist.name.toUpperCase())) Log.Debug(`getPlayListArtists Ignoring: ${artist.name}`);
+          // if (!ignoreUpperCase.includes(artist.name.toUpperCase())) artistsArr.push(artist.name);  
+          artistsArr.push(artist.name);
+        });
+      })
+    
+      Log.Debug(`getPlaylistArtists() Playlist Artists: ${artistsArr}`);
 
-    Log.Debug(`getPlaylistArtists() Playlist Artists: ${artistsArr}`);
-
-    return artistsArr;
-  } else {
-    Log.Info("getPlaylistArtists() No data received from your watch playlist");
-    return [];
+    } else {
+      Log.Info(`getPlaylistArtists() No data received from playlist ID: ${playlistId[i]}`);
+    }
   }
+
+  // Remove any duplicates before we finish
+  artistsArr = CommonLib.arrayRemoveDupes(artistsArr);
+  Logger.log(artistsArr);
+  return artistsArr;
 }
 
 /**

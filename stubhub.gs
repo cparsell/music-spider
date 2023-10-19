@@ -7,6 +7,8 @@ const STUBHUB_SEARCH_INVENTORY = STUBHUB_BASE_URL + "/search/inventory/v1";
 // https://developer.stubhub.com/
 // https://developer.viagogo.net/docs/overview/introduction
 
+
+// NOT IMPLEMENTED CURRENTLY
 // StubHub seems to be only partially public
 // There is no obvious way to create a client ID / client secret
 // Apparently they might have disabled this in 2022 according to the internet?
@@ -25,8 +27,6 @@ const getStubHubData = async () => {
     'Accept-Encoding': 'application/json'
   }
 }
-
-
 
 const refreshAuthStubHub = async () => {
   // get new access token
