@@ -8,7 +8,7 @@ const test_seatGeek = async () => {
 } 
 
 
-const getSeatGeekData = async (keyword) => {
+const getSeatGeekData = async () => {
   // keyword = "Four Tet";
   const pageSize = 25;
   let results = new Array;
@@ -106,7 +106,7 @@ const getSeatGeekData = async (keyword) => {
  * 
  * 
  */
-const searchSeatGeek = async (keyword, artistList) => {
+const searchSeatGeek = async (artistList) => {
   // keyword = "Four Tet"; // for testing
   if (!artistList) artistList = artistsList();
     // Get existing list of events from events sheet
@@ -115,7 +115,7 @@ const searchSeatGeek = async (keyword, artistList) => {
   
   try {
     // search for artist name, returns an array of event objects
-    await getSeatGeekData(keyword)
+    await getSeatGeekData()
       // process results to find matches
       .then(async(data) => {
         // let results = await getSeatGeekData(keyword);
@@ -234,7 +234,7 @@ const seatGeekTrigger = async (artistsArr) => {
     }
     let existingEvents = buildEventsArr();
     // Return list of events in vicinity
-    let results = await searchSeatGeek("", artistsArr, existingEvents);
+    let results = await searchSeatGeek(artistsArr);
 
     // get rid of any results that are already on the Events Sheet
     let filteredEventsArr = filterNewEvents(results, existingEvents);
