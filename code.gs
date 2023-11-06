@@ -92,7 +92,7 @@ const refreshEvents = async () =>
   } 
 
   if (Config.SEARCH_SEAT_GEEK) {
-    const sgEvents = seatGeekTrigger(artistsArr);
+    const sgEvents = await seatGeekTrigger(artistsArr);
     Log.Info("New SeatGeek events", sgEvents);
     writeEventsToSheet(sgEvents);
     // Write Calendar Event for new events if configured to
