@@ -187,8 +187,6 @@ const GetRowData = (sheet, row) =>
  * @returns {array} [{}]
  */
 const filterNewEvents = (newArray, existingArray) => {
-  // this filter function tests whether the same event exists already
-  // 
   var reduced = newArray.filter(aItem => !existingArray.find(bItem => { 
     let aDate = Utilities.formatDate(new Date(aItem["date"]), "PST", "yyyy/MM/dd");
     let bDate = Utilities.formatDate(new Date(bItem["date"]), "PST", "yyyy/MM/dd");
@@ -210,17 +208,14 @@ const filterNewEvents = (newArray, existingArray) => {
     return (
       (aUrl == bUrl) || 
       (
-        ( 
-          (aName.length > 3) ? (aName.indexOf(bName > -1) || bName.indexOf(aName) > -1) : aName === bName
-        ) && 
+        (aName.indexOf(bName > -1) || bName.indexOf(aName) > -1) && 
         (
           (aAddressSplit.indexOf(bAddress) > -1 || bAddressSplit.indexOf(aAddress) > -1) || 
           (aVenue.indexOf(bVenue) > -1 || bVenue.indexOf(aVenue) > -1)
         ) && 
-        (aDate == bDate)
+        aDate == bDate
       ))  //|| aItem[url] == bItem[url]
     }));
-
     Log.Info("filterNewEvents() filtered array", reduced);
   return reduced;
 }

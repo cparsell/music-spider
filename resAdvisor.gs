@@ -151,11 +151,12 @@ const searchRA = async (artistList) => {
               results.push(event);
             } 
           });
-          // check artist against title of this result
-          if ((title.toString().indexOf(artistList[j].toString()) > -1) || (artistList[j].toString().indexOf(title.toString()) > -1) ) {
-            Log.Info(`searchRA() - Found a match for artist ${artistList[j]} in title: ${title}`);
-            results.push(event);
-          }
+          // check artist against title of this result IF the name is longer than 3 characters
+          // too many false positives with 3-letter names
+          // if ((title.toString().indexOf(artistList[j].toString()) > -1) || (artistList[j].toString().indexOf(title.toString()) > -1) ) {
+          //   Log.Info(`searchRA() - Found a match for artist ${artistList[j]} in title: ${title}`);
+          //   results.push(event);
+          // }
         }
       }
     }
