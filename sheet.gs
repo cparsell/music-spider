@@ -187,6 +187,8 @@ const GetRowData = (sheet, row) =>
  * @returns {array} [{}]
  */
 const filterNewEvents = (newArray, existingArray) => {
+  // this filter function tests whether the same event exists already
+  // and returns the filtered array
   var reduced = newArray.filter(aItem => !existingArray.find(bItem => { 
     let aDate = Utilities.formatDate(new Date(aItem["date"]), "PST", "yyyy/MM/dd");
     let bDate = Utilities.formatDate(new Date(bItem["date"]), "PST", "yyyy/MM/dd");
