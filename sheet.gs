@@ -203,7 +203,6 @@ const filterNewEvents = (newArray, existingArray) => {
     let bAddressSplit = bAddress.split(/[s,s;]+/)[0];
     let aVenue = aItem["venue"].toString().toUpperCase();
     let bVenue = bItem["venue"].toString().toUpperCase();
-
     let aUrl = aItem["url"].toString().toUpperCase();
     let bUrl = bItem["url"].toString().toUpperCase();
     // if ((aAddressSplit.indexOf(bAddress) > -1 || bAddressSplit.indexOf(aAddress) > -1) || (aVenue.indexOf(bVenue) > -1 || bVenue.indexOf(aVenue) > -1)) Logger.log(`Address match or Venue Match: ${aName}, ${bName}`)
