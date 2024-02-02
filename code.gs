@@ -68,6 +68,24 @@ const refreshEvents = async () =>
   // get list of known events from Events Sheet
   let existingEvents = buildEventsArr();
 
+  // If searchSeatGeek is set to TRUE in config.gs then search Resident Advisor
+  if (Config.SEARCH_SEAT_GEEK) {
+    const sgEvents = await seatGeekTrigger(artistsArr);
+    Log.Info("New SeatGeek events", sgEvents);
+    writeEventsToSheet(sgEvents);
+    // Write Calendar Event for new events if configured to
+    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(sgEvents);
+  }
+
+  // If searchRA is set to TRUE in config.gs then search Resident Advisor
+  if (Config.SEARCH_RA) {
+    const raEvents = await searchRAMain(artistsArr);
+    Log.Info("New Resident Advisor events", raEvents);
+    writeEventsToSheet(raEvents);
+    // Write Calendar Event for new events if configured to
+    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(raEvents);
+  } 
+
   // Start Ticketmaster search loop
   // Ticketmaster API stops you if we try to get too many pages of data
   // So we can't just get all the events in an area and filter out the artists one likes (less requests)
@@ -82,22 +100,9 @@ const refreshEvents = async () =>
     if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(tmEvents);
   }
 
-  // If searchRA set to TRUE in config.gs then search Resident Advisor too
-  if (Config.SEARCH_RA) {
-    const raEvents = await searchRAMain(artistsArr);
-    Log.Info("New Resident Advisor events", raEvents);
-    writeEventsToSheet(raEvents);
-    // Write Calendar Event for new events if configured to
-    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(raEvents);
-  } 
 
-  if (Config.SEARCH_SEAT_GEEK) {
-    const sgEvents = await seatGeekTrigger(artistsArr);
-    Log.Info("New SeatGeek events", sgEvents);
-    writeEventsToSheet(sgEvents);
-    // Write Calendar Event for new events if configured to
-    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(sgEvents);
-  }
+
+
 }
 
 
