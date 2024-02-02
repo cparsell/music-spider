@@ -179,15 +179,16 @@ const GetRowData = (sheet, row) =>
 /**
  * ----------------------------------------------------------------------------------------------------------------
  * Filter list of new events to exclude ones that already exist on the Events Sheet
+ * Either:
+ *  A. URLs are the same OR
+ *  B. the event NAMES, ADDRESSES, and DATES are the same
  * @param {array} newArray list of new results
  * @param {array} existingArray list of existing events
- * @param {string} name parameter "eName" in quotes
- * @param {string} venue parameter "venue" in quotes
- * @param {string} date parameter "date" in quotes
- * @param {string} url parameter "url" in quotes
  * @returns {array} [{}]
  */
 const filterNewEvents = (newArray, existingArray) => {
+  // this filter function tests whether the same event exists already
+  // 
   var reduced = newArray.filter(aItem => !existingArray.find(bItem => { 
     let aDate = Utilities.formatDate(new Date(aItem["date"]), "PST", "yyyy/MM/dd");
     let bDate = Utilities.formatDate(new Date(bItem["date"]), "PST", "yyyy/MM/dd");
@@ -209,11 +210,17 @@ const filterNewEvents = (newArray, existingArray) => {
     return (
       (aUrl == bUrl) || 
       (
-        (aName.indexOf(bName > -1) || bName.indexOf(aName) > -1) && 
-        ((aAddressSplit.indexOf(bAddress) > -1 || bAddressSplit.indexOf(aAddress) > -1) || (aVenue.indexOf(bVenue) > -1 || bVenue.indexOf(aVenue) > -1)) && 
-        aDate == bDate
+        ( 
+          (aName.length > 3) ? (aName.indexOf(bName > -1) || bName.indexOf(aName) > -1) : aName === bName
+        ) && 
+        (
+          (aAddressSplit.indexOf(bAddress) > -1 || bAddressSplit.indexOf(aAddress) > -1) || 
+          (aVenue.indexOf(bVenue) > -1 || bVenue.indexOf(aVenue) > -1)
+        ) && 
+        (aDate == bDate)
       ))  //|| aItem[url] == bItem[url]
     }));
+
     Log.Info("filterNewEvents() filtered array", reduced);
   return reduced;
 }
