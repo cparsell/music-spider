@@ -176,6 +176,13 @@ const GetRowData = (sheet, row) =>
   }
 }
 
+const filterAddress = (address) => {
+  filtered = address.replace(/(Avenue|Ave[.]?)/g, 'Ave');
+  filtered = address.replace(/(Street|St[.]?)/g, 'St');
+  filtered = address.replace(/(Drive|Dr[.]?)/g, 'Dr');
+  filtered = address.replace(/(Road|Rd[.]?)/g, 'Rd');
+  return filtered
+}
 /**
  * ----------------------------------------------------------------------------------------------------------------
  * Filter list of new events to exclude ones that already exist on the Events Sheet
@@ -197,10 +204,11 @@ const filterNewEvents = (newArray, existingArray) => {
     let aAddress = aItem["address"].toString().toUpperCase();
     let bAddress = bItem["address"].toString().toUpperCase();
     // Split addresses at the first comma or semicolon
+    // And replace 'St.' or 'Street' with 'St'
     // Returns something like: 1290 Sutter Street
     // This reduces false negatives if Ticketmaster shows CA but another shows it as California
-    let aAddressSplit = aAddress.split(/[s,s;]+/)[0];
-    let bAddressSplit = bAddress.split(/[s,s;]+/)[0];
+    let aAddressFiltered = filterAddress(aAddress.split(/[s,s;]+/)[0]);
+    let bAddressFiltered = filterAddress(bAddress.split(/[s,s;]+/)[0]);
     let aVenue = aItem["venue"].toString().toUpperCase();
     let bVenue = bItem["venue"].toString().toUpperCase();
     let aUrl = aItem["url"].toString().toUpperCase();
@@ -211,7 +219,7 @@ const filterNewEvents = (newArray, existingArray) => {
       (
         (aName.indexOf(bName > -1) || bName.indexOf(aName) > -1) && 
         (
-          (aAddressSplit.indexOf(bAddress) > -1 || bAddressSplit.indexOf(aAddress) > -1) || 
+          (aAddressFiltered.indexOf(bAddress) > -1 || bAddressFiltered.indexOf(aAddress) > -1) || 
           (aVenue.indexOf(bVenue) > -1 || bVenue.indexOf(aVenue) > -1)
         ) && 
         aDate == bDate
