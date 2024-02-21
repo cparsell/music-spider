@@ -184,33 +184,18 @@ const searchRAMain = async (artistsArr) => {
     // Get list of artists from Artists Sheet
     if (!artistsArr) artistsArr = artistsList();
     // Get existing list of events from events sheet
-    const events = buildEventsArr();
-
+    const existingEvents = buildEventsArr();
     // returns events that match your artists
     const results = await searchRA(artistsArr);
-    
-    // let test = [
-    //   { eName: "Poodles", venue: "Bathroom", date: "tomorrow", something: "dandy", url: "https://ra.co/events/177234"},
-    //   { eName: "Arnold", venue: "House", date: "yesterday", something: "stuffed", url: "https://ra.co/events/177235"},
-    //   { eName: "Bundy", venue: "Club", date: "next week", something: "bunk", url: "https://ra.co/events/177236"},
-    //   { eName: "Bandy With a diff", venue: "Doghouse", date: "sometime", something: "fgdfg", url: "https://ra.co/events/172354"},
-    // ]
-    // let newTest = [
-    //   { eName: "Arnold", venue: "House", date: "yesterday", something: "stupid", url: "https://ra.co/events/177235"},
-    //   { eName: "Bandy", venue: "Doghouse", date: "sometime", something: "fgdfg", url: "https://ra.co/events/172354"},
-    //   { eName: "Poodles", venue: "Bathroom", date: "tomorrow", something: "dandy", url: "https://ra.co/events/177234"},
-    //   { eName: "Junk", venue: "Crabhouse", date: "next year", something: "feverdream", url: "https://ra.co/events/173456"},
-    //   { eName: "stuff", venue: "vet clinic", date: "centuries ago", something: "dumbstuff", url: "https://ra.co/events/123434"},
-    // ]
-
     // run function that filters out resutls that are already on the events sheet
-    newEvents = filterNewEvents(results, events);
-
+    newEvents = filterDupeEvents(results, existingEvents);
+    let altEvents = filterAltEvents(results, existingEvents);
+    Log.Info("New RA Events", newEvents);
+    return {newEvents: newEvents, altEvents: altEvents};
   } catch (err) {
     Log.Error(`searchRAMain () error - ${err}`);
     return [];
   }
 
-  Log.Info("New RA Events", newEvents);
-  return newEvents;
+  
 }

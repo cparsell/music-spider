@@ -109,8 +109,9 @@ const buildEventsArr = () =>
  * @param {sheet} sheet
  * @param {string} dateHeaderName default is "Date"
  */
-const removeExpiredEntries = (sheet,dateHeaderName="Date") => 
+const removeExpiredEntries = (sheet) => 
 {
+  dateHeaderName=HEADERNAMES.date;
   // sheet = EVENT_SHEET; // for debugging
   if(typeof sheet != `object`) return 1;
   try {
@@ -189,14 +190,15 @@ const filterAddress = (address) => {
  * Either:
  *  A. URLs are the same OR
  *  B. the event NAMES, ADDRESSES, and DATES are the same
+ * In the case of B, it will add the URL to the URL2 column so one can choose from multiple ticket vendors
  * @param {array} newArray list of new results
  * @param {array} existingArray list of existing events
- * @returns {array} [{}]
+ * @returns {object} {filtered :[{}], alt: [{}]}
  */
-const filterNewEvents = (newArray, existingArray) => {
+const filterDupeEvents = (newArray, existingArray) => {
   // this filter function tests whether the same event exists already
   // and returns the filtered array
-  var reduced = newArray.filter(aItem => !existingArray.find(bItem => { 
+  let reduced = newArray.filter(aItem => !existingArray.find(bItem => { 
     let aDate = Utilities.formatDate(new Date(aItem["date"]), "PST", "yyyy/MM/dd");
     let bDate = Utilities.formatDate(new Date(bItem["date"]), "PST", "yyyy/MM/dd");
     let aName = aItem["eName"].toString().toUpperCase();
@@ -214,8 +216,9 @@ const filterNewEvents = (newArray, existingArray) => {
     let aUrl = aItem["url"].toString().toUpperCase();
     let bUrl = bItem["url"].toString().toUpperCase();
     // if ((aAddressSplit.indexOf(bAddress) > -1 || bAddressSplit.indexOf(aAddress) > -1) || (aVenue.indexOf(bVenue) > -1 || bVenue.indexOf(aVenue) > -1)) Logger.log(`Address match or Venue Match: ${aName}, ${bName}`)
+    
     return (
-      (aUrl == bUrl) || 
+      (aUrl != bUrl) ||
       (
         (aName.indexOf(bName > -1) || bName.indexOf(aName) > -1) && 
         (
@@ -223,10 +226,44 @@ const filterNewEvents = (newArray, existingArray) => {
           (aVenue.indexOf(bVenue) > -1 || bVenue.indexOf(aVenue) > -1)
         ) && 
         aDate == bDate
-      ))  //|| aItem[url] == bItem[url]
-    }));
-    Log.Info("filterNewEvents() filtered array", reduced);
+      )
+    )
+  }));
+  Log.Info("filterDupeEvents() filtered out duplicates", reduced);
   return reduced;
+}
+
+const filterAltEvents = (newArray, existingArray) => {
+  // this filter function tests whether any events share
+  // Date, Address, Name, and Venue
+  let alternates = newArray.filter(aItem => existingArray.find(bItem => {
+    let aDate = Utilities.formatDate(new Date(aItem["date"]), "PST", "yyyy/MM/dd");
+    let bDate = Utilities.formatDate(new Date(bItem["date"]), "PST", "yyyy/MM/dd");
+    let aName = aItem["eName"].toString().toUpperCase();
+    let bName = bItem["eName"].toString().toUpperCase();
+    let aAddress = aItem["address"].toString().toUpperCase();
+    let bAddress = bItem["address"].toString().toUpperCase();
+    let aAddressFiltered = filterAddress(aAddress.split(/[s,s;]+/)[0]);
+    let bAddressFiltered = filterAddress(bAddress.split(/[s,s;]+/)[0]);
+    let aVenue = aItem["venue"].toString().toUpperCase();
+    let bVenue = bItem["venue"].toString().toUpperCase();
+    let aUrl = aItem["url"].toString().toUpperCase();
+    let bUrl = bItem["url"].toString().toUpperCase();
+    // if ((aAddressSplit.indexOf(bAddress) > -1 || bAddressSplit.indexOf(aAddress) > -1) || (aVenue.indexOf(bVenue) > -1 || bVenue.indexOf(aVenue) > -1)) Logger.log(`Address match or Venue Match: ${aName}, ${bName}`)
+    return (
+      (aUrl != bUrl) &&
+      (
+        (aName.indexOf(bName > -1) || bName.indexOf(aName) > -1) && 
+        (
+          (aAddressFiltered.indexOf(bAddress) > -1 || bAddressFiltered.indexOf(aAddress) > -1) || 
+          (aVenue.indexOf(bVenue) > -1 || bVenue.indexOf(aVenue) > -1)
+        ) 
+      ) && 
+      aDate == bDate
+    )
+  }));
+  Log.Debug("filterAltEvents() exist but are from a different vendor", alternates);
+  return alternates;
 }
 
 /**
@@ -272,16 +309,12 @@ const searchColForValue = (sheet, columnName, val) =>
  */
 const SetByHeader = (sheet, columnName, row, val) => {
   // if(typeof sheet != `object`) return 1;
-  let data;
-  let col;
   try {
-    data = sheet.getDataRange().getValues();
-    col = data[0].indexOf(columnName) + 1;
-    if(col != -1) 
-    {
-      sheet.getRange(row, col).setValue(val);
-      return 0;
-    } else return 1;
+    const data = sheet.getDataRange().getValues();
+    const col = data[0].indexOf(columnName) + 1;
+    if(col == -1) return false;
+    sheet.getRange(row, col).setValue(val);
+    return 0;
   } catch (err) {
     Logger.log(`${err} : SetByHeader failed - Sheet: ${sheet} Row: ${row} Col: ${col} Value: ${val}`);
     console.error(`${err} : SetByHeader failed - Sheet: ${sheet} Row: ${row} Col: ${col} Value: ${val}`);
@@ -496,6 +529,93 @@ const showMessage = (message, title) =>
   }
 }
 
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * writeAltEventsToSheet
+ * Write new URL to an existing event
+ * @param {array} eventsArr [{name, date, city, venue, url, image, acts}]
+ */
+const writeAltEventsToSheet = async (altEvents) => 
+{
+  const sheet = EVENT_SHEET;
+  try {
+    // Get sheet data
+    const data = sheet.getDataRange().getValues();
+    // Get column numbers for Name, Date, Venue, and Address
+    const colDate = data[0].indexOf(HEADERNAMES.date);
+    const colName = data[0].indexOf(HEADERNAMES.eName);
+    const colVenue = data[0].indexOf(HEADERNAMES.venue);
+    const colAddress = data[0].indexOf(HEADERNAMES.address);
+    const colAlt = data[0].indexOf(HEADERNAMES.url2);
+    if (colDate == -1 || colName == -1 || colVenue == -1 || colAddress == -1) 
+    {
+      // sheet.getRange(row, col).setValue(val);
+      throw new Error ("Unable to locate column names that should be on the Events Sheet")
+    }
+    const activeRange = sheet.getRange(2,1,sheet.getLastRow()-1,sheet.getLastColumn());
+    const lastRow = sheet.getLastRow()-1; //subtract header
+    if (lastRow < 1) throw new Error ("No events found on Events Sheet");
+    const existing = activeRange.getValues();
+    let row=0;
+    // Loop through existing events
+    for (let i=0;i<existing.length; i++) {
+      let aItem = existing[i];
+      row = i + 2;
+      // Logger.log(`AltEvents length: ${altEvents.length}`);
+      let altUrl = aItem[colAlt];
+      // Only search for a second URL if one doesn't already exist
+      if (altUrl != "") {
+        let aDate = Utilities.formatDate(new Date(aItem[colDate]), "PST", "yyyy/MM/dd");
+        let aName = aItem[colName].toString().toUpperCase();
+        let aAddress = aItem[colAddress].toString().toUpperCase();
+        let aAddressFiltered = filterAddress(aAddress.split(/[s,s;]+/)[0]);
+        let aVenue = aItem[colVenue].toString().toUpperCase();
+        // Loop through new results
+        for (let j=0;j<altEvents.length; j++) {
+          let bItem = altEvents[j];
+
+          let bDate = Utilities.formatDate(new Date(bItem["date"]), "PST", "yyyy/MM/dd");
+
+          let bName = bItem["eName"].toString().toUpperCase();
+          let bAddress = bItem["address"].toString().toUpperCase();
+          let bAddressFiltered = filterAddress(bAddress.split(/[s,s;]+/)[0]);
+          let bVenue = bItem["venue"].toString().toUpperCase();
+          // let aUrl = aItem["url"].toString().toUpperCase();
+          // check if the existing event matches event name, date, and venue, and address of the result
+          if (
+            (aName.indexOf(bName > -1) || bName.indexOf(aName) > -1) && 
+            (
+              (aAddressFiltered.indexOf(bAddress) > -1 || bAddressFiltered.indexOf(aAddress) > -1) || 
+              (aVenue.indexOf(bVenue) > -1 || bVenue.indexOf(aVenue) > -1)
+            ) && 
+            aDate == bDate
+          ) {
+            Log.Debug(`writeAltEventsToSheet() - Existing event -  Row: ${row}, Name: ${aName}`);
+            let bUrl = bItem["url"].toString();
+            SetByHeader(EVENT_SHEET, HEADERNAMES.url2, parseInt(row), bUrl);
+          }
+        }
+      }
+    }
+  } catch (err) {
+    Logger.log(`writeAltEventsToSheet() error: ${err}`);
+    console.error(`writeAltEventsToSheet() error: ${err}`);
+  }
+}
+
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * writeEventsToSheet
+ * Write an array of events to sheet
+ * @param {array} eventsArr [{name, date, city, venue, url, image, acts}]
+ */
+const writeEventsToSheet = async (eventsArr) => 
+{
+  for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
+    CommonLib.setRowData(sheet, HEADERNAMES, eventsArr[key]);
+  }
+}
+
 const test = () => {
-  
+  CommonLib.setByHeader(EVENT_SHEET, HEADERNAMES.eName, 25, "Test");
 }

@@ -3,11 +3,17 @@
 
 
 const test_seatGeek = async () => {
-  let sdf = await seatGeekTrigger();
+  const sdf = await seatGeekTrigger();
   // Log.Info("new events", sdf);
 } 
 
-
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * Get SeatGeek Data
+ * Reaches out to SeatGeek API and returns results object
+ * @params {array} artistList array of artist names
+ * @returns {object} results 
+ */
 const getSeatGeekData = async () => {
   // keyword = "Four Tet";
   const pageSize = 25;
@@ -18,7 +24,7 @@ const getSeatGeekData = async () => {
     if (!Config.SEAT_GEEK_CLIENT_SECRET) throw new Error ("No Seat Geek Client Secret found in Config.gs file");
     if (!Config.LAT_LONG) throw new Error ("No Latitude/Longitude found in Config.gs file");
     const AUTH_STRING = `client_id=${Config.SEAT_GEEK_CLIENT_ID}&client_secret=${Config.SEAT_GEEK_CLIENT_SECRET}&`;
-    const AUTH_STRINGNO = `client_id=${Config.SEAT_GEEK_CLIENT_ID}&client_secret=${Config.SEAT_GEEK_CLIENT_SECRET}`;
+    // const AUTH_STRINGNO = `client_id=${Config.SEAT_GEEK_CLIENT_ID}&client_secret=${Config.SEAT_GEEK_CLIENT_SECRET}`;
     // const body = {
     //   // 'postal_code': zipCode,
     //   // 'performers.slug': 'new-york-mets'
@@ -103,8 +109,8 @@ const getSeatGeekData = async () => {
 /**
  * ----------------------------------------------------------------------------------------------------------------
  * Search SeatGeek for a keyword
- * 
- * 
+ * @params {array} artistList array of artist names
+ * @returns {object} results 
  */
 const searchSeatGeek = async (artistList) => {
   // keyword = "Four Tet"; // for testing
@@ -189,42 +195,54 @@ const searchSeatGeek = async (artistList) => {
 /**
  * ----------------------------------------------------------------------------------------------------------------
  * Main loop for searching SeatGeek for all artists in the Artists sheets
- * 
+ * Should be run by seatGeekTrigger
+ * @params {array} artistsArr array of artist names
+ * @params {array} existingEvents array of event objects [{eName: "sdf", date: '12/23/2023 9:00"...}]
  */
 const searchSeatGeekLoop = async (artistsArr, existingEvents) => {
+  try {
+    if (!artistsArr) throw new Error ("Missing artistsArr argument")
+    if (!existingEvents) throw new Error ("Missing existingEvents argument")
+    
+    let eventsArr = new Array;
+    // try {
+    for (let i=0;i<artistsArr.length;i++) {
+      await searchSeatGeek(artistsArr[i], artistsArr).then(data => 
+      {
+        for (let i=0; i<data.length;i++) {
+          eventsArr.push({
+            date: data[i].date,
+            eName: data[i].eName,
+            city: data[i].city,
+            venue: data[i].venue, 
+            url: data[i].url, 
+            image: data[i].image,
+            acts: data[i].acts.toString(),
+            address: data[i].address,
+          });
+        }
+      })
+      Utilities.sleep(100);
+    }
 
-  // if (!artistsArr) artistsArr = artistsList();
-  // if (!existingEvents) existingEvents = buildEventsArr();
-  let eventsArr = new Array;
-  // try {
-  for (let i=0;i<artistsArr.length;i++) {
-    await searchSeatGeek(artistsArr[i], artistsArr).then(data => 
-    {
-      for (let i=0; i<data.length;i++) {
-        eventsArr.push({
-          date: data[i].date,
-          eName: data[i].eName,
-          city: data[i].city,
-          venue: data[i].venue, 
-          url: data[i].url, 
-          image: data[i].image,
-          acts: data[i].acts.toString(),
-          address: data[i].address,
-        });
-      }
-    })
-    Utilities.sleep(100);
+    return eventsArr;
+  } catch (e) 
+  { 
+    Log.Error(`searchSeatGeekLoop() error: ${e}`);
+    return []
   }
-
-  return eventsArr;
-  // } catch (e) 
-  // { 
-  //   Log.Error(`searchSeatGeekLoop() error - ${e}`);
-  //   return []
-  // }
   
 }
 
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * Search SeatGeek for a keyword
+ * Can be started by a trigger in Gooogle Apps Script
+ * By default it is run by the main RefreshEvents function in Code.gs
+ * 
+ * @params {array} artistList array of artist names
+ * @returns {object} results 
+ */
 const seatGeekTrigger = async (artistsArr) => {
   let trigger = new Array;
   if (Config.SEARCH_SEAT_GEEK) {
@@ -237,8 +255,10 @@ const seatGeekTrigger = async (artistsArr) => {
     let results = await searchSeatGeek(artistsArr);
 
     // get rid of any results that are already on the Events Sheet
-    let filteredEventsArr = filterNewEvents(results, existingEvents);
-    Log.Info("seatGeekTrigger() - New SeatGeek events", filteredEventsArr);
+    let newEvents = filterDupeEvents(results, existingEvents);
+    let altEvents = filterAltEvents(results, existingEvents);
+
+    Log.Info("seatGeekTrigger() - New SeatGeek events", newEvents);
 
     // Write events to Sheet and calendar if this triggered on its own - not through RefreshEvents main function
     if (trigger.length > 0) {
@@ -248,6 +268,6 @@ const seatGeekTrigger = async (artistsArr) => {
       if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(results);
     }
 
-    return filteredEventsArr;
+    return {newEvents: newEvents, altEvents: altEvents};
   }
 }

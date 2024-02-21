@@ -28,13 +28,15 @@ const searchTMLoop = async (artistsArr, existingEvents) => {
       Utilities.sleep(180);
     }
     // get rid of any results that are already on the Events Sheet
-    let filteredEventsArr = filterNewEvents(eventsArr,existingEvents);
-    Log.Debug("searchTMLoop() - filtered Events", filteredEventsArr);
+    const newEvents = filterDupeEvents(eventsArr,existingEvents);
+    const altEvents = filterAltEvents(eventsArr,existingEvents);
+    Log.Debug("searchTMLoop() - filtered Events", newEvents);
 
     // Ticketmaster provides a bunch of different images of different sizes
     // This function will run through the newfound events and select the highest res image
-    let imageFilteredEvents = filterTMimages(filteredEventsArr);
-    return imageFilteredEvents;
+    const imageFilteredNewEvents = filterTMimages(newEvents);
+    const imageFilteredAltEvents = filterTMimages(altEvents);
+    return {newEvents: imageFilteredNewEvents, altEvents: imageFilteredAltEvents};
   } catch (e) 
   { 
     Log.Error(`SearchTMLoop() error - ${e}`);
@@ -43,12 +45,20 @@ const searchTMLoop = async (artistsArr, existingEvents) => {
   
 }
 
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * Process Images in Ticketmaster API response
+ * Response usually includes multiple images. This function limits it to just the largest one.
+ * @param {object} eventsArr [{eName, date, city, venue, url, image, acts}, ...]
+ * @returns {object} eventsArr returns the events array with the image limited to the largest one
+ */
 const filterTMimages = (eventsArr) => {
   if (eventsArr.length == 0) return [];
   // loop through all the new events
   for (let i=0; i<eventsArr.length;i++) {
     let item = eventsArr[i];
     let image = [[0,0]];
+
 
     // Loop through image URLs in JSON response. Find the one with the largest filesize
     for (let i=0;i<item.image.length;i++)
@@ -62,30 +72,22 @@ const filterTMimages = (eventsArr) => {
         image[0][1]=imgBytes
       }
     }
-    Logger.log(item.image[image[0][0]].url);
-    eventsArr[i].image = item.image[image[0][0]].url;
+    const result = item.image[image[0][0]].url;
+    Log.Debug('Ticketmaster, Image URL', result);
+    // replace array.image with just the largest image
+    eventsArr[i].image = result;
   }
   return eventsArr;
 }
 
-/**
- * ----------------------------------------------------------------------------------------------------------------
- * writeEventsToSheet
- * Write an array of events to sheet
- * @param {array} eventsArr [{name, date, city, venue, url, image, acts}]
- */
-const writeEventsToSheet = async (eventsArr) => 
-{
-  for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
-    CommonLib.setRowData(EVENT_SHEET, HEADERNAMES, eventsArr[key]);
-  }
-}
+
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
  * ticketSearch
  * Search Ticketmaster. Runs tmSearch function and parses response data.
  * @param {string} keyword 
+ * @returns {object} eventsArr
  */
 const ticketSearch = async (keyword) => 
 {
@@ -181,6 +183,7 @@ const ticketSearch = async (keyword) =>
  * tmSearch
  * Fetch data from Ticketmaster API
  * @param {object} event {name, date, city, venue, url, image, acts} 
+ * @returns {object} results
  */
 const tmSearch = async (keyword) => 
 {
@@ -189,7 +192,7 @@ const tmSearch = async (keyword) =>
   let page = 0;
   const pageSize = 20;
   let results = new Array;
-  let options = {
+  const options = {
     "method": "GET",
     "async": true,
     "contentType": "application/json",
@@ -258,6 +261,7 @@ const tmSearch = async (keyword) =>
  * @param {string} keyword name of artist being searched
  * @page {integer} page the page number we want in return - starts with 0
  * @param {integer} pageSize number of results returned in each response
+ * @returns {string} params encoded parameters for Ticketmaster API query
  */
 const returnTMParams = (keyword, page, pageSize) => {
   let params = `?apikey=${Config.KEY_TM}`;
@@ -274,13 +278,13 @@ const returnTMParams = (keyword, page, pageSize) => {
 
 
 const test_ticket = async () => {
-  let result = await ticketSearch("Hania Rani");
+  const result = await ticketSearch("Hania Rani");
   Logger.log(result);
-  let filteredEventsArr = filterNewEvents(result,buildEventsArr());
+  const filteredEventsArr = filterNewEvents(result,buildEventsArr());
     // Log.Debug("searchTMLoop() - filtered Events", filteredEventsArr);
 
     // select which image is highest resolution and use only this
-    let imageFilteredEvents = filterTMimages(filteredEventsArr);
+    const imageFilteredEvents = filterTMimages(filteredEventsArr);
     Logger.log(imageFilteredEvents);
     return imageFilteredEvents;
 }

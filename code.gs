@@ -73,19 +73,25 @@ const refreshEvents = async () =>
   // and they sell tickets that came from other vendors like Ticketmaster, etc.
   if (Config.SEARCH_SEAT_GEEK) {
     const sgEvents = await seatGeekTrigger(artistsArr);
-    Log.Info("New SeatGeek events", sgEvents);
-    writeEventsToSheet(sgEvents);
+    Log.Debug("New SeatGeek events", sgEvents);
+    Log.Debug("Existing events, alt listing", sgEvents.altEvents);
+    // Write new events to events sheet
+    writeEventsToSheet(sgEvents.newEvents);
+    writeAltEventsToSheet(sgEvents.altEvents);
     // Write Calendar Event for new events if configured to
-    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(sgEvents);
+    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(sgEvents.newEvents);
   }
 
   // If 'searchRA' is set to TRUE in config.gs then search Resident Advisor
   if (Config.SEARCH_RA) {
     const raEvents = await searchRAMain(artistsArr);
-    Log.Info("New Resident Advisor events", raEvents);
-    writeEventsToSheet(raEvents);
+    Log.Debug("New Resident Advisor events", raEvents.newEvents);
+    Log.Debug("Existing events, alt listing", raEvents.altEvents);
+    // Write new events to events sheet
+    writeEventsToSheet(raEvents.newEvents);
+    writeAltEventsToSheet(raEvents.altEvents);
     // Write Calendar Event for new events if configured to
-    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(raEvents);
+    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(raEvents.newEvents);
   } 
 
   // If 'searchTicketmaster' is set to TRUE in config.gs then search Ticketmaster
@@ -96,16 +102,14 @@ const refreshEvents = async () =>
   // the way it has to be done
   if (Config.SEARCH_TICKETMASTER) {
     const tmEvents = await searchTMLoop(artistsArr, existingEvents);
-    Log.Info("New TM events", tmEvents);
-      // Write new events to events sheet
-    writeEventsToSheet(tmEvents);
+    Log.Debug("New TM events", tmEvents.newEvents);
+    Log.Debug("Existing events, alt listing", tmEvents.altEvents);
+    // Write new events to events sheet
+    writeEventsToSheet(tmEvents.newEvents);
+    writeAltEventsToSheet(tmEvents.altEvents);
     // Write Calendar Event for new events if configured to
-    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(tmEvents);
+    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(tmEvents.newEvents);
   }
-
-
-
-
 }
 
 
