@@ -123,8 +123,7 @@ const removeExpiredEntries = (sheet) =>
     let range = sheet.getRange(2,col+1,lastRow,1).getValues();
     if (col == -1) 
     {
-      console.error(`Matching data by header failed...`);
-      return false;
+      throw new Error(`Matching data by header failed...`);
     }
     let rowsToDel = [];
     for (let i=0;i<range.length;i++){
@@ -138,9 +137,10 @@ const removeExpiredEntries = (sheet) =>
       Log.Info(`Removing expired event: ${data[i+1][0]}, Date: ${range[rowsToDel[i]-2]}`);
       sheet.deleteRow(rowsToDel[i]);
     }
+    return 0;
   } catch (err) {
     console.error(`${err} : removeExpiredEntry failed - Sheet: ${sheet} Col Name specified: ${dateHeaderName}`);
-    return false;
+    return 1;
   }
 }
 
@@ -149,6 +149,7 @@ const removeExpiredEntries = (sheet) =>
  * Return a dictionary of values from a whole row on a given sheet
  * @param {sheet} sheet
  * @param {number} row
+ * @returns {object} dict a dictionary of row data {columnName: cellValue, col2name: cellValue...}
  */
 const GetRowData = (sheet, row) => 
 {
@@ -328,24 +329,24 @@ const SetByHeader = (sheet, columnName, row, val) => {
  * @param {sheet} sheet
  * @param {dict} data 
  */
-const SetRowData = (sheet,data) => 
-{
-  if(typeof sheet != `object`) return 1;
-  try {
-    let sheetHeaderNames = Object.values(GetRowData(sheet, 1));
-    let values = [];
-      Object.entries(data).forEach(pair => 
-      {
-        let headername = HEADERNAMES[pair[0]];
-        let index = sheetHeaderNames.indexOf(headername);
-        values[index] = pair[1];
-      })
-    sheet.appendRow(values);
-  } catch (err) {
-    console.error(`${err} : SetRowData failed - Sheet: ${sheet}`);
-    return 1;
-  }
-}
+// const SetRowData = (sheet,data) => 
+// {
+//   if(typeof sheet != `object`) return 1;
+//   try {
+//     let sheetHeaderNames = Object.values(GetRowData(sheet, 1));
+//     let values = [];
+//       Object.entries(data).forEach(pair => 
+//       {
+//         let headername = HEADERNAMES[pair[0]];
+//         let index = sheetHeaderNames.indexOf(headername);
+//         values[index] = pair[1];
+//       })
+//     sheet.appendRow(values);
+//   } catch (err) {
+//     console.error(`${err} : SetRowData failed - Sheet: ${sheet}`);
+//     return 1;
+//   }
+// }
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
@@ -546,6 +547,7 @@ const writeAltEventsToSheet = async (altEvents) =>
     const colName = data[0].indexOf(HEADERNAMES.eName);
     const colVenue = data[0].indexOf(HEADERNAMES.venue);
     const colAddress = data[0].indexOf(HEADERNAMES.address);
+    const colUrl = data[0].indexOf(HEADERNAMES.url);
     const colAlt = data[0].indexOf(HEADERNAMES.url2);
     if (colDate == -1 || colName == -1 || colVenue == -1 || colAddress == -1) 
     {
@@ -560,6 +562,7 @@ const writeAltEventsToSheet = async (altEvents) =>
     // Loop through existing events
     for (let i=0;i<existing.length; i++) {
       let aItem = existing[i];
+      let aUrl = aItem[colUrl];
       row = i + 2;
       // Logger.log(`AltEvents length: ${altEvents.length}`);
       let altUrl = aItem[colAlt];
@@ -580,6 +583,7 @@ const writeAltEventsToSheet = async (altEvents) =>
           let bAddress = bItem["address"].toString().toUpperCase();
           let bAddressFiltered = filterAddress(bAddress.split(/[s,s;]+/)[0]);
           let bVenue = bItem["venue"].toString().toUpperCase();
+          let bUrl = bItem['url'];
           // let aUrl = aItem["url"].toString().toUpperCase();
           // check if the existing event matches event name, date, and venue, and address of the result
           if (
@@ -588,11 +592,11 @@ const writeAltEventsToSheet = async (altEvents) =>
               (aAddressFiltered.indexOf(bAddress) > -1 || bAddressFiltered.indexOf(aAddress) > -1) || 
               (aVenue.indexOf(bVenue) > -1 || bVenue.indexOf(aVenue) > -1)
             ) && 
-            aDate == bDate
+            (aDate == bDate) && (aUrl != bUrl)
           ) {
             Log.Debug(`writeAltEventsToSheet() - Existing event -  Row: ${row}, Name: ${aName}`);
             let bUrl = bItem["url"].toString();
-            SetByHeader(EVENT_SHEET, HEADERNAMES.url2, parseInt(row), bUrl);
+            CommonLib.setByHeader(EVENT_SHEET, HEADERNAMES.url2, row, bUrl);
           }
         }
       }

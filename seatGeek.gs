@@ -56,7 +56,8 @@ const getSeatGeekData = async () => {
     const response = await UrlFetchApp.fetch(url, options);
     const firstPage = await response.getContentText();
     const responseCode = await response.getResponseCode();
-    Log.Debug(`Response Code ${responseCode} - ${RESPONSECODES[responseCode]}`);
+
+    Log.Info(`Response Code ${responseCode} - ${RESPONSECODES[responseCode]}`);
 
     // If response is good 
     if (responseCode == 200 || responseCode == 201) 

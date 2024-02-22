@@ -58,12 +58,16 @@ const BarMenu = () =>
  */
 const refreshEvents = async () => 
 {
+  
+  Log.Debug("Deleting any empty rows. Removing any expired events");
   // Clear any empty rows if something was manually deleted
   CommonLib.deleteEmptyRows(EVENT_SHEET);
   // Remove events that have happened already
   removeExpiredEntries(EVENT_SHEET);
   
-  // get current list of artists from Artist Sheets
+  
+  Log.Debug("Building Artist Array and Events Array");
+  // Get current list of artists from Artist Sheets
   let artistsArr = artistsList();
   // get list of known events from Events Sheet
   let existingEvents = buildEventsArr();
@@ -72,6 +76,7 @@ const refreshEvents = async () =>
   // I prefer searching SeatGeek first since it can get all results in one go 
   // and they sell tickets that came from other vendors like Ticketmaster, etc.
   if (Config.SEARCH_SEAT_GEEK) {
+    Log.Info("Searching SeatGeek...");
     const sgEvents = await seatGeekTrigger(artistsArr);
     Log.Debug("New SeatGeek events", sgEvents);
     Log.Debug("Existing events, alt listing", sgEvents.altEvents);
@@ -84,6 +89,7 @@ const refreshEvents = async () =>
 
   // If 'searchRA' is set to TRUE in config.gs then search Resident Advisor
   if (Config.SEARCH_RA) {
+    Log.Debug("Searching Resident Advisor...");
     const raEvents = await searchRAMain(artistsArr);
     Log.Debug("New Resident Advisor events", raEvents.newEvents);
     Log.Debug("Existing events, alt listing", raEvents.altEvents);
@@ -101,6 +107,7 @@ const refreshEvents = async () =>
   // Instead this sends a request for each artist - not very efficient but seems to be
   // the way it has to be done
   if (Config.SEARCH_TICKETMASTER) {
+    Log.Info("Searching Ticketmaster...");
     const tmEvents = await searchTMLoop(artistsArr, existingEvents);
     Log.Debug("New TM events", tmEvents.newEvents);
     Log.Debug("Existing events, alt listing", tmEvents.altEvents);

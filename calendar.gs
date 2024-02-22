@@ -1,3 +1,10 @@
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * Create a Google Calendar Event for a Concert
+ * Trigger - Create menu when spreadsheet is opened
+ * @param {array} events an array of event objects [{eName: '', date: '1/23/2024', ...}]
+ * @returns {void}
+ */
 const createCalEvents = (events) => 
 {
   let calendarId = Config.CALENDAR_ID;
@@ -15,6 +22,14 @@ const createCalEvents = (events) =>
   }
 }
 
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * Create a Google Calendar Event for a Concert
+ * Returns a time H hours after the specified
+ * @param {datetime} time
+ * @param {integer} h number of hours
+ * @returns {datetime} finishDate the time H hours after the specified time
+ */
 const addHours = (time, h) => 
 {
   let date = new Date(time).getTime();

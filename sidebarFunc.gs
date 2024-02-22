@@ -1,4 +1,9 @@
 
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * Show Configuration Sidebar
+ * @returns {void} 
+ */
 const configSidebar = async () => {
   const ui = SpreadsheetApp.getUi();
   let template = HtmlService.createTemplateFromFile('sidebar')
@@ -13,6 +18,12 @@ const configSidebar = async () => {
   ui.showSidebar(html);
 }
 
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * Process form data
+ * @param {object} formObject
+ * @returns {void} 
+ */
 const ProcessForm = (formObject) => {
   let type = ``, names = []; 
   // console.info(formObject);
