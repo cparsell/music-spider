@@ -11,9 +11,8 @@ Developed by [cparsell](https://github.com/cparsell)
 Made for [Google Apps Script](https://developers.google.com/apps-script/)
   
 ## Recent Changes
-- Added ability to search results from **Resident Advisor**'s API. One has to specify the region to search with a code(e.g. 218 is the Bay Area, 8 is New York...) so that's not well integrated but it works.
-- 
-
+- Feb 2024: Added a second URL column and the ability to save a second ticket URL. If the first result comes from Ticketmaster, then a second result on SeatGeek will be added to the 'Alt URL' column.
+- Sept 2023: Added ability to search results from **Resident Advisor**'s API. One has to specify the region to search with a code(e.g. 218 is the Bay Area, 8 is New York...) so that's not well integrated but it works.
 
 ## What it does:
 It can gather the names of artists from Spotify's API from three sources:
