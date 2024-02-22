@@ -168,7 +168,7 @@ class CreateMessage
     // for (const [index, [key]] of Object.entries(Object.entries(this.events))) 
     for (let key=0;key<this.events.length;key++)
     {
-      const {date, city, venue, url, image, eName, acts} = this.events[key];
+      const {date, city, venue, url, url2, image, eName, acts} = this.events[key];
       let actsArr = new Array;
       let actsB = new Array;
       //turn text into array
@@ -212,8 +212,15 @@ class CreateMessage
         message += `<br/>`
       }
       message += `<span style="color:#696969;font-size:12px;font-family:georgia,times,times new roman,serif;">at ${venue}, ${city}<br/> `;
-      message += `<strong>${DAY_NAMES[eventDay]}, ${MONTH_NAMES[eventMonth]} ${eventDayNum} ${eventYear}</strong> ${eventTime}</span></span></div>`;
-      message += `<br/></td>`;
+      message += `<strong>${DAY_NAMES[eventDay]}, ${MONTH_NAMES[eventMonth]} ${eventDayNum} ${eventYear}</strong> ${eventTime}</span></span>`;
+      if (url2) message += `<br>
+        <span style=''>
+          <a href='${url2}' style='text-decoration:none;color:#696969;font-size:11px;font-family:georgia,times,times new roman,serif;'>
+            Tickets also available here
+          </a>
+        </span></br>`
+      message += `</div><br/></td>`;
+
       if (!CommonLib.isEven(key)) message += `</tr><br/>`; // End table row every odd event
     };
     message += `<br/></tbody></table>`; 
