@@ -217,14 +217,24 @@ const filterDupeEvents = (newArray, existingArray) => {
     let aUrl = aItem["url"].toString().toUpperCase();
     let bUrl = bItem["url"].toString().toUpperCase();
     // if ((aAddressSplit.indexOf(bAddress) > -1 || bAddressSplit.indexOf(aAddress) > -1) || (aVenue.indexOf(bVenue) > -1 || bVenue.indexOf(aVenue) > -1)) Logger.log(`Address match or Venue Match: ${aName}, ${bName}`)
-    
-    return (
-      (aUrl != bUrl) ||
-      (
+
+    if (aUrl == bUrl) Logger.log(`${aName} URL exists ${aUrl} = ${bUrl}`);
+    if (
         (aName.indexOf(bName > -1) || bName.indexOf(aName) > -1) && 
         (
           (aAddressFiltered.indexOf(bAddress) > -1 || bAddressFiltered.indexOf(aAddress) > -1) || 
           (aVenue.indexOf(bVenue) > -1 || bVenue.indexOf(aVenue) > -1)
+        ) && 
+        aDate == bDate
+      ) Logger.log(`${aName} Name, address, venue exists`);
+
+    return (
+      (aUrl != bUrl) &&
+      (
+        (aName.indexOf(bName > -1) && bName.indexOf(aName) > -1) && 
+        (
+          (aAddressFiltered.indexOf(bAddress) > -1 && bAddressFiltered.indexOf(aAddress) > -1) || 
+          (aVenue.indexOf(bVenue) > -1 && bVenue.indexOf(aVenue) > -1)
         ) && 
         aDate == bDate
       )
@@ -616,7 +626,7 @@ const writeAltEventsToSheet = async (altEvents) =>
 const writeEventsToSheet = async (eventsArr) => 
 {
   for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
-    CommonLib.setRowData(sheet, HEADERNAMES, eventsArr[key]);
+    CommonLib.setRowData(EVENT_SHEET, HEADERNAMES, eventsArr[key]);
   }
 }
 
