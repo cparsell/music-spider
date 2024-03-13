@@ -91,7 +91,7 @@ const refreshEvents = async () => {
     Log.Info("Existing events, alt listing", raEvents.altEvents);
     // Write new events to events sheet
     writeEventsToSheet(raEvents.newEvents);
-    // writeAltEventsToSheet(raEvents.altEvents);
+    writeAltEventsToSheet(raEvents.altEvents);
     // Write Calendar Event for new events if configured to
     // if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(raEvents.newEvents);
   }
@@ -102,15 +102,15 @@ const refreshEvents = async () => {
   // So we can't just get all the events in an area and filter out the artists one likes (less requests)
   // Instead this sends a request for each artist - not very efficient but seems to be
   // the way it has to be done
-  if (Config.SEARCH_TICKETMASTER) {
-    Log.Info("Searching Ticketmaster...");
-    const tmEvents = await searchTMLoop(artistsArr, existingEvents);
-    Log.Debug("New TM events", tmEvents.newEvents);
-    Log.Debug("Existing events, alt listing", tmEvents.altEvents);
-    // Write new events to events sheet
-    writeEventsToSheet(tmEvents.newEvents);
-    writeAltEventsToSheet(tmEvents.altEvents);
-    // Write Calendar Event for new events if configured to
-    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(tmEvents.newEvents);
-  }
+  // if (Config.SEARCH_TICKETMASTER) {
+  //   Log.Info("Searching Ticketmaster...");
+  //   const tmEvents = await searchTMLoop(artistsArr, existingEvents);
+  //   Log.Info("New TM events", tmEvents.newEvents);
+  //   Log.Info("Existing events, alt listing", tmEvents.altEvents);
+  //   // Write new events to events sheet
+  //   writeEventsToSheet(tmEvents.newEvents);
+  //   writeAltEventsToSheet(tmEvents.altEvents);
+  //   // Write Calendar Event for new events if configured to
+  //   if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(tmEvents.newEvents);
+  // }
 };
