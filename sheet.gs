@@ -414,6 +414,7 @@ const editDistance = (s1, s2) => {
 /**
  * ------------------------------------------------------------------------------------------------------
  * Compares two strings and returns a percentage of how similar the two are
+ * source: https://stackoverflow.com/questions/10473745/compare-strings-javascript-return-of-likely
  * @param {string} s1
  * @param {string} s2
  * @returns {float} score
