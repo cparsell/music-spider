@@ -301,14 +301,14 @@ const filterAltEvents = (newArray, existingArray) => {
           ? true
           : false;
 
-      let aVenue = aItem["venue"].toString().toUpperCase();
-      let bVenue = bItem["venue"].toString().toUpperCase();
+      let aVenue = aItem["venue"];
+      let bVenue = bItem["venue"];
       let venueScore = stringSimilarity(aVenue, bVenue) > 0.5 ? true : false;
 
       let aUrl = aItem["url"].toString().toUpperCase();
       let bUrl = bItem["url"].toString().toUpperCase();
       let urlsEqual = aUrl == bUrl;
-      // if ((aAddressSplit.indexOf(bAddress) > -1 || bAddressSplit.indexOf(aAddress) > -1) || (aVenue.indexOf(bVenue) > -1 || bVenue.indexOf(aVenue) > -1)) Logger.log(`Address match or Venue Match: ${aName}, ${bName}`)
+
       return !urlsEqual && datesEqual && addressScore && venueScore;
     })
   );
@@ -743,7 +743,7 @@ const writeAltEventsToSheet = async (altEvents) => {
             datesEqual &&
             !urlsEqual
           ) {
-            Log.Debug(
+            Log.Info(
               `writeAltEventsToSheet() - Existing event -  Row: ${row}, Name: ${aName}`
             );
             let bUrl = bItem["url"].toString();
