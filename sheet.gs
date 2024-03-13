@@ -213,12 +213,11 @@ const filterAddress = (address) => {
  * @returns {object} {filtered :[{}], alt: [{}]}
  */
 const filterDupeEvents = (newArray, existingArray) => {
-  // this filter function tests whether the same event exists already
-  // and returns the filtered array
-  Logger.log(existingArray);
+  // this filter function tests whether a "very similar" event exists already and returns the filtered array
   let reduced = newArray.filter(
     (aItem) =>
       !existingArray.find((bItem) => {
+        // Exclude any that are returned from this find()
         let aDate = Utilities.formatDate(
           new Date(aItem["date"]),
           "PST",
@@ -256,11 +255,12 @@ const filterDupeEvents = (newArray, existingArray) => {
         let bUrl = bItem["url"].toString().toUpperCase();
         let urlsEqual = aUrl == bUrl;
 
-        Logger.log(
-          `new: ${aName}, ex: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actScore}, dateScore: ${dateScore}, addressScore: ${addressScore}, venueScore: ${venueScore}`
-        );
-
-        return !urlsEqual && !actScore && !dateScore && !venueScore;
+        // Logger.log(
+        //   `new: ${aName}, ex: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actScore}, dateScore: ${dateScore}, addressScore: ${addressScore}, venueScore: ${venueScore}`
+        // );
+        // Urls match, act lists match, dates are match,
+        // and venue names are very similar (accounting for differences in listing the name)
+        return urlsEqual && actScore && dateScore && venueScore;
       })
   );
   Log.Debug("filterDupeEvents() filtered out duplicates", reduced);
@@ -282,25 +282,31 @@ const filterAltEvents = (newArray, existingArray) => {
         "PST",
         "yyyy/MM/dd"
       );
-      let aName = aItem["eName"].toString().toUpperCase();
-      let bName = bItem["eName"].toString().toUpperCase();
-      let aAddress = aItem["address"].toString().toUpperCase();
-      let bAddress = bItem["address"].toString().toUpperCase();
+      let datesEqual = aDate == bDate;
+
+      let aName = aItem["eName"].toString();
+      let bName = bItem["eName"].toString();
+      let nameScore = stringSimilarity(aName, bName) > 0.66 ? true : false;
+
+      let aAddress = aItem["address"];
+      let bAddress = bItem["address"];
       let aAddressFiltered = filterAddress(aAddress.split(/[s,s;]+/)[0]);
       let bAddressFiltered = filterAddress(bAddress.split(/[s,s;]+/)[0]);
+      let addressScore =
+        stringSimilarity(aAddressFiltered, bAddressFiltered) > 0.66
+          ? true
+          : false;
+
       let aVenue = aItem["venue"].toString().toUpperCase();
       let bVenue = bItem["venue"].toString().toUpperCase();
+      let venueScore = stringSimilarity(aVenue, bVenue) > 0.66 ? true : false;
+
       let aUrl = aItem["url"].toString().toUpperCase();
       let bUrl = bItem["url"].toString().toUpperCase();
+      let urlsEqual = aUrl == bUrl;
       // if ((aAddressSplit.indexOf(bAddress) > -1 || bAddressSplit.indexOf(aAddress) > -1) || (aVenue.indexOf(bVenue) > -1 || bVenue.indexOf(aVenue) > -1)) Logger.log(`Address match or Venue Match: ${aName}, ${bName}`)
       return (
-        aUrl != bUrl &&
-        (aName.indexOf(bName > -1) || bName.indexOf(aName) > -1) &&
-        (aAddressFiltered.indexOf(bAddress) > -1 ||
-          bAddressFiltered.indexOf(aAddress) > -1 ||
-          aVenue.indexOf(bVenue) > -1 ||
-          bVenue.indexOf(aVenue) > -1) &&
-        aDate == bDate
+        !urlsEqual && datesEqual && nameScore && addressScore && venueScore
       );
     })
   );

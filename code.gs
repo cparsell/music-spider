@@ -71,17 +71,17 @@ const refreshEvents = async () => {
   // If 'searchSeatGeek' is set to TRUE in config.gs then search SeatGeek
   // I prefer searching SeatGeek first since it can get all results in one go
   // and they sell tickets that came from other vendors like Ticketmaster, etc.
-  // if (Config.SEARCH_SEAT_GEEK) {
-  //   Log.Info("Searching SeatGeek...");
-  //   const sgEvents = await seatGeekTrigger(artistsArr);
-  //   Log.Debug("New SeatGeek events", sgEvents);
-  //   Log.Debug("Existing events, alt listing", sgEvents.altEvents);
-  //   // Write new events to events sheet
-  //   writeEventsToSheet(sgEvents.newEvents);
-  //   writeAltEventsToSheet(sgEvents.altEvents);
-  //   // Write Calendar Event for new events if configured to
-  //   if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(sgEvents.newEvents);
-  // }
+  if (Config.SEARCH_SEAT_GEEK) {
+    Log.Info("Searching SeatGeek...");
+    const sgEvents = await seatGeekTrigger(artistsArr);
+    Log.Debug("New SeatGeek events", sgEvents);
+    Log.Debug("Existing events, alt listing", sgEvents.altEvents);
+    // Write new events to events sheet
+    writeEventsToSheet(sgEvents.newEvents);
+    writeAltEventsToSheet(sgEvents.altEvents);
+    // Write Calendar Event for new events if configured to
+    // if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(sgEvents.newEvents);
+  }
 
   // If 'searchRA' is set to TRUE in config.gs then search Resident Advisor
   if (Config.SEARCH_RA) {
@@ -93,7 +93,7 @@ const refreshEvents = async () => {
     writeEventsToSheet(raEvents.newEvents);
     // writeAltEventsToSheet(raEvents.altEvents);
     // Write Calendar Event for new events if configured to
-    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(raEvents.newEvents);
+    // if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(raEvents.newEvents);
   }
 
   // If 'searchTicketmaster' is set to TRUE in config.gs then search Ticketmaster
