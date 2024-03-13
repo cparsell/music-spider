@@ -255,11 +255,9 @@ const filterDupeEvents = (newArray, existingArray) => {
         let bUrl = bItem["url"].toString().toUpperCase();
         let urlsEqual = aUrl == bUrl;
 
-        // Logger.log(`urlsEqual: ${urlsEqual}`);
-        // Logger.log(`actScore: ${actScore}`);
-        // Logger.log(`dateScore: ${dateScore}`);
-        // Logger.log(`addressScore: ${addressScore}`);
-        // Logger.log(`venueScore: ${venueScore}`);
+        Logger.log(
+          `new: ${aName}, ex: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actScore}, dateScore: ${dateScore}, addressScore: ${addressScore}, venueScore: ${venueScore}`
+        );
 
         return !urlsEqual && !actScore && !dateScore && !venueScore;
       })
