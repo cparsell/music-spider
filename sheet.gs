@@ -215,6 +215,7 @@ const filterAddress = (address) => {
 const filterDupeEvents = (newArray, existingArray) => {
   // this filter function tests whether the same event exists already
   // and returns the filtered array
+  Logger.log(existingArray);
   let reduced = newArray.filter(
     (aItem) =>
       !existingArray.find((bItem) => {
