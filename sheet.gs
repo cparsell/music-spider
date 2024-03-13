@@ -243,17 +243,15 @@ const filterDupeEvents = (newArray, existingArray) => {
         let aAddressFiltered = filterAddress(aAddress.split(/[s,s;]+/)[0]);
         let bAddressFiltered = filterAddress(bAddress.split(/[s,s;]+/)[0]);
         let addressScore =
-          stringSimilarity(aAddressFiltered, bAddressFiltered) > 0.5
-            ? true
-            : false;
+          stringSimilarity(aAddressFiltered, bAddressFiltered) > 0.5;
 
         let aActs = aItem["acts"].toString().toUpperCase();
         let bActs = bItem["acts"].toString().toUpperCase();
-        let actScore = aActs == bActs ? true : false;
+        let actScore = aActs == bActs;
 
         let aVenue = aItem["venue"].toString().toUpperCase();
         let bVenue = bItem["venue"].toString().toUpperCase();
-        let venueScore = stringSimilarity(aVenue, bVenue) > 0.5 ? true : false;
+        let venueScore = stringSimilarity(aVenue, bVenue) > 0.5;
 
         let aUrl = aItem["url"].toString().toUpperCase();
         let bUrl = bItem["url"].toString().toUpperCase();
@@ -288,28 +286,30 @@ const filterAltEvents = (newArray, existingArray) => {
       );
       let datesEqual = aDate == bDate;
 
-      let aName = aItem["eName"].toString();
-      let bName = bItem["eName"].toString();
-      let nameScore = stringSimilarity(aName, bName) > 0.5 ? true : false;
+      let aActs = aItem["acts"];
+      let bActs = bItem["acts"];
+      let actsScore = stringSimilarity(aActs, bActs) > 0.5;
 
       let aAddress = aItem["address"];
       let bAddress = bItem["address"];
       let aAddressFiltered = filterAddress(aAddress.split(/[s,s;]+/)[0]);
       let bAddressFiltered = filterAddress(bAddress.split(/[s,s;]+/)[0]);
       let addressScore =
-        stringSimilarity(aAddressFiltered, bAddressFiltered) > 0.5
-          ? true
-          : false;
+        stringSimilarity(aAddressFiltered, bAddressFiltered) > 0.5;
 
       let aVenue = aItem["venue"];
       let bVenue = bItem["venue"];
-      let venueScore = stringSimilarity(aVenue, bVenue) > 0.5 ? true : false;
+      let venueScore = stringSimilarity(aVenue, bVenue) > 0.5;
 
       let aUrl = aItem["url"].toString().toUpperCase();
       let bUrl = bItem["url"].toString().toUpperCase();
       let urlsEqual = aUrl == bUrl;
-
-      return !urlsEqual && datesEqual && addressScore && venueScore;
+      Logger.log(
+        `ex: ${aName}, new: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actScore}, dateScore: ${dateScore}, addressScore: ${addressScore}, venueScore: ${venueScore}`
+      );
+      return (
+        !urlsEqual && actsScore && datesEqual && (addressScore || venueScore)
+      );
     })
   );
   Log.Debug(
