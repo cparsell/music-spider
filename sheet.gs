@@ -186,6 +186,10 @@ const GetRowData = (sheet, row) => {
   }
 };
 
+function testStringSim() {
+  Logger.log(stringSimilarity("The Regency", "The Rgeency Ballroom"));
+}
+
 /**
  * Split addresses at the first comma or semicolon
     And replace 'St.' or 'Street' with 'St'
