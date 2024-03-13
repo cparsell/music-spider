@@ -33,24 +33,6 @@
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
- * BarMenu
- * Trigger - Create menu when spreadsheet is opened
- * @returns {void}
- */
-const BarMenu = () => {
-  SpreadsheetApp.getUi()
-    .createMenu(`Music Spider`)
-    // .addItem(`Configure`, `configSidebar`)
-    .addItem(`Refresh Artists from Spotify`, `refreshArtists`)
-    .addItem(`Refresh Events`, `refreshEvents`)
-    .addItem(`Send Email Newsletter`, `sendEmail`)
-    .addSeparator()
-    .addItem(`Clear Blank Rows`, `deleteEmptyRows`)
-    .addToUi();
-};
-
-/**
- * ----------------------------------------------------------------------------------------------------------------
  * refreshEvents
  * Trigger - Main function for Ticketmaster search. Searches Ticketmaster for artists found in Spotify or added manually.
  * Any events returned that contain the artist's name are added to the sheet
@@ -113,4 +95,22 @@ const refreshEvents = async () => {
   //   // Write Calendar Event for new events if configured to
   //   if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(tmEvents.newEvents);
   // }
+};
+
+/**
+ * ----------------------------------------------------------------------------------------------------------------
+ * BarMenu
+ * Trigger - Create menu when spreadsheet is opened
+ * @returns {void}
+ */
+const BarMenu = () => {
+  SpreadsheetApp.getUi()
+    .createMenu(`Music Spider`)
+    // .addItem(`Configure`, `configSidebar`)
+    .addItem(`Refresh Artists from Spotify`, `refreshArtists`)
+    .addItem(`Refresh Events`, `refreshEvents`)
+    .addItem(`Send Email Newsletter`, `sendEmail`)
+    .addSeparator()
+    .addItem(`Clear Blank Rows`, `deleteEmptyRows`)
+    .addToUi();
 };
