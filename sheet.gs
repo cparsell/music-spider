@@ -285,7 +285,8 @@ const filterAltEvents = (newArray, existingArray) => {
         "yyyy/MM/dd"
       );
       let datesEqual = aDate == bDate;
-
+      let aName = aItem["eName"];
+      let bName = bItem["eName"];
       let aActs = aItem["acts"];
       let bActs = bItem["acts"];
       let actsScore = stringSimilarity(aActs, bActs) > 0.5;
