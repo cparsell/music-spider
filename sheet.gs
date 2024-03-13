@@ -699,13 +699,12 @@ const writeAltEventsToSheet = async (altEvents) => {
     const lastRow = sheet.getLastRow() - 1; //subtract header
     if (lastRow < 1) throw new Error("No events found on Events Sheet");
     const existing = activeRange.getValues();
-    // Logger.log(existing);
     let row = 0;
     // Loop through existing events
     for (let i = 0; i < existing.length; i++) {
       let aItem = existing[i];
-      Logger.log(aItem);
-      let aUrl = aItem[colUrl].toUpperCase();
+
+      let aUrl = aItem[colUrl];
       row = i + 2;
       // Logger.log(`AltEvents length: ${altEvents.length}`);
       let altUrl = aItem[colAlt];
@@ -724,19 +723,17 @@ const writeAltEventsToSheet = async (altEvents) => {
         // Loop through new results
         for (let j = 0; j < altEvents.length; j++) {
           let bItem = altEvents[j];
-          // Logger.log(bItem);
           let bDate = Utilities.formatDate(
             new Date(bItem["date"]),
             "PST",
             "yyyy/MM/dd"
           );
-
           let bName = bItem["eName"];
           // Logger.log(`writeAlt() ex:${aName}, new: ${bName}`);
           let bAddress = bItem["address"];
           let bAddressFiltered = filterAddress(bAddress.split(/[s,s;]+/)[0]);
           let bVenue = bItem["venue"];
-          let bUrl = bItem["url"].toUpperCase();
+          let bUrl = bItem["url"];
           let bActs = bItem["acts"];
           // Conditionals
           let datesEqual = aDate == bDate;
@@ -752,7 +749,7 @@ const writeAltEventsToSheet = async (altEvents) => {
 
           // if the existing event matches event name, date, and venue, and address of the result & URLS are not "very similar"
           if (
-            !urlsEqual &&
+            !urlScore &&
             actScore &&
             datesEqual &&
             (addressScore || venueScore)
@@ -760,7 +757,6 @@ const writeAltEventsToSheet = async (altEvents) => {
             Log.Info(
               `writeAltEventsToSheet() - Existing event -  Row: ${row}, Name: ${aName}`
             );
-            let bUrl = bItem["url"].toString();
             CommonLib.setByHeader(EVENT_SHEET, HEADERNAMES.url2, row, bUrl);
           }
         }
