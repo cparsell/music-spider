@@ -255,13 +255,13 @@ const filterDupeEvents = (newArray, existingArray) => {
         let bUrl = bItem["url"].toString().toUpperCase();
         let urlsEqual = aUrl == bUrl;
 
-        Logger.log(`urlsEqual: ${urlsEqual}`);
-        Logger.log(`actScore: ${actScore}`);
-        Logger.log(`dateScore: ${dateScore}`);
-        Logger.log(`addressScore: ${addressScore}`);
-        Logger.log(`venueScore: ${venueScore}`);
+        // Logger.log(`urlsEqual: ${urlsEqual}`);
+        // Logger.log(`actScore: ${actScore}`);
+        // Logger.log(`dateScore: ${dateScore}`);
+        // Logger.log(`addressScore: ${addressScore}`);
+        // Logger.log(`venueScore: ${venueScore}`);
 
-        return !urlsEqual && actScore && dateScore && venueScore;
+        return !urlsEqual && !actScore && !dateScore && !venueScore;
       })
   );
   Log.Debug("filterDupeEvents() filtered out duplicates", reduced);
