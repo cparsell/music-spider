@@ -91,7 +91,7 @@ const refreshEvents = async () => {
     Log.Debug("Existing events, alt listing", raEvents.altEvents);
     // Write new events to events sheet
     writeEventsToSheet(raEvents.newEvents);
-    writeAltEventsToSheet(raEvents.altEvents);
+    // writeAltEventsToSheet(raEvents.altEvents);
     // Write Calendar Event for new events if configured to
     if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(raEvents.newEvents);
   }

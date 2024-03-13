@@ -239,7 +239,9 @@ const filterDupeEvents = (newArray, existingArray) => {
         let aAddressFiltered = filterAddress(aAddress.split(/[s,s;]+/)[0]);
         let bAddressFiltered = filterAddress(bAddress.split(/[s,s;]+/)[0]);
         let addressScore =
-          stringSimilarity(aAddressFiltered, bAddressFiltered) > 0.66;
+          stringSimilarity(aAddressFiltered, bAddressFiltered) > 0.66
+            ? true
+            : false;
 
         let aActs = aItem["acts"].toString().toUpperCase();
         let bActs = bItem["acts"].toString().toUpperCase();
@@ -252,6 +254,12 @@ const filterDupeEvents = (newArray, existingArray) => {
         let aUrl = aItem["url"].toString().toUpperCase();
         let bUrl = bItem["url"].toString().toUpperCase();
         let urlsEqual = aUrl == bUrl;
+
+        Logger.log(`urlsEqual: ${urlsEqual}`);
+        Logger.log(`actScore: ${actScore}`);
+        Logger.log(`dateScore: ${dateScore}`);
+        Logger.log(`addressScore: ${addressScore}`);
+        Logger.log(`venueScore: ${venueScore}`);
 
         return !urlsEqual && actScore && dateScore && venueScore;
       })
