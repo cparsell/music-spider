@@ -56,8 +56,11 @@ const refreshEvents = async () => {
   if (Config.SEARCH_SEAT_GEEK) {
     Log.Info("Searching SeatGeek...");
     const sgEvents = await seatGeekTrigger(artistsArr);
-    Log.Info("New SeatGeek events", sgEvents.newEvents);
-    Log.Info("Existing events, alt listing", sgEvents.altEvents);
+    Log.Info("New SeatGeek events", CommonLib.prettifyJson(sgEvents.newEvents));
+    Log.Info(
+      "Existing events, alt listing",
+      CommonLib.prettifyJson(sgEvents.altEvents)
+    );
     // Write new events to events sheet
     writeEventsToSheet(sgEvents.newEvents);
     writeAltEventsToSheet(sgEvents.altEvents);
@@ -69,8 +72,14 @@ const refreshEvents = async () => {
   if (Config.SEARCH_RA) {
     Log.Debug("Searching Resident Advisor...");
     const raEvents = await searchRAMain(artistsArr);
-    Log.Info("New Resident Advisor events", raEvents.newEvents);
-    Log.Info("Existing events, alt listing", raEvents.altEvents);
+    Log.Info(
+      "New Resident Advisor events",
+      CommonLib.prettifyJson(raEvents.newEvents)
+    );
+    Log.Info(
+      "Existing events, alt listing",
+      CommonLib.prettifyJson(raEvents.altEvents)
+    );
     // Write new events to events sheet
     writeEventsToSheet(raEvents.newEvents);
     writeAltEventsToSheet(raEvents.altEvents);
@@ -84,17 +93,20 @@ const refreshEvents = async () => {
   // So we can't just get all the events in an area and filter out the artists one likes (less requests)
   // Instead this sends a request for each artist - not very efficient but seems to be
   // the way it has to be done
-  // if (Config.SEARCH_TICKETMASTER) {
-  //   Log.Info("Searching Ticketmaster...");
-  //   const tmEvents = await searchTMLoop(artistsArr, existingEvents);
-  //   Log.Info("New TM events", tmEvents.newEvents);
-  //   Log.Info("Existing events, alt listing", tmEvents.altEvents);
-  //   // Write new events to events sheet
-  //   writeEventsToSheet(tmEvents.newEvents);
-  //   writeAltEventsToSheet(tmEvents.altEvents);
-  //   // Write Calendar Event for new events if configured to
-  //   if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(tmEvents.newEvents);
-  // }
+  if (Config.SEARCH_TICKETMASTER) {
+    Log.Info("Searching Ticketmaster...");
+    const tmEvents = await searchTMLoop(artistsArr, existingEvents);
+    Log.Info("New TM events", CommonLib.prettifyJson(tmEvents.newEvents));
+    Log.Info(
+      "Existing events, alt listing",
+      CommonLib.prettifyJson(tmEvents.altEvents)
+    );
+    // Write new events to events sheet
+    writeEventsToSheet(tmEvents.newEvents);
+    writeAltEventsToSheet(tmEvents.altEvents);
+    // Write Calendar Event for new events if configured to
+    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(tmEvents.newEvents);
+  }
 };
 
 /**

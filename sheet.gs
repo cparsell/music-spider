@@ -755,7 +755,7 @@ const writeAltEventsToSheet = async (altEvents) => {
             (addressScore || venueScore)
           ) {
             Log.Info(
-              `writeAltEventsToSheet() - Existing event -  Row: ${row}, Name: ${aName}`
+              `writeAltEventsToSheet() - Writing alt URL for event '${aName}' in row: ${row}`
             );
             CommonLib.setByHeader(EVENT_SHEET, HEADERNAMES.url2, row, bUrl);
           }
