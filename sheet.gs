@@ -699,16 +699,18 @@ const writeAltEventsToSheet = async (altEvents) => {
     const lastRow = sheet.getLastRow() - 1; //subtract header
     if (lastRow < 1) throw new Error("No events found on Events Sheet");
     const existing = activeRange.getValues();
+    // Logger.log(existing);
     let row = 0;
     // Loop through existing events
     for (let i = 0; i < existing.length; i++) {
       let aItem = existing[i];
+      Logger.log(aItem);
       let aUrl = aItem[colUrl].toUpperCase();
       row = i + 2;
       // Logger.log(`AltEvents length: ${altEvents.length}`);
       let altUrl = aItem[colAlt];
       // Only search for a second URL if one doesn't already exist
-      if (altUrl != "") {
+      if (altUrl == "") {
         let aDate = Utilities.formatDate(
           new Date(aItem[colDate]),
           "PST",
@@ -722,7 +724,7 @@ const writeAltEventsToSheet = async (altEvents) => {
         // Loop through new results
         for (let j = 0; j < altEvents.length; j++) {
           let bItem = altEvents[j];
-
+          // Logger.log(bItem);
           let bDate = Utilities.formatDate(
             new Date(bItem["date"]),
             "PST",
@@ -730,7 +732,7 @@ const writeAltEventsToSheet = async (altEvents) => {
           );
 
           let bName = bItem["eName"];
-          Logger.log(`writeAlt() ex:${aName}, new: ${bName}`);
+          // Logger.log(`writeAlt() ex:${aName}, new: ${bName}`);
           let bAddress = bItem["address"];
           let bAddressFiltered = filterAddress(bAddress.split(/[s,s;]+/)[0]);
           let bVenue = bItem["venue"];
@@ -742,13 +744,13 @@ const writeAltEventsToSheet = async (altEvents) => {
           let addressScore =
             stringSimilarity(aAddressFiltered, bAddressFiltered) > 0.5;
           let venueScore = stringSimilarity(aVenue, bVenue) > 0.5;
-          let urlsEqual = aUrl == bUrl;
+          let urlScore = stringSimilarity(aUrl, bUrl) > 0.7; // URLs are very similar
           let actScore = stringSimilarity(aActs, bActs) > 0.6;
-          Logger.log(
-            `ex: ${aName}, new: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actScore}, dateScore: ${datesEqual}, addressScore: ${addressScore}, venueScore: ${venueScore}`
-          );
+          // Logger.log(
+          //   `ex: ${aName}, new: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actScore}, dateScore: ${datesEqual}, addressScore: ${addressScore}, venueScore: ${venueScore}`
+          // );
 
-          // if the existing event matches event name, date, and venue, and address of the result & URLS are not the same
+          // if the existing event matches event name, date, and venue, and address of the result & URLS are not "very similar"
           if (
             !urlsEqual &&
             actScore &&
