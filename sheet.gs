@@ -306,8 +306,9 @@ const filterAltEvents = (newArray, existingArray) => {
       let bUrl = bItem["url"].toString().toUpperCase();
       let urlsEqual = aUrl == bUrl;
       Logger.log(
-        `ex: ${aName}, new: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actScore}, dateScore: ${dateScore}, addressScore: ${addressScore}, venueScore: ${venueScore}`
+        `ex: ${aName}, new: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actsScore}, dateScore: ${dateScore}, addressScore: ${addressScore}, venueScore: ${venueScore}`
       );
+
       return (
         !urlsEqual && actsScore && datesEqual && (addressScore || venueScore)
       );
@@ -317,6 +318,7 @@ const filterAltEvents = (newArray, existingArray) => {
     "filterAltEvents() exist but are from a different vendor",
     alternates
   );
+
   return alternates;
 };
 
@@ -724,25 +726,26 @@ const writeAltEventsToSheet = async (altEvents) => {
             "PST",
             "yyyy/MM/dd"
           );
-          let datesEqual = aDate == bDate;
+
           let bName = bItem["eName"].toString();
-          let nameScore = stringSimilarity(aName, bName) > 0.5;
           let bAddress = bItem["address"].toString();
           let bAddressFiltered = filterAddress(bAddress.split(/[s,s;]+/)[0]);
+          let bVenue = bItem["venue"].toString().toUpperCase();
+          let bUrl = bItem["url"].toUpperCase();
+          // Conditionals
+          let datesEqual = aDate == bDate;
+          let nameScore = stringSimilarity(aName, bName) > 0.5;
           let addressScore =
             stringSimilarity(aAddressFiltered, bAddressFiltered) > 0.5;
-          let bVenue = bItem["venue"].toString().toUpperCase();
           let venueScore = stringSimilarity(aVenue, bVenue) > 0.5;
-          let bUrl = bItem["url"].toUpperCase();
           let urlsEqual = aUrl == bUrl;
           // let aUrl = aItem["url"].toString().toUpperCase();
           // check if the existing event matches event name, date, and venue, and address of the result
           if (
+            !urlsEqual &&
             nameScore &&
-            addressScore &&
-            venueScore &&
             datesEqual &&
-            !urlsEqual
+            (addressScore || venueScore)
           ) {
             Log.Info(
               `writeAltEventsToSheet() - Existing event -  Row: ${row}, Name: ${aName}`
