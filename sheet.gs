@@ -247,7 +247,7 @@ const filterDupeEvents = (newArray, existingArray) => {
 
         let aActs = aItem["acts"].toString().toUpperCase();
         let bActs = bItem["acts"].toString().toUpperCase();
-        let actScore = aActs == bActs;
+        let actScore = stringSimilarity(aActs, bActs) > 0.66;
 
         let aVenue = aItem["venue"].toString().toUpperCase();
         let bVenue = bItem["venue"].toString().toUpperCase();
@@ -289,7 +289,7 @@ const filterAltEvents = (newArray, existingArray) => {
       let bName = bItem["eName"];
       let aActs = aItem["acts"];
       let bActs = bItem["acts"];
-      let actsScore = stringSimilarity(aActs, bActs) > 0.5;
+      let actsScore = stringSimilarity(aActs, bActs) > 0.6;
 
       let aAddress = aItem["address"];
       let bAddress = bItem["address"];
@@ -681,6 +681,7 @@ const writeAltEventsToSheet = async (altEvents) => {
     const colName = data[0].indexOf(HEADERNAMES.eName);
     const colVenue = data[0].indexOf(HEADERNAMES.venue);
     const colAddress = data[0].indexOf(HEADERNAMES.address);
+    const colActs = data[0].indexOf(HEADERNAMES.acts);
     const colUrl = data[0].indexOf(HEADERNAMES.url);
     const colAlt = data[0].indexOf(HEADERNAMES.url2);
     if (colDate == -1 || colName == -1 || colVenue == -1 || colAddress == -1) {
@@ -713,10 +714,11 @@ const writeAltEventsToSheet = async (altEvents) => {
           "PST",
           "yyyy/MM/dd"
         );
-        let aName = aItem[colName].toString();
-        let aAddress = aItem[colAddress].toString().toUpperCase();
+        let aName = aItem[colName];
+        let aAddress = aItem[colAddress].toUpperCase();
         let aAddressFiltered = filterAddress(aAddress.split(/[s,s;]+/)[0]);
-        let aVenue = aItem[colVenue].toString().toUpperCase();
+        let aVenue = aItem[colVenue];
+        let aActs = aItem[colActs];
         // Loop through new results
         for (let j = 0; j < altEvents.length; j++) {
           let bItem = altEvents[j];
@@ -727,11 +729,12 @@ const writeAltEventsToSheet = async (altEvents) => {
             "yyyy/MM/dd"
           );
 
-          let bName = bItem["eName"].toString();
-          let bAddress = bItem["address"].toString();
+          let bName = bItem["eName"];
+          let bAddress = bItem["address"];
           let bAddressFiltered = filterAddress(bAddress.split(/[s,s;]+/)[0]);
-          let bVenue = bItem["venue"].toString().toUpperCase();
+          let bVenue = bItem["venue"];
           let bUrl = bItem["url"].toUpperCase();
+          let bActs = bItem["acts"];
           // Conditionals
           let datesEqual = aDate == bDate;
           let nameScore = stringSimilarity(aName, bName) > 0.5;
@@ -739,11 +742,15 @@ const writeAltEventsToSheet = async (altEvents) => {
             stringSimilarity(aAddressFiltered, bAddressFiltered) > 0.5;
           let venueScore = stringSimilarity(aVenue, bVenue) > 0.5;
           let urlsEqual = aUrl == bUrl;
-          // let aUrl = aItem["url"].toString().toUpperCase();
-          // check if the existing event matches event name, date, and venue, and address of the result
+          let actScore = stringSimilarity(aActs, bActs) > 0.6;
+          Logger.log(
+            `ex: ${aName}, new: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actScore}, dateScore: ${datesEqual}, addressScore: ${addressScore}, venueScore: ${venueScore}`
+          );
+
+          // if the existing event matches event name, date, and venue, and address of the result & URLS are not the same
           if (
             !urlsEqual &&
-            nameScore &&
+            actScore &&
             datesEqual &&
             (addressScore || venueScore)
           ) {
