@@ -264,7 +264,7 @@ const filterDupeEvents = (newArray, existingArray) => {
         // );
         // Urls match, act lists match, dates are match,
         // and venue names are very similar (accounting for differences in listing the name)
-        return urlsEqual && actScore && dateScore && venueScore;
+        return urlsEqual || (actScore && dateScore && venueScore);
       })
   );
   Log.Debug("filterDupeEvents() filtered out duplicates", reduced);
