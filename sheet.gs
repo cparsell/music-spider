@@ -722,7 +722,7 @@ const writeAltEventsToSheet = async (altEvents) => {
         // Loop through new results
         for (let j = 0; j < altEvents.length; j++) {
           let bItem = altEvents[j];
-          Logger.log(`writeAlt() ex:${aName}, new: ${bName}`);
+
           let bDate = Utilities.formatDate(
             new Date(bItem["date"]),
             "PST",
@@ -730,6 +730,7 @@ const writeAltEventsToSheet = async (altEvents) => {
           );
 
           let bName = bItem["eName"];
+          Logger.log(`writeAlt() ex:${aName}, new: ${bName}`);
           let bAddress = bItem["address"];
           let bAddressFiltered = filterAddress(bAddress.split(/[s,s;]+/)[0]);
           let bVenue = bItem["venue"];
