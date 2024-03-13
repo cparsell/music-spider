@@ -305,9 +305,10 @@ const filterAltEvents = (newArray, existingArray) => {
       let aUrl = aItem["url"].toString().toUpperCase();
       let bUrl = bItem["url"].toString().toUpperCase();
       let urlsEqual = aUrl == bUrl;
-      Logger.log(
-        `ex: ${aName}, new: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actsScore}, dateScore: ${dateScore}, addressScore: ${addressScore}, venueScore: ${venueScore}`
-      );
+      Logger
+        .log
+        // `ex: ${aName}, new: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actsScore}, dateScore: ${datesEqual}, addressScore: ${addressScore}, venueScore: ${venueScore}`
+        ();
 
       return (
         !urlsEqual && actsScore && datesEqual && (addressScore || venueScore)
