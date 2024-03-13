@@ -701,7 +701,7 @@ const writeAltEventsToSheet = async (altEvents) => {
     // Loop through existing events
     for (let i = 0; i < existing.length; i++) {
       let aItem = existing[i];
-      let aUrl = aItem[colUrl];
+      let aUrl = aItem[colUrl].toUpperCase();
       row = i + 2;
       // Logger.log(`AltEvents length: ${altEvents.length}`);
       let altUrl = aItem[colAlt];
@@ -712,7 +712,7 @@ const writeAltEventsToSheet = async (altEvents) => {
           "PST",
           "yyyy/MM/dd"
         );
-        let aName = aItem[colName].toString().toUpperCase();
+        let aName = aItem[colName].toString();
         let aAddress = aItem[colAddress].toString().toUpperCase();
         let aAddressFiltered = filterAddress(aAddress.split(/[s,s;]+/)[0]);
         let aVenue = aItem[colVenue].toString().toUpperCase();
@@ -725,22 +725,25 @@ const writeAltEventsToSheet = async (altEvents) => {
             "PST",
             "yyyy/MM/dd"
           );
-
-          let bName = bItem["eName"].toString().toUpperCase();
-          let bAddress = bItem["address"].toString().toUpperCase();
+          let datesEqual = aDate == bDate;
+          let bName = bItem["eName"].toString();
+          let nameScore = stringSimilarity(aName, bName) > 0.5;
+          let bAddress = bItem["address"].toString();
           let bAddressFiltered = filterAddress(bAddress.split(/[s,s;]+/)[0]);
+          let addressScore =
+            stringSimilarity(aAddressFiltered, bAddressFiltered) > 0.5;
           let bVenue = bItem["venue"].toString().toUpperCase();
-          let bUrl = bItem["url"];
+          let venueScore = stringSimilarity(aVenue, bVenue) > 0.5;
+          let bUrl = bItem["url"].toUpperCase();
+          let urlsEqual = aUrl == bUrl;
           // let aUrl = aItem["url"].toString().toUpperCase();
           // check if the existing event matches event name, date, and venue, and address of the result
           if (
-            (aName.indexOf(bName > -1) || bName.indexOf(aName) > -1) &&
-            (aAddressFiltered.indexOf(bAddress) > -1 ||
-              bAddressFiltered.indexOf(aAddress) > -1 ||
-              aVenue.indexOf(bVenue) > -1 ||
-              bVenue.indexOf(aVenue) > -1) &&
-            aDate == bDate &&
-            aUrl != bUrl
+            nameScore &&
+            addressScore &&
+            venueScore &&
+            datesEqual &&
+            !urlsEqual
           ) {
             Log.Debug(
               `writeAltEventsToSheet() - Existing event -  Row: ${row}, Name: ${aName}`
