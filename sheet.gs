@@ -722,7 +722,7 @@ const writeAltEventsToSheet = async (altEvents) => {
         // Loop through new results
         for (let j = 0; j < altEvents.length; j++) {
           let bItem = altEvents[j];
-
+          Logger.log(`writeAlt() ex:${aName}, new: ${bName}`);
           let bDate = Utilities.formatDate(
             new Date(bItem["date"]),
             "PST",
