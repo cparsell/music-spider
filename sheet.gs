@@ -187,7 +187,7 @@ const GetRowData = (sheet, row) => {
 };
 
 function testStringSim() {
-  Logger.log(stringSimilarity("The Regency", "The Rgeency Ballroom"));
+  Logger.log(CommonLib.stringSimilarity("The Regency", "The Rgeency Ballroom"));
 }
 
 /**
@@ -236,22 +236,22 @@ const filterDupeEvents = (newArray, existingArray) => {
 
         let aName = aItem["eName"].toString().toUpperCase();
         let bName = bItem["eName"].toString().toUpperCase();
-        let nameScore = stringSimilarity(aName, bName) > 0.5;
+        let nameScore = CommonLib.stringSimilarity(aName, bName) > 0.5;
 
         let aAddress = aItem["address"].toString().toUpperCase();
         let bAddress = bItem["address"].toString().toUpperCase();
         let aAddressFiltered = filterAddress(aAddress.split(/[s,s;]+/)[0]);
         let bAddressFiltered = filterAddress(bAddress.split(/[s,s;]+/)[0]);
         let addressScore =
-          stringSimilarity(aAddressFiltered, bAddressFiltered) > 0.5;
+          CommonLib.stringSimilarity(aAddressFiltered, bAddressFiltered) > 0.5;
 
         let aActs = aItem["acts"].toString().toUpperCase();
         let bActs = bItem["acts"].toString().toUpperCase();
-        let actScore = stringSimilarity(aActs, bActs) > 0.66;
+        let actScore = CommonLib.stringSimilarity(aActs, bActs) > 0.66;
 
         let aVenue = aItem["venue"].toString().toUpperCase();
         let bVenue = bItem["venue"].toString().toUpperCase();
-        let venueScore = stringSimilarity(aVenue, bVenue) > 0.5;
+        let venueScore = CommonLib.stringSimilarity(aVenue, bVenue) > 0.5;
 
         let aUrl = aItem["url"].toString().toUpperCase();
         let bUrl = bItem["url"].toString().toUpperCase();
@@ -287,20 +287,20 @@ const filterAltEvents = (newArray, existingArray) => {
       let datesEqual = aDate == bDate;
       let aName = aItem["eName"];
       let bName = bItem["eName"];
-      let aActs = aItem["acts"];
-      let bActs = bItem["acts"];
-      let actsScore = stringSimilarity(aActs, bActs) > 0.6;
+      let aActs = CommonLib.sortArrayAlpha(aItem["acts"]);
+      let bActs = CommonLib.sortArrayAlpha(bItem["acts"]);
+      let actsScore = CommonLib.stringSimilarity(aActs, bActs) > 0.6;
 
       let aAddress = aItem["address"];
       let bAddress = bItem["address"];
       let aAddressFiltered = filterAddress(aAddress.split(/[s,s;]+/)[0]);
       let bAddressFiltered = filterAddress(bAddress.split(/[s,s;]+/)[0]);
       let addressScore =
-        stringSimilarity(aAddressFiltered, bAddressFiltered) > 0.5;
+        CommonLib.stringSimilarity(aAddressFiltered, bAddressFiltered) > 0.5;
 
       let aVenue = aItem["venue"];
       let bVenue = bItem["venue"];
-      let venueScore = stringSimilarity(aVenue, bVenue) > 0.5;
+      let venueScore = CommonLib.stringSimilarity(aVenue, bVenue) > 0.5;
 
       let aUrl = aItem["url"].toString().toUpperCase();
       let bUrl = bItem["url"].toString().toUpperCase();
@@ -380,85 +380,6 @@ const SetByHeader = (sheet, columnName, row, val) => {
     return 1;
   }
 };
-
-/**
- * Companion function for stringSimilarity()
- *
- * @param s1
- * @param s2
- * @returns
- */
-const editDistance = (s1, s2) => {
-  s1 = s1.toLowerCase();
-  s2 = s2.toLowerCase();
-
-  var costs = new Array();
-  for (var i = 0; i <= s1.length; i++) {
-    var lastValue = i;
-    for (var j = 0; j <= s2.length; j++) {
-      if (i == 0) costs[j] = j;
-      else {
-        if (j > 0) {
-          var newValue = costs[j - 1];
-          if (s1.charAt(i - 1) != s2.charAt(j - 1))
-            newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
-          costs[j - 1] = lastValue;
-          lastValue = newValue;
-        }
-      }
-    }
-    if (i > 0) costs[s2.length] = lastValue;
-  }
-  return costs[s2.length];
-};
-
-/**
- * ------------------------------------------------------------------------------------------------------
- * Compares two strings and returns a percentage of how similar the two are
- * source: https://stackoverflow.com/questions/10473745/compare-strings-javascript-return-of-likely
- * @param {string} s1
- * @param {string} s2
- * @returns {float} score
- */
-const stringSimilarity = (s1, s2) => {
-  var longer = s1;
-  var shorter = s2;
-  if (s1.length < s2.length) {
-    longer = s2;
-    shorter = s1;
-  }
-  var longerLength = longer.length;
-  if (longerLength == 0) {
-    return 1.0;
-  }
-  return (
-    (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength)
-  );
-};
-/**
- * ------------------------------------------------------------------------------------------------------
- * Writes a row of data to a sheet. Input event data and it writes each value to the sheet with matching header name
- * @param {sheet} sheet
- * @param {dict} data
- */
-// const SetRowData = (sheet,data) =>
-// {
-//   if(typeof sheet != `object`) return 1;
-//   try {
-//     let sheetHeaderNames = Object.values(GetRowData(sheet, 1));
-//     let values = [];
-//       Object.entries(data).forEach(pair =>
-//       {
-//         let headername = HEADERNAMES[pair[0]];
-//         let index = sheetHeaderNames.indexOf(headername);
-//         values[index] = pair[1];
-//       })
-//     sheet.appendRow(values);
-//   } catch (err) {
-//     console.error(`${err} : SetRowData failed - Sheet: ${sheet}`);
-//     return 1;
-//   }
-// }
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
@@ -737,12 +658,13 @@ const writeAltEventsToSheet = async (altEvents) => {
           let bActs = bItem["acts"];
           // Conditionals
           let datesEqual = aDate == bDate;
-          let nameScore = stringSimilarity(aName, bName) > 0.5;
+          let nameScore = CommonLib.stringSimilarity(aName, bName) > 0.5;
           let addressScore =
-            stringSimilarity(aAddressFiltered, bAddressFiltered) > 0.5;
-          let venueScore = stringSimilarity(aVenue, bVenue) > 0.5;
-          let urlScore = stringSimilarity(aUrl, bUrl) > 0.7; // URLs are very similar
-          let actScore = stringSimilarity(aActs, bActs) > 0.6;
+            CommonLib.stringSimilarity(aAddressFiltered, bAddressFiltered) >
+            0.5;
+          let venueScore = CommonLib.stringSimilarity(aVenue, bVenue) > 0.5;
+          let urlScore = CommonLib.stringSimilarity(aUrl, bUrl) > 0.7; // URLs are very similar
+          let actScore = CommonLib.stringSimilarity(aActs, bActs) > 0.6;
           // Logger.log(
           //   `ex: ${aName}, new: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actScore}, dateScore: ${datesEqual}, addressScore: ${addressScore}, venueScore: ${venueScore}`
           // );
