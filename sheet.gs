@@ -309,9 +309,7 @@ const filterAltEvents = (newArray, existingArray) => {
       let bUrl = bItem["url"].toString().toUpperCase();
       let urlsEqual = aUrl == bUrl;
       // if ((aAddressSplit.indexOf(bAddress) > -1 || bAddressSplit.indexOf(aAddress) > -1) || (aVenue.indexOf(bVenue) > -1 || bVenue.indexOf(aVenue) > -1)) Logger.log(`Address match or Venue Match: ${aName}, ${bName}`)
-      return (
-        !urlsEqual && datesEqual && nameScore && addressScore && venueScore
-      );
+      return !urlsEqual && datesEqual && addressScore && venueScore;
     })
   );
   Log.Debug(

@@ -74,8 +74,8 @@ const refreshEvents = async () => {
   if (Config.SEARCH_SEAT_GEEK) {
     Log.Info("Searching SeatGeek...");
     const sgEvents = await seatGeekTrigger(artistsArr);
-    Log.Debug("New SeatGeek events", sgEvents);
-    Log.Debug("Existing events, alt listing", sgEvents.altEvents);
+    Log.Info("New SeatGeek events", sgEvents.newEvents);
+    Log.Info("Existing events, alt listing", sgEvents.altEvents);
     // Write new events to events sheet
     writeEventsToSheet(sgEvents.newEvents);
     writeAltEventsToSheet(sgEvents.altEvents);
@@ -87,8 +87,8 @@ const refreshEvents = async () => {
   if (Config.SEARCH_RA) {
     Log.Debug("Searching Resident Advisor...");
     const raEvents = await searchRAMain(artistsArr);
-    Log.Debug("New Resident Advisor events", raEvents.newEvents);
-    Log.Debug("Existing events, alt listing", raEvents.altEvents);
+    Log.Info("New Resident Advisor events", raEvents.newEvents);
+    Log.Info("Existing events, alt listing", raEvents.altEvents);
     // Write new events to events sheet
     writeEventsToSheet(raEvents.newEvents);
     // writeAltEventsToSheet(raEvents.altEvents);
