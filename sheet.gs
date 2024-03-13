@@ -232,7 +232,7 @@ const filterDupeEvents = (newArray, existingArray) => {
           "PST",
           "yyyy/MM/dd"
         );
-        let dateScore = aDate == bDate ? true : false;
+        let dateScore = aDate == bDate;
 
         let aName = aItem["eName"].toString().toUpperCase();
         let bName = bItem["eName"].toString().toUpperCase();
