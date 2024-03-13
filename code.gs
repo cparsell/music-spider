@@ -26,7 +26,7 @@
  *
  * Other APIs:
  * - SeatGeek (in the works) (https://platform.seatgeek.com/)
- * - StubHub (not implemeneted yet, https://developer.stubhub.com/docs/overview/introduction/)
+ * - StubHub (not implemented yet, https://developer.stubhub.com/docs/overview/introduction/)
  * - SeeTickets API (not public afaik)
  * - Songkick (paid only last I checked)
  */

@@ -55,7 +55,7 @@ const artistsList = () => {
 /**
  * ----------------------------------------------------------------------------------------------------------------
  * Build Events Array
- * Remove duplictes from an array
+ * Remove duplicates from an array
  * @param {array} array
  * @returns {array} array
  */
