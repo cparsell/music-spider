@@ -133,7 +133,7 @@ const searchRA = (artistList) => {
             acts.push(artists[index].name);
           }
         }
-        const shouldAddEvent = acts.some((act) => artistList.includes(act))
+        const shouldAddEvent = acts.some((act) => artistList.includes(act));
         if (shouldAddEvent) {
           let title = listing?.title;
           let venue = listing?.venue?.name;
@@ -187,7 +187,6 @@ const searchRA = (artistList) => {
  */
 const searchRAMain = (artistsArr) => {
   let newEvents = {};
-
 
   if (Config.SEARCH_RA) {
     try {

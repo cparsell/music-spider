@@ -1,28 +1,25 @@
-
 /**
  * ----------------------------------------------------------------------------------------------------------------
  * Class for Writing a Log
  */
 class Log {
-  constructor() { 
-
-  }
+  constructor() {}
 
   /**
    * Error Message
    * @param {string} message
    */
   static Error(message, obj = null) {
-    try{
+    try {
       if (obj) message = `${message}: ${JSON.stringify(obj)}`;
       let date = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
-      let text = [date, "ERROR!", message, ];
+      let text = [date, "ERROR!", message];
       LOGGER_SHEET.appendRow(text);
       console.error(`${text[0]}, ${text[1]} : ${message}`);
       this.prototype._PopItem();
       this.prototype._CleanupSheet();
       return 0;
-    } catch(err) {
+    } catch (err) {
       console.error(`"Error()" failed : ${err}`);
       return 1;
     }
@@ -34,7 +31,7 @@ class Log {
    * @param {object} obj optional object to be logged as a string
    */
   static Warning(message, obj = null) {
-    try{
+    try {
       if (obj) message = `${message}: ${JSON.stringify(obj)}`;
       let date = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
       let text = [date, "INFO", message];
@@ -43,7 +40,7 @@ class Log {
       this.prototype._PopItem();
       this.prototype._CleanupSheet();
       return 0;
-    } catch(err) {
+    } catch (err) {
       console.error(`"Warning()" failed : ${err}`);
       return 1;
     }
@@ -64,7 +61,7 @@ class Log {
       this.prototype._PopItem();
       this.prototype._CleanupSheet();
       return 0;
-    } catch(err) {
+    } catch (err) {
       console.error(`"Info()" failed : ${err}`);
       return 1;
     }
@@ -76,7 +73,7 @@ class Log {
    * @param {object} obj optional object to be logged as a string
    */
   static Debug(message, obj = null) {
-    if (Config.DEBUG){
+    if (Config.DEBUG) {
       try {
         if (obj) message = `${message}: ${JSON.stringify(obj)}`;
         let date = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
@@ -86,7 +83,7 @@ class Log {
         this.prototype._PopItem();
         this.prototype._CleanupSheet();
         return 0;
-      } catch(err) {
+      } catch (err) {
         console.error(`"Debug()" failed : ${err}`);
         return 1;
       }
@@ -96,34 +93,31 @@ class Log {
   /** @private */
   _PopItem() {
     try {
-      if(LOGGER_SHEET.getLastRow() >= 500) LOGGER_SHEET.deleteRow(2);
+      if (LOGGER_SHEET.getLastRow() >= 500) LOGGER_SHEET.deleteRow(2);
       return 0;
-    } catch(err) {
+    } catch (err) {
       console.error(`"PopItem()" failed : ${err}`);
       return 1;
     }
   }
-  
+
   /** @private */
   _CleanupSheet() {
     try {
-      if(LOGGER_SHEET.getLastRow() > 2000) LOGGER_SHEET.deleteRows(2, 1998);
+      if (LOGGER_SHEET.getLastRow() > 2000) LOGGER_SHEET.deleteRows(2, 1998);
       return 0;
-    } catch(err) {
+    } catch (err) {
       console.error(`Whoops ---> ${err}`);
       return 1;
     }
   }
-  
 }
 
-
 const _testWrite = () => {
-  for(let i = 0; i < 2; i++) {
+  for (let i = 0; i < 2; i++) {
     Log.Info(`${i} Some Info...`);
     Log.Warning(`${i} Some Warning....`);
     Log.Error(`${i} Some Error....`);
     Log.Debug(`${i} Some Debug....`);
   }
-}
-
+};
