@@ -82,7 +82,7 @@ class Log {
         let date = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
         let text = [date, "DEBUG", message];
         LOGGER_SHEET.appendRow(text);
-        console.log(`${text[0]}, ${text[1]} : ${message}`);
+        console.log(`${text[0]}, ${text[1]} : `, message);
         this.prototype._PopItem();
         this.prototype._CleanupSheet();
         return 0;

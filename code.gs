@@ -25,7 +25,7 @@
  * - NOTE: Use the address given in the text of the web app page, not the one you copied from Google Script. For me at least, they were slightly different.
  *
  * Other APIs:
- * - SeatGeek (in the works) (https://platform.seatgeek.com/)
+ * - SeatGeek (worked - an API account requires approval now?) (https://developer.seatgeek.com/)
  * - StubHub (not implemented yet, https://developer.stubhub.com/docs/overview/introduction/)
  * - SeeTickets API (not public afaik)
  * - Songkick (paid only last I checked)
@@ -47,6 +47,7 @@ const refreshEvents = async () => {
   Log.Debug("Building Artist Array and Events Array");
   // Get current list of artists from Artist Sheets
   let artistsArr = artistsList();
+
   // get list of known events from Events Sheet
   let existingEvents = buildEventsArr();
 
@@ -68,7 +69,7 @@ const refreshEvents = async () => {
   // If 'searchRA' is set to TRUE in config.gs then search Resident Advisor
   if (Config.SEARCH_RA) {
     Log.Debug("Searching Resident Advisor...");
-    const raEvents = await searchRAMain(artistsArr);
+    const raEvents = searchRAMain(artistsArr);
     Log.Info("New Resident Advisor events", raEvents.newEvents);
     Log.Info("Existing events, alt listing", raEvents.altEvents);
     // Write new events to events sheet
@@ -93,7 +94,7 @@ const refreshEvents = async () => {
     writeEventsToSheet(tmEvents.newEvents);
     writeAltEventsToSheet(tmEvents.altEvents);
     // Write Calendar Event for new events if configured to
-    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(tmEvents.newEvents);
+    // if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(tmEvents.newEvents);
   }
 };
 

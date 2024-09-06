@@ -16,9 +16,9 @@
   // 28: Toronto, Canada
   // 29: Amsterdam
   // 30: Scotland, UK
-  // 31: 
-  // 32: 
-  // 33: 
+  // 31: ?
+  // 32: ?
+  // 33: ?
   // 34: Berlin, Germany
   // 35: Belfast, UK
   // 36:Kuala Lumpur, Malaysia
@@ -41,7 +41,7 @@
   // 53: Lisboa, Portugal
   // 54: Edmonton, Canada
   // 55: Taipei, Taiwan
-  // 56: 
+  // 56: ?
   // 57: Oslo, Norway
   // 58: Stockholm, Sweden
   // 59: Santiago, Chile

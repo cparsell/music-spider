@@ -136,7 +136,7 @@ const retrieveAuth = async () =>
         // Refresh the auth info
         Log.Info("Access token expired. Refreshing authentication...");
         authInfo = refreshAuth(authInfo.refreshToken);
-
+        Log.Info(`authInfo.expiry: ${authInfo.expiry}`)
         // Save the new auth info back to the user properties store
         userProperties.setProperties(authInfo);
     }

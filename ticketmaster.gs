@@ -10,21 +10,8 @@ const searchTMLoop = async (artistsArr, existingEvents) => {
   let eventsArr = new Array;
   try {
     for (let i=0;i<artistsArr.length;i++) {
-      await ticketSearch(artistsArr[i]).then(data => 
-      {
-        for (let i=0; i<data.length;i++) {
-          eventsArr.push({
-            date: data[i].date,
-            eName: data[i].eName,
-            city: data[i].city,
-            venue: data[i].venue, 
-            url: data[i].url, 
-            image: data[i].image,
-            acts: data[i].acts.toString(),
-            address: data[i].address,
-          });
-        }
-      })
+      await ticketSearch(artistsArr[i], artistsArr).then((data) => 
+        data.forEach((event) => eventsArr.push(event)))
       Utilities.sleep(180);
     }
     // get rid of any results that are already on the Events Sheet
@@ -89,11 +76,15 @@ const filterTMimages = (eventsArr) => {
  * @param {string} keyword 
  * @returns {object} eventsArr
  */
-const ticketSearch = async (keyword) => 
+const ticketSearch = async (keyword, artistsArr) => 
 {
-  // keyword = "The Books" // for debugging, I uncomment this, specify something that returns a result, and run the function from Apps Script to see the Execution Log
+  // keyword = "The Books" // for debugging
   if (keyword == undefined) {
     Logger.log("ticketSearch() - No keyword provided");
+    return;
+  }
+  if (!Array.isArray(artistsArr) || artistsArr.length == 0) {
+    Logger.log("ticketSearch() - Artists Array undefined or empty");
     return;
   }
   // let artist = ARTIST_SHEET.getRange(2,1);
@@ -101,7 +92,7 @@ const ticketSearch = async (keyword) =>
 
   try {
     // returns JSON response
-    await tmSearch(keyword)
+    await fetchFromTicketmaster(keyword, artistsArr)
       .then(async(data) => {
         Log.Debug(`ticketSearch() - ${data.length} results parsed`);
         // Log.Debug(`ticketSearch() - data received`, data)
@@ -110,65 +101,66 @@ const ticketSearch = async (keyword) =>
           Log.Debug(`ticketSearch() - No results for`, keyword);
           return false;
         }
-        // data?._embedded?.events?.forEach((item) =>
+
         data.forEach((item) =>
         {
-          let url = item.url;
-          let image = item.images;
-          let attractions = new Array;
+          let attractions = new Array();
+
           item?._embedded?.attractions?.forEach((attraction) => 
           {
             attractions.push(attraction.name);
           });
-          // if other artists in my list are in this event, move them to front of list
-          let artistsArr = artistsList();
-          for (let j=0;j<artistsArr.length;j++)
-          {
-            let artist = artistsArr[j];
-            if (attractions.includes(artist) && artist != keyword) {
-              attractions = attractions.sort(function(x,y){ return x == artist ? -1 : y == artist ? 1 : 0; });
+
+          let isNameInList = attractions.some((attraction) => {
+              return artistsArr.includes(attraction)
             }
-          }
-          // then move keyword to front of list of acts
-          attractions = attractions.sort(function(x,y){ return x == keyword ? -1 : y == keyword ? 1 : 0; });
-          item?._embedded?.venues?.forEach((venue) =>
-          { 
-            let venueName = venue.name; 
-            let venueAddress = venue.address.line1;
-            let date;
-            if (item.dates.start.dateTime) {
-              date = new Date(item.dates.start.dateTime);
-            }
-            // some list timeTBA = true, or noSpecificTime = true. if so, use localDate value
-            if (item.dates.start.timeTBA || item.dates.start.noSpecificTime) 
-            {
-              date = new Date(item.dates.start.localDate);
-            }
-            // Logger.log(`venue: ${venueName}`);
-            if (attractions.includes(keyword) || item.name.toUpperCase() == keyword.toUpperCase()) 
-            {
-              let eventDate = Utilities.formatDate(date, "PST", "yyyy/MM/dd HH:mm");
-              Logger.log(`Found event: ${item.name}`);
-              eventsArr.push( 
+          );
+          if (isNameInList) {
+            Logger.log(`Found event: ${item.name}`);
+            let url = item.url ? item.url : "";
+            let image = item.images ? item.images : "";
+            let venueName, venueAddress, venueCity, venueState, date, dateFormatted;
+            item?._embedded?.venues?.forEach((venue) =>
+            { 
+              venueName = venue.name ? venue.name : ""; 
+              venueAddress = venue.address.line1 ? venue.address.line1 : "";
+              venueCity = venue.city.name ? venue.city.name : "";
+              venueState = venue.state.name ? venue.state.name : "";
+              try {
+              if (item.dates.start.dateTime) {
+                date = new Date(item.dates.start.dateTime);
+              }
+              // some list timeTBA = true, or noSpecificTime = true. if so, use localDate value
+              if (item.dates.start.timeTBA || item.dates.start.noSpecificTime) 
+              {
+                date = new Date(item.dates.start.localDate);
+              }
+              
+                dateFormatted = Utilities.formatDate(date, "PST", "yyyy/MM/dd HH:mm");
+              } catch (error) {
+                Logger.log(`ticketSearch() Error formatting date: ${error.message}`);
+              }
+              
+            });
+            eventsArr.push( 
               { 
                 "eName": item.name,
-                "acts": attractions,
+                "acts": attractions.join(),
                 "venue": venueName , 
-                "city": venue.city.name, 
-                "date": eventDate, 
+                "city": venueCity, 
+                "date": dateFormatted, 
                 "url": url, 
                 "image": image,
-                "address": `${venueAddress}, ${venue.city.name}, ${venue.state.name}`
+                "address": `${venueAddress}, ${venueCity}, ${venueState}`
               });
-            }
-          });
+            
+          }
         });
         if (eventsArr.length==0) 
         {
           Log.Debug(`ticketSearch() - No events found for ${keyword}`);
           return;
         }
-        // Logger.log(eventsArr);
         Log.Debug(`ticketSearch() - eventsArr: ${eventsArr}`);
     });
     Log.Debug(`ticketSearch() - ${eventsArr.length} events found`);
@@ -180,12 +172,12 @@ const ticketSearch = async (keyword) =>
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
- * tmSearch
+ * fetchFromTicketmaster
  * Fetch data from Ticketmaster API
  * @param {object} event {name, date, city, venue, url, image, acts} 
  * @returns {object} results
  */
-const tmSearch = async (keyword) => 
+const fetchFromTicketmaster = async (keyword) => 
 {
   // Ticketmaster API
   // reference: https://developer.ticketmaster.com/products-and-docs/apis/discovery-api/v2/#search-events-v2
@@ -206,6 +198,7 @@ const tmSearch = async (keyword) =>
     if (responseCode == 200 || responseCode == 201) 
     {
       let content = await response.getContentText();
+      // Log.Info(content);
       let data = JSON.parse(content);
       // Log.Info("tmSearch() - response", data);  // uncomment this to write raw JSON response to 'Logger' sheet
       

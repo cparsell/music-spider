@@ -199,11 +199,20 @@ function testStringSim() {
  * @returns 
  */
 const filterAddress = (address) => {
-  filtered = address.replace(/(Avenue|Ave[.]?)/g, "Ave");
-  filtered = address.replace(/(Street|St[.]?)/g, "St");
-  filtered = address.replace(/(Drive|Dr[.]?)/g, "Dr");
-  filtered = address.replace(/(Road|Rd[.]?)/g, "Rd");
-  return filtered;
+  if (address) {
+    try {
+      filtered = address.replace(/(Avenue|Ave[.]?)/g, "Ave");
+      filtered = address.replace(/(Street|St[.]?)/g, "St");
+      filtered = address.replace(/(Drive|Dr[.]?)/g, "Dr");
+      filtered = address.replace(/(Road|Rd[.]?)/g, "Rd");
+      return filtered;
+    } catch (err0r) {
+      Log.Error(`filterAddress() error: ${err0r}`)
+    }
+  } else {
+    Log.Debug("filterAddress() - address is null");
+    return ""
+  }
 };
 /**
  * ----------------------------------------------------------------------------------------------------------------
@@ -212,114 +221,166 @@ const filterAddress = (address) => {
  *  A. URLs are the same OR
  *  B. the event NAMES, ADDRESSES, and DATES are the same
  * In the case of B, it will add the URL to the URL2 column so one can choose from multiple ticket vendors
- * @param {array} newArray list of new results
- * @param {array} existingArray list of existing events
- * @returns {object} {filtered :[{}], alt: [{}]}
+ * @param {Array} newArray list of new results
+ * @param {Array} existingArray list of existing events
+ * @returns {Array} the filtered array
  */
 const filterDupeEvents = (newArray, existingArray) => {
+  try {
+    // Ensure inputs are arrays
+    if (!Array.isArray(newArray) || !Array.isArray(existingArray)) {
+      throw new Error('Both newArray and existingArray must be arrays.');
+    }
   // this filter function tests whether a "very similar" event exists already and returns the filtered array
-  let reduced = newArray.filter(
-    (aItem) =>
+
+
+    let reduced = newArray.filter((aItem) =>
+      // Check if a very similar event exists in the existingArray
       !existingArray.find((bItem) => {
-        // Exclude any that are returned from this find()
-        let aDate = Utilities.formatDate(
-          new Date(aItem["date"]),
-          "PST",
-          "yyyy/MM/dd"
-        );
-        let bDate = Utilities.formatDate(
-          new Date(bItem["date"]),
-          "PST",
-          "yyyy/MM/dd"
-        );
-        let dateScore = aDate == bDate;
+        let aDate, bDate;
+        try {
+          aDate = Utilities.formatDate(new Date(aItem["date"]), "PST", "yyyy/MM/dd");
+          bDate = Utilities.formatDate(new Date(bItem["date"]), "PST", "yyyy/MM/dd");
+        } catch (error) {
+          Logger.log(`Error formatting date: ${error.message}`);
+          return false; // Skip this comparison if there's an error with date formatting
+        }
+        let dateScore = aDate === bDate;
 
-        let aName = aItem["eName"].toString().toUpperCase();
-        let bName = bItem["eName"].toString().toUpperCase();
-        let nameScore = CommonLib.stringSimilarity(aName, bName) > 0.5;
 
-        let aAddress = aItem["address"].toString().toUpperCase();
-        let bAddress = bItem["address"].toString().toUpperCase();
-        let aAddressFiltered = filterAddress(aAddress.split(/[s,s;]+/)[0]);
-        let bAddressFiltered = filterAddress(bAddress.split(/[s,s;]+/)[0]);
-        let addressScore =
-          CommonLib.stringSimilarity(aAddressFiltered, bAddressFiltered) > 0.5;
+        // Extract and compare event names
+        let aName = aItem["eName"] ? aItem["eName"].toString().toUpperCase() : "";
+        let bName = bItem["eName"] ? bItem["eName"].toString().toUpperCase() : "";
+        // let nameScore = CommonLib.stringSimilarity(aName, bName) > 0.5;
 
-        let aActs = aItem["acts"].toString().toUpperCase();
-        let bActs = bItem["acts"].toString().toUpperCase();
+        // Extract and compare acts
+        let aActs = aItem["acts"] ? CommonLib.sortArrayAlpha(aItem["acts"].split(',')).join(): "";
+        let bActs = bItem["acts"] ? CommonLib.sortArrayAlpha(bItem["acts"].split(',')).join() : "";
+
         let actScore = CommonLib.stringSimilarity(aActs, bActs) > 0.66;
 
-        let aVenue = aItem["venue"].toString().toUpperCase();
-        let bVenue = bItem["venue"].toString().toUpperCase();
+        // Extract and compare venue names
+        let aVenue = aItem["venue"] ? aItem["venue"].toString().trim().toUpperCase() : "";
+        let bVenue = bItem["venue"] ? bItem["venue"].toString().trim().toUpperCase() : "";
+
         let venueScore = CommonLib.stringSimilarity(aVenue, bVenue) > 0.5;
 
-        let aUrl = aItem["url"].toString().toUpperCase();
-        let bUrl = bItem["url"].toString().toUpperCase();
-        let urlsEqual = aUrl == bUrl;
+        // Extract and compare URLs
+        let aUrl = aItem["url"] ? aItem["url"].toString().toUpperCase() : "";
+        let bUrl = bItem["url"] ? bItem["url"].toString().toUpperCase() : "";
 
-        // Logger.log(
-        //   `new: ${aName}, ex: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actScore}, dateScore: ${dateScore}, addressScore: ${addressScore}, venueScore: ${venueScore}`
-        // );
+        let urlsEqual = aUrl === bUrl;
+
+        Log.Debug(
+          `new: ${aName}, ex: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actScore}, dateScore: ${dateScore}, addressScore: ${addressScore}, venueScore: ${venueScore}`
+        );
         // Urls match, act lists match, dates are match,
         // and venue names are very similar (accounting for differences in listing the name)
         return urlsEqual || (actScore && dateScore && venueScore);
       })
-  );
-  Log.Debug("filterDupeEvents() filtered out duplicates", reduced);
-  return reduced;
+    );
+    Log.Debug("filterDupeEvents() filtered out duplicates", reduced);
+    return reduced;
+  } catch (error) {
+    Logger.log(`Error in filterDupeEvents function: ${error.message}`);
+    return []; // Return an empty array in case of error
+  }
 };
 
+/**
+ * Filters events from newArray that share Date, Address, Name, and Venue with events in existingArray.
+ * @param {Array} newArray - The array of new events to filter.
+ * @param {Array} existingArray - The array of existing events to compare against.
+ * @returns {Array} The filtered array of alternate events.
+ */
 const filterAltEvents = (newArray, existingArray) => {
-  // this filter function tests whether any events share
-  // Date, Address, Name, and Venue
-  let alternates = newArray.filter((aItem) =>
-    existingArray.find((bItem) => {
-      let aDate = Utilities.formatDate(
-        new Date(aItem["date"]),
-        "PST",
-        "yyyy/MM/dd"
-      );
-      let bDate = Utilities.formatDate(
-        new Date(bItem["date"]),
-        "PST",
-        "yyyy/MM/dd"
-      );
-      let datesEqual = aDate == bDate;
-      let aName = aItem["eName"];
-      let bName = bItem["eName"];
-      let aActs = CommonLib.sortArrayAlpha(aItem["acts"]);
-      let bActs = CommonLib.sortArrayAlpha(bItem["acts"]);
-      let actsScore = CommonLib.stringSimilarity(aActs, bActs) > 0.6;
+  try {
+    console.info("filterAltEvents() starting");
+    // Ensure inputs are arrays
+    if (!Array.isArray(newArray) || !Array.isArray(existingArray)) {
+      throw new Error('Both newArray and existingArray must be arrays.');
+    }
 
-      let aAddress = aItem["address"];
-      let bAddress = bItem["address"];
-      let aAddressFiltered = filterAddress(aAddress.split(/[s,s;]+/)[0]);
-      let bAddressFiltered = filterAddress(bAddress.split(/[s,s;]+/)[0]);
-      let addressScore =
-        CommonLib.stringSimilarity(aAddressFiltered, bAddressFiltered) > 0.5;
+    let alternates = newArray.filter((aItem) => {
+      // console.info('aItem');
+      // console.info(aItem);
+      try {
+        return existingArray.find((bItem) => {
+          // console.info('bItem');
+          // console.info(bItem);
+          // Extract and format dates
+          let aDate = '';
+          let bDate = '';
+          try {
+            aDate = aItem["date"]
+              ? Utilities.formatDate(new Date(aItem["date"]), "PST", "yyyy/MM/dd")
+              : '';
+            bDate = bItem["date"]
+              ? Utilities.formatDate(new Date(bItem["date"]), "PST", "yyyy/MM/dd")
+              : '';
+          } catch (error) {
+            Logger.log(`Error formatting date: ${error.message}`);
+            return false; // Skip comparison if date formatting fails
+          }
+          let datesEqual = aDate === bDate;
 
-      let aVenue = aItem["venue"];
-      let bVenue = bItem["venue"];
-      let venueScore = CommonLib.stringSimilarity(aVenue, bVenue) > 0.5;
+          let aName = aItem["eName"] ? aItem["eName"].toString().trim() : "";
+          let bName = bItem["eName"] ? bItem["eName"].toString().trim() : "";
+          // Compare acts
+          let aActs = aItem["acts"] ? CommonLib.sortArrayAlpha(aItem["acts"].toString().split(",")).join() : "";
+          let bActs = bItem["acts"] ? CommonLib.sortArrayAlpha(bItem["acts"].toString().split(',')).join() : "";
+          // console.info(`aActs: ${aActs}`);
+          // console.info(`bActs: ${bActs}`);
+          let actsScore = CommonLib.stringSimilarity(aActs, bActs) > 0.6;
 
-      let aUrl = aItem["url"].toString().toUpperCase();
-      let bUrl = bItem["url"].toString().toUpperCase();
-      let urlsEqual = aUrl == bUrl;
-      // Logger.log(
-      //   `ex: ${aName}, new: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actsScore}, dateScore: ${datesEqual}, addressScore: ${addressScore}, venueScore: ${venueScore}`
-      // );
+          // Compare addresses
+          let aAddress = aItem["address"] ? aItem["address"].toString().trim().toUpperCase() : '';
+          let bAddress = bItem["address"] ? bItem["address"].toString().trim().toUpperCase() : '';
+          let aAddressFiltered = filterAddress(aAddress.split(/[s,s;]+/)[0]);
+          let bAddressFiltered = filterAddress(bAddress.split(/[s,s;]+/)[0]);
+          // console.info(`aAddress: ${aAddress}`);
+          // console.info(`bAddress: ${bAddress}`);
+          let addressScore = CommonLib.stringSimilarity(aAddressFiltered, bAddressFiltered) > 0.5;
 
-      return (
-        !urlsEqual && actsScore && datesEqual && (addressScore || venueScore)
-      );
-    })
-  );
-  Log.Debug(
-    "filterAltEvents() exist but are from a different vendor",
-    alternates
-  );
+          // Compare venue names
+          let aVenue = aItem["venue"] ? aItem["venue"].toString().trim().toUpperCase() : '';
+          let bVenue = bItem["venue"] ? bItem["venue"].toString().trim().toUpperCase() : '';
+          // console.info(`aVenue: ${aVenue}`);
+          // console.info(`bVenue: ${bVenue}`);
+          let venueScore = CommonLib.stringSimilarity(aVenue, bVenue) > 0.5;
 
-  return alternates;
+          // Compare URLs
+          let aUrl = aItem["url"] ? aItem["url"].toString().trim().toUpperCase() : '';
+          let bUrl = bItem["url"] ? bItem["url"].toString().trim().toUpperCase() : '';
+          // console.info(`aUrl: ${aUrl}`);
+          // console.info(`bUrl: ${bUrl}`);
+          let urlsEqual = aUrl === bUrl;
+          // Logger.log(`Comparing events - URLs Equal: ${urlsEqual}, 
+          // Act Score: ${actsScore}, Date Score: ${datesEqual}, 
+          // Address Score: ${addressScore}, Venue Score: ${venueScore}`);
+          Log.Debug(
+            `existing: ${aName}, new: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actsScore}, dateScore: ${datesEqual}, addressScore: ${addressScore}, venueScore: ${venueScore}`
+          );
+
+          return (
+            !urlsEqual && actsScore && datesEqual && (addressScore || venueScore)
+          );
+        })
+      } catch (error) {
+        Logger.log(`Error comparing events: ${error.message}`);
+        return false; // Skip this item in case of any comparison errors
+      }
+    });
+    Log.Debug(
+      "filterAltEvents() exist but are from a different vendor",
+      alternates
+    );
+
+    return alternates;
+  } catch (error) {
+    Logger.log(`Error in filterAltEvents function: ${error.message}`);
+    return []; // Return an empty array in case of an error
+  }
 };
 
 /**

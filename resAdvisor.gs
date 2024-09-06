@@ -6,7 +6,7 @@
  * @param {boolean} getAllPages if false will only return 1 page (18 results max)
  * @returns {array} results [{eventdata}, {eventdata}...]
  */
-const getRAData = async (area = 218, getAllPages = true) => {
+const getRAData = (area = 218, getAllPages = true) => {
   const pageSize = 18; // 18 is teh max number of results RA will send in one page
   let page = 1;
   let running = 0;
@@ -17,15 +17,15 @@ const getRAData = async (area = 218, getAllPages = true) => {
     // build the headers for the fetch request
     let options = returnRAOptions(page, area, queryRAEventListings);
     // Fetch from the API
-    let response = await UrlFetchApp.fetch(url, options);
-    let firstPage = await response.getContentText();
-    let responseCode = await response.getResponseCode();
+    let response = UrlFetchApp.fetch(url, options);
+    let firstPage = response.getContentText();
+    let responseCode = response.getResponseCode();
     Log.Info(`Response Code ${responseCode} - ${RESPONSECODES[responseCode]}`);
     // If response is good
     if (responseCode == 200 || responseCode == 201) {
       // Log.Debug("results", JSON.parse(firstPage));
-      let data = await JSON.parse(firstPage);
-      let newData = await data.data.eventListings;
+      let data = JSON.parse(firstPage);
+      let newData = data.data.eventListings;
       let totalResults = newData.totalResults;
       results.push(...newData.data);
       // Return only one page if that's what's asked for
@@ -42,7 +42,7 @@ const getRAData = async (area = 218, getAllPages = true) => {
         let options = returnRAOptions(page, area);
         if (totalResults - running < pageSize) pgSize = totalResults - pg;
         running += pgSize;
-        nextPage = await UrlFetchApp.fetch(url, options).getContentText();
+        nextPage = UrlFetchApp.fetch(url, options).getContentText();
         let nextPageParsed = JSON.parse(nextPage).data.eventListings.data;
         results.push(...nextPageParsed);
       }
@@ -111,22 +111,20 @@ const returnRAOptions = (page, area, theQuery = queryRAEventListings) => {
  * Searches the results to return only events that match artists in your list
  * @param {array} artistList
  */
-const searchRA = async (artistList) => {
+const searchRA = (artistList) => {
+  // Create array for new event matches
   let results = new Array();
   try {
     // Fetch all Resident Advisor events in the next 8 months in your region
-    let listings = await getRAData(Math.floor(Config.REGION_RA));
+    let listings = getRAData(Math.floor(Config.REGION_RA));
     Logger.log("searchRA() - TOTAL events parsed: " + listings.length);
     // Run through each result to see if they match any artists in the Artist Sheet
     for (let i = 0; i < listings.length; i++) {
       let listing = listings[i]?.event;
-      Log.Debug(listing);
+      // Log.Debug(listing);
+
       if (listing) {
-        let title = listing?.title;
-        let acts = [];
-        let venue = listing?.venue?.name;
-        let images = listing?.images;
-        let imageUrl = listing?.images[0]?.filename;
+        let acts = new Array();
         // if there are artists listed, create an array with their names
         // (most of RA events don't seem to have artists listed here though)
         let artists = listing?.artists;
@@ -135,38 +133,39 @@ const searchRA = async (artistList) => {
             acts.push(artists[index].name);
           }
         }
-        let event = {
-          date: Utilities.formatDate(
-            new Date(listing.startTime),
-            "PST",
-            "yyyy/MM/dd HH:mm"
-          ),
-          eName: title,
-          city: "",
-          venue: venue,
-          url: "https://ra.co" + listing.contentUrl,
-          image: imageUrl,
-          acts: acts.toString(),
-          address: listing.venue.address,
-        };
-        // For each artist in the Artist Sheet, check the result for
-        for (let j = 0; j < artistList.length; j++) {
-          // check artist against list of acts in this result
-          acts.forEach(function (res) {
-            if (res.toUpperCase() === artistList[j].toString().toUpperCase()) {
-              Log.Info(
-                `searchRA() - Found a match for artist: ${artistList[j]} in list of acts - title: ${title}`
-              );
-              results.push(event);
-            }
-          });
-          // check artist against title of this result IF the name is longer than 3 characters
-          // too many false positives with 3-letter names
-          // if (artistList[j].length > 3) {
-          //   if ((title.toString().indexOf(artistList[j].toString()) > -1) || (artistList[j].toString().indexOf(title.toString()) > -1) ) {
-          //     Log.Info(`searchRA() - Found a match for artist ${artistList[j]} in title: ${title}`);
-          //     results.push(event);
-          //   }
+        const shouldAddEvent = acts.some((act) => artistList.includes(act))
+        if (shouldAddEvent) {
+          let title = listing?.title;
+          let venue = listing?.venue?.name;
+          let images = listing?.images;
+          let imageUrl = listing?.images[0]?.filename;
+          let event = {
+            date: Utilities.formatDate(
+              new Date(listing.startTime),
+              "PST",
+              "yyyy/MM/dd HH:mm"
+            ),
+            eName: title,
+            city: "",
+            venue: venue,
+            url: "https://ra.co" + listing.contentUrl,
+            image: imageUrl,
+            acts: acts.toString(),
+            address: listing.venue.address,
+          };
+
+          results.push(event);
+          // For each artist in the Artist Sheet, check the result for
+          // for (let j = 0; j < artistList.length; j++) {
+          //   // check artist against list of acts in this result
+          //   acts.forEach(function (res) {
+          //     if (res.toUpperCase() === artistList[j].toString().toUpperCase()) {
+          //       Log.Info(
+          //         `searchRA() - Found a match for artist: ${artistList[j]} in list of acts - title: ${title}`
+          //       );
+          //       results.push(event);
+          //     }
+          //   });
           // }
         }
       }
@@ -186,35 +185,24 @@ const searchRA = async (artistList) => {
  * Reaches out to RA API to get results,
  * @param {array} artistsArr the array of artists in the Artists List sheet
  */
-const searchRAMain = async (artistsArr) => {
+const searchRAMain = (artistsArr) => {
   let newEvents = {};
 
-  let trigger = new Array();
-  if (Config.SEARCH_RA) {
-    if (!artistsArr) {
-      artistsArr = artistsList();
-      trigger.push(true);
-    }
 
+  if (Config.SEARCH_RA) {
     try {
       // Get list of artists from Artists Sheet
       if (!artistsArr) artistsArr = artistsList();
       // Get existing list of events from events sheet
       const existingEvents = buildEventsArr();
       // returns events that match your artists
-      const results = await searchRA(artistsArr);
-      // run function that filters out resutls that are already on the events sheet
+      const results = searchRA(artistsArr);
+      // run function that filters out results that are already on the events sheet
       newEvents = filterDupeEvents(results, existingEvents);
       let altEvents = filterAltEvents(results, existingEvents);
+
       Log.Debug("New RA Events", newEvents);
 
-      // If this triggered on its ow (not in RefreshEvents), write events to Sheet and calendar
-      if (trigger.length > 0) {
-        writeEventsToSheet(results);
-
-        // Write Calendar Event for new events
-        if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(results);
-      }
       return { newEvents: newEvents, altEvents: altEvents };
     } catch (err) {
       Log.Error(`searchRAMain () error - ${err}`);
