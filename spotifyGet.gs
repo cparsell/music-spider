@@ -9,10 +9,9 @@
  */
 const refreshArtists = async () => 
 {
-  // Logs to 'Logger' sheet
-  let topArtists = new Array;
-  let playlistArtists = new Array;
-  let followedArtists = new Array;
+  let topArtists = [];
+  let playlistArtists = [];
+  let followedArtists = [];
   let ignoreUpperCase = ARTISTS_TO_IGNORE.map((x) => { return x.toUpperCase(); })
   if (Config.GET_TOP_ARTISTS) 
   {

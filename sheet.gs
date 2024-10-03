@@ -24,10 +24,10 @@ const addArrayToSheet = (sheet, column, values) => {
  * @returns {array} filtered array of artists
  */
 const artistsList = () => {
-  let results = new Array();
-  let artistRows = ARTIST_SHEET.getLastRow() - 1;
+  let results = [];
+  const artistRows = ARTIST_SHEET.getLastRow() - 1;
   if (artistRows == 0) artistRows = 1;
-  let artistsArr = ARTIST_SHEET.getRange(2, 1, artistRows, 1).getValues();
+  const artistsArr = ARTIST_SHEET.getRange(2, 1, artistRows, 1).getValues();
 
   for (let i = 0; i < artistsArr.length; i++) {
     results.push(artistsArr[i][0]);
@@ -61,8 +61,8 @@ const artistsList = () => {
  */
 const buildEventsArr = () => {
   try {
-    let lastRow = EVENT_SHEET.getLastRow();
-    let events = new Array();
+    const lastRow = EVENT_SHEET.getLastRow();
+    let events = [];
 
     if (lastRow > 1) {
       for (i = 1; i < lastRow; i++) {
@@ -73,24 +73,14 @@ const buildEventsArr = () => {
         let eventDate = Utilities.formatDate(date, "PST", "yyyy/MM/dd HH:mm");
         rowData.date = eventDate;
         events.push(rowData);
-        // events[eventDate] = rowData;
+
       }
-      // Log.Info(JSON.stringify(events));
+
       // Sort by key, which is the date
-      let ordered = events.sort(function (a, b) {
+      const ordered = events.sort(function (a, b) {
         return a.date < b.date ? -1 : a.date > b.date ? 1 : 0;
-        // return a.date.localeCompare(b.date);
       });
 
-      // ordered = Object.keys(events).sort().reduce(
-      //   (obj, key) =>
-      //   {
-      //     obj[key] = events[key];
-      //     return obj;
-      //   },
-      //   {}
-      // );
-      // Log.Info(JSON.stringify(ordered));
       return ordered;
     } else {
       console.warn("No events found- unable to build array of Events");
@@ -108,6 +98,36 @@ const compareArrays = (arr1, arr2) => {
   Logger.log(compare(arr1, arr2));
   return compare(arr1, arr2);
 };
+
+/**
+ * Create event for selected event or events
+ * @param {object} events
+ */
+const createSelectedCalEvents = () => {
+  const eventSheet = SHEETS.EVENTS;
+  const selectedRange = eventSheet.getActiveRange();
+  const selectedRows = selectedRange.getRow();  // selected row number
+  const selectedNumRows = selectedRange.getNumRows(); // total number of rows in the selection
+  const numColumns = eventSheet.getLastColumn(); // Get total number of columns
+
+  // Get all values from the range covering the selected rows and all columns
+  const values = eventSheet.getRange(selectedRows, 1, selectedNumRows, numColumns).getValues();
+  const headers = eventSheet.getRange(1, 1, 1, numColumns).getValues()[0]; // Fetch all headers
+  const events = values.map(row => {
+    let event = {};
+    headers.forEach((header, index) => {
+      const key = Object.keys(HEADERNAMES).find(key => HEADERNAMES[key] === header);
+      if (key) {
+        event[key] = row[index];
+      }
+    });
+    return event;
+  });
+
+  const names = events.map(event => event.eName);
+  console.info(`Creating calendar event(s) for: ${names.join(', ')}`)
+  createCalEvents(events);
+}
 
 /**
  * ----------------------------------------------------------------------------------------------------------------

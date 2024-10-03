@@ -63,7 +63,7 @@ const refreshEvents = async () => {
     writeEventsToSheet(sgEvents.newEvents);
     writeAltEventsToSheet(sgEvents.altEvents);
     // Write Calendar Event for new events if configured to
-    // if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(sgEvents.newEvents);
+    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(sgEvents.newEvents);
   }
 
   // If 'searchRA' is set to TRUE in config.gs then search Resident Advisor
@@ -76,7 +76,7 @@ const refreshEvents = async () => {
     writeEventsToSheet(raEvents.newEvents);
     writeAltEventsToSheet(raEvents.altEvents);
     // Write Calendar Event for new events if configured to
-    // if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(raEvents.newEvents);
+    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(raEvents.newEvents);
   }
 
   // If 'searchTicketmaster' is set to TRUE in config.gs then search Ticketmaster
@@ -94,7 +94,7 @@ const refreshEvents = async () => {
     writeEventsToSheet(tmEvents.newEvents);
     writeAltEventsToSheet(tmEvents.altEvents);
     // Write Calendar Event for new events if configured to
-    // if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(tmEvents.newEvents);
+    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(tmEvents.newEvents);
   }
 };
 
@@ -111,7 +111,9 @@ const BarMenu = () => {
     .addItem(`Refresh Artists from Spotify`, `refreshArtists`)
     .addItem(`Refresh Events`, `refreshEvents`)
     .addItem(`Send Email Newsletter`, `sendEmail`)
+    .addItem(`Create Calendar Event for Selected`, 'createSelectedCalEvents')
     .addSeparator()
     .addItem(`Clear Blank Rows`, `deleteEmptyRows`)
     .addToUi();
 };
+
