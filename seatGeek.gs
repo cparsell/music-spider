@@ -51,7 +51,7 @@ const getSeatGeekData = async () => {
 
     const latlong = Config.latLong().split(",");
     const lat = latlong[0]; // lat=${encodeURIComponent(lat)}&long=${encodeURIComponent(long)}
-    const long = latlong[1]; 
+    const long = latlong[1];
     // let url = `${SEAT_GEEK_EVENTS}?${AUTH_STRING}&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(long)}&range=${Config.RADIUS}${unit}&q=${keyword}&per_page=${pageSize}&page=${page}`;
     let url = `${SEAT_GEEK_EVENTS}?${AUTH_STRING}&lat=${lat}&lon=${long}&range=${Config.radius()}${unit}&per_page=${pageSize}&page=${page}`;
 

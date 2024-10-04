@@ -1,54 +1,43 @@
-
-
-
 /**
  * ----------------------------------------------------------------------------------------------------------------
  * refreshArtists
  * Trigger - reach out to Spotify API to get listening history.
  * Writes the list artists to sheet
  */
-const refreshArtists = async () => 
-{
+const refreshArtists = async () => {
   let topArtists = [];
   let playlistArtists = [];
   let followedArtists = [];
-  let ignoreUpperCase = ARTISTS_TO_IGNORE.map((x) => { return x.toUpperCase(); })
-  if (Config.getTopArtists()) 
-  {
-    try 
-    {
-    // Get Top Artists from Spotify
+  let ignoreUpperCase = ARTISTS_TO_IGNORE.map((x) => {
+    return x.toUpperCase();
+  });
+  if (Config.getTopArtists()) {
+    try {
+      // Get Top Artists from Spotify
       topArtists = await getTopArtists(ignoreUpperCase);
       Logger.log(`${topArtists.length} Top Artists`);
       Log.Debug(`Top Artists: ${topArtists}`);
-    } catch (err) 
-    {
+    } catch (err) {
       Log.Error(`${err} : getTopArtists failed`);
     }
   }
-  if (Config.getArtistsFromPlaylist()) 
-  {
-    try 
-    {
+  if (Config.getArtistsFromPlaylist()) {
+    try {
       // Get Artists from a playlist on Spotify
       playlistArtists = await getPlaylistArtists(ignoreUpperCase);
       Logger.log(`${playlistArtists.length} Playlist Artists`);
       Log.Debug(`plastlistArtists: ${playlistArtists}`);
-    } catch (err) 
-    {
+    } catch (err) {
       Log.Error(`getPlaylistArtists() error - ${err}`);
     }
   }
-  if (Config.getFollowing()) 
-  { 
-    try 
-    {
-    // Get Artists you follow
-    followedArtists = await getFollowedArtists(ignoreUpperCase);
-    Logger.log(`${followedArtists.length} Followed Artists`);
-    Log.Debug(`followedArtists: ${followedArtists}`);
-    } catch (err) 
-    {
+  if (Config.getFollowing()) {
+    try {
+      // Get Artists you follow
+      followedArtists = await getFollowedArtists(ignoreUpperCase);
+      Logger.log(`${followedArtists.length} Followed Artists`);
+      Log.Debug(`followedArtists: ${followedArtists}`);
+    } catch (err) {
       Log.Error(`${err} : getFollowing failed`);
     }
   }
@@ -57,61 +46,62 @@ const refreshArtists = async () =>
   Log.Debug(`Artists combined: ${combined}`);
   // Remove duplicates
   let artistsArr = CommonLib.arrayRemoveDupes(combined);
-  if (artistsArr.length == 0) 
-  {
-    Log.Warning(`Unable to retrieve a list of artists from Spotify playlist - check playlist ID, Spotify client ID, or client secret`);
+  if (artistsArr.length == 0) {
+    Log.Warning(
+      `Unable to retrieve a list of artists from Spotify playlist - check playlist ID, Spotify client ID, or client secret`
+    );
     return;
   }
   Log.Info(`${artistsArr.length} artists total added`);
-  if (artistsArr.length > 0) 
-  {
+  if (artistsArr.length > 0) {
     // Clear previous artist list
     CommonLib.clearSheetData(ARTIST_SHEET, 2);
     // clearSheetData(ARTIST_SHEET);
     // Write new artists to sheet
     CommonLib.writeArrayToColumn(artistsArr, ARTIST_SHEET, 1);
     Log.Debug(`Total Artists, duplicates removed: ${artistsArr}`);
-  } else 
-  {
+  } else {
     Logger.log("Unable to retrieve a list of artists from Spotify");
     Log.Info("Unable to retrieve a list of artists from Spotify");
   }
   // Set alignment of column to 'left' - artist names that are just numbers get aligned right
-  ARTIST_SHEET.getRange(1,1,ARTIST_SHEET.getLastRow(),1).setHorizontalAlignment('left');
-}
+  ARTIST_SHEET.getRange(
+    1,
+    1,
+    ARTIST_SHEET.getLastRow(),
+    1
+  ).setHorizontalAlignment("left");
+};
 
 /**
-   * ----------------------------------------------------------------------------------------------------------------
-   * Fetch data from Spotify API
-   * @param {array} array
-   * @returns {array} array
-   */
-let getSpotifyData = async (url, getAllPages = false) =>
-{
+ * ----------------------------------------------------------------------------------------------------------------
+ * Fetch data from Spotify API
+ * @param {array} array
+ * @returns {array} array
+ */
+let getSpotifyData = async (url, getAllPages = false) => {
   const accessToken = await retrieveAuth();
   Log.Debug(`getSpotifyData() Access token: ${JSON.stringify(accessToken)}`);
-  let headers = 
-  {
-    "Authorization": "Bearer " + accessToken,
-    "Content-Type": "application/json"
+  let headers = {
+    Authorization: "Bearer " + accessToken,
+    "Content-Type": "application/json",
   };
 
-  let options = 
-  {
-    "muteHttpExceptions": true,
-    "headers": headers
+  let options = {
+    muteHttpExceptions: true,
+    headers: headers,
   };
   try {
     let response = await UrlFetchApp.fetch(url, options);
     let firstPage = await response.getContentText();
     let responseCode = await response.getResponseCode();
-    Log.Info(`getSpotifyData() - Response Code ${responseCode} - ${RESPONSECODES[responseCode]}`);
-    if (responseCode == 200 || responseCode == 201) 
-    {
+    Log.Info(
+      `getSpotifyData() - Response Code ${responseCode} - ${RESPONSECODES[responseCode]}`
+    );
+    if (responseCode == 200 || responseCode == 201) {
       Log.Debug(CommonLib.prettifyJson(firstPage));
       // Bail out if we only wanted the first page
-      if (!getAllPages)
-      {
+      if (!getAllPages) {
         return [firstPage];
       }
 
@@ -120,15 +110,13 @@ let getSpotifyData = async (url, getAllPages = false) =>
 
       let pageObj = JSON.parse(firstPage);
       // Strip any outer shell, if there is one
-      if (Object.values(pageObj).length == 1)
-      {
+      if (Object.values(pageObj).length == 1) {
         pageObj = Object.values(pageObj)[0];
       }
 
       // Retrieve URL for next page
       let nextPageUrl = pageObj["next"];
-      while (nextPageUrl)
-      {
+      while (nextPageUrl) {
         // Retrieve the next page
         nextPage = UrlFetchApp.fetch(nextPageUrl, options).getContentText();
         data.push(nextPage);
@@ -136,54 +124,52 @@ let getSpotifyData = async (url, getAllPages = false) =>
         // Retrieve URL for next page
         pageObj = JSON.parse(nextPage);
         // Strip any outer shell, if there is one
-        if (Object.values(pageObj).length == 1)
-        {
+        if (Object.values(pageObj).length == 1) {
           pageObj = Object.values(pageObj)[0];
         }
         nextPageUrl = pageObj["next"];
       }
       return data;
     } else {
-      Log.Error(`getSpotifyData() Failed - Response Code ${responseCode} - ${RESPONSECODES[responseCode]} from ${url}`);
+      Log.Error(
+        `getSpotifyData() Failed - Response Code ${responseCode} - ${RESPONSECODES[responseCode]} from ${url}`
+      );
       return false;
     }
   } catch (err) {
     Log.Error(`getSpotifyData() Failed to get data from ${url} - ${err}`);
     return {};
   }
-}
+};
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
  * Returns an array of all artists from Saved Tracks on Spotify
  * Caution: will return ALL artists from Saved Tracks. If you have
- * a lot of Saved Tracks, it may be artists you aren't that 
+ * a lot of Saved Tracks, it may be artists you aren't that
  * interested in seeing live ;)
- * @param {bool} ignoreUpperCase 
+ * @param {bool} ignoreUpperCase
  */
-const getSavedTracksArtists = async (ignoreUpperCase) => 
-{
+const getSavedTracksArtists = async (ignoreUpperCase) => {
   const sheet = ARTIST_SHEET;
   // Retrieve auth
 
   Log.Debug(`Access token: ${JSON.stringify(accessToken)}`);
-  
+
   // Retrieve data
   let params = "?limit=50";
   Log.Info(`Getting artists from saved tracks`);
   let data = await getSpotifyData(SAVED_TRACKS_URL + params, true);
 
   // Fold array of responses into single structure
-  if (data) 
-  {
+  if (data) {
     data = CommonLib.collateArrays("items", data);
     let artistsArr = [];
-    data.forEach(track =>
-    {
-      track.track?.artists.forEach(artist =>
-      {
+    data.forEach((track) => {
+      track.track?.artists.forEach((artist) => {
         // if (ignoreUpperCase.includes(artist.name.toUpperCase())) Log.Debug(`getSaveTracksArtists Ignoring: ${artist.name}`);
-        if (!ignoreUpperCase.includes(artist.name.toUpperCase())) artistsArr.push(artist.name);  
+        if (!ignoreUpperCase.includes(artist.name.toUpperCase()))
+          artistsArr.push(artist.name);
       });
     });
 
@@ -194,21 +180,22 @@ const getSavedTracksArtists = async (ignoreUpperCase) =>
     // if (artistsArr.length > 0) writeArrayToColumn(artistsArr, sheet, 1);
     return artistsArr;
   } else {
-    Log.Warning("getSavedTracksArtists() Unable to get artists from saved tracks");
+    Log.Warning(
+      "getSavedTracksArtists() Unable to get artists from saved tracks"
+    );
   }
-}
+};
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
  * getFollowedArtists
  * Returns an array of all artists followed on Spotify
- * @param {bool} ignoreUpperCase 
+ * @param {bool} ignoreUpperCase
  */
-const getFollowedArtists = async (ignoreUpperCase) =>
-{
+const getFollowedArtists = async (ignoreUpperCase) => {
   // API reference: https://developer.spotify.com/documentation/web-api/reference/get-followed
   let params = "?type=artist&limit=50";
-  
+
   // Retrieve data
   let data = await getSpotifyData(FOLLOW_URL + params, true);
 
@@ -216,30 +203,26 @@ const getFollowedArtists = async (ignoreUpperCase) =>
   data = CommonLib.collateArrays("artists.items", data);
 
   // Sort artists by name
-  data.sort((first, second) =>
-  {
-    if (first.name < second.name)
-    {
+  data.sort((first, second) => {
+    if (first.name < second.name) {
       return -1;
     }
-    if (first.name > second.name)
-    {
+    if (first.name > second.name) {
       return 1;
     }
     // names must be equal
     return 0;
   });
-  let artistsArr = new Array;
-  data.forEach(artist =>
-  {
+  let artistsArr = new Array();
+  data.forEach((artist) => {
     // if (ignoreUpperCase.includes(artist.name.toUpperCase())) Log.Debug(`getFollowedArtists Ignoring: ${artist.name}`);
-    if (!ignoreUpperCase.includes(artist.name.toUpperCase())) artistsArr.push(artist.name);  
+    if (!ignoreUpperCase.includes(artist.name.toUpperCase()))
+      artistsArr.push(artist.name);
     // artistsArr.push(JSON.stringify(artist.name));
   });
   Log.Debug(`artistsArr ${artistsArr}`);
   return artistsArr;
-}
-
+};
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
@@ -248,43 +231,43 @@ const getFollowedArtists = async (ignoreUpperCase) =>
  * Playlist ID is supplied in Configuration
  * @param {bool} ignoreUpperCase
  */
-const getPlaylistArtists = async (ignoreUpperCase = true) => 
-{
+const getPlaylistArtists = async (ignoreUpperCase = true) => {
   // If multiple IDs are separated with commas, it will pull from each playlist
-  const playlistId = Config.playlistID().split(',');
-  Log.Info('Getting artists from playlists', playlistId);
+  const playlistId = Config.playlistID().split(",");
+  Log.Info("Getting artists from playlists", playlistId);
 
-  let artistsArr = new Array;
+  let artistsArr = new Array();
 
-  for (let i=0; i<playlistId.length; i++) {
+  for (let i = 0; i < playlistId.length; i++) {
     // Retrieve data
     Log.Debug(`Pulling from playlist ${playlistId[i]}`);
     let params = "?playlist_id=" + playlistId[i];
-    params += `&limit=50`
-    
-    let data = await getSpotifyData(`${PLAYLIST_URL}/${playlistId[i]}${params}`, true);
+    params += `&limit=50`;
 
-    if (data[0]) 
-    {
+    let data = await getSpotifyData(
+      `${PLAYLIST_URL}/${playlistId[i]}${params}`,
+      true
+    );
+
+    if (data[0]) {
       const newData = await JSON.parse(data);
       const items = newData?.tracks?.items;
 
       // For each track, loop through the listed artists for the track and push the arist names to an array
-      items.forEach(item => 
-      {
+      items.forEach((item) => {
         let artists = item?.track?.album?.artists;
-        artists.forEach(artist =>
-        { 
+        artists.forEach((artist) => {
           // if (ignoreUpperCase.includes(artist.name.toUpperCase())) Log.Debug(`getPlayListArtists Ignoring: ${artist.name}`);
-          // if (!ignoreUpperCase.includes(artist.name.toUpperCase())) artistsArr.push(artist.name);  
+          // if (!ignoreUpperCase.includes(artist.name.toUpperCase())) artistsArr.push(artist.name);
           artistsArr.push(artist.name);
         });
-      })
-    
-      Log.Debug(`getPlaylistArtists() Playlist Artists: ${artistsArr}`);
+      });
 
+      Log.Debug(`getPlaylistArtists() Playlist Artists: ${artistsArr}`);
     } else {
-      Log.Info(`getPlaylistArtists() No data received from playlist ID: ${playlistId[i]}`);
+      Log.Info(
+        `getPlaylistArtists() No data received from playlist ID: ${playlistId[i]}`
+      );
     }
   }
 
@@ -292,7 +275,7 @@ const getPlaylistArtists = async (ignoreUpperCase = true) =>
   artistsArr = CommonLib.arrayRemoveDupes(artistsArr);
   Logger.log(artistsArr);
   return artistsArr;
-}
+};
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
@@ -301,72 +284,77 @@ const getPlaylistArtists = async (ignoreUpperCase = true) =>
  * This searches "long term", "medium term", and "short term"
  * @param {bool} ignoreUpperCase
  */
-const getTopArtists = async (ignoreUpperCase) => 
-{
-  let artistsArr = new Array;
+const getTopArtists = async (ignoreUpperCase) => {
+  let artistsArr = new Array();
   // Request for LONG TERM top artists
   try {
-  artistsArr = artistsArr.concat(await getTopData("long_term", 0, ignoreUpperCase));
-  
-  // Request for LONG TERM top artists OFFSET +48
-  artistsArr = artistsArr.concat(await getTopData("long_term", 48, ignoreUpperCase));
+    artistsArr = artistsArr.concat(
+      await getTopData("long_term", 0, ignoreUpperCase)
+    );
 
-  // Re-request for MEDIUM TERM top artists
-  artistsArr = artistsArr.concat(await getTopData("medium_term", 0, ignoreUpperCase));
+    // Request for LONG TERM top artists OFFSET +48
+    artistsArr = artistsArr.concat(
+      await getTopData("long_term", 48, ignoreUpperCase)
+    );
 
-  // Re-request for SHORT TERM top artists
-  artistsArr = artistsArr.concat(await getTopData("short_term", 0, ignoreUpperCase));
-  
-  let final = new Array;
+    // Re-request for MEDIUM TERM top artists
+    artistsArr = artistsArr.concat(
+      await getTopData("medium_term", 0, ignoreUpperCase)
+    );
 
-  if (artistsArr.length == 0) throw new Error(`Returned 0 top artists somehow`);
+    // Re-request for SHORT TERM top artists
+    artistsArr = artistsArr.concat(
+      await getTopData("short_term", 0, ignoreUpperCase)
+    );
 
-  final = CommonLib.arrayRemoveDupes(artistsArr);
-  return final;
+    let final = new Array();
+
+    if (artistsArr.length == 0)
+      throw new Error(`Returned 0 top artists somehow`);
+
+    final = CommonLib.arrayRemoveDupes(artistsArr);
+    return final;
   } catch (err) {
-    Log.Error(`getTopArtists() error - ${err}`)
-    return []
+    Log.Error(`getTopArtists() error - ${err}`);
+    return [];
   }
-}
+};
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
  * Returns an array of Top Artists as gathered by Spotify
  * This searches "long term", "medium term", and "short term"
  * @param {string} term expects "long_term", "medium_term", or "short_term"
- * @param {integer} offset 
+ * @param {integer} offset
  * @param {bool} ignoreUpperCase Uppercase array of artists
  */
 const getTopData = async (term, offset, ignoreUpperCase) => {
   // Retrieve auth
   const accessToken = await retrieveAuth();
   Log.Debug(`Access token: ${JSON.stringify(accessToken)}`);
-  // params for Top Artists 
+  // params for Top Artists
   // reference: https://developer.spotify.com/documentation/web-api/reference/get-users-top-artists-and-tracks
   let params = `?time_range=${term}`;
   params += `&limit=50`;
   params += `&offset=${offset}`;
-
 
   Log.Debug(`getTopData() Getting data(${term})...`);
 
   // getSpotifyData = CommonLib.dataResponseTime(getSpotifyData)
   const resp = await getSpotifyData(TOP_ARTISTS_URL + params, true);
 
-  let artistsArr = new Array;
+  let artistsArr = new Array();
   // Fold array of responses into single structure
-  if (resp[0]) 
-  {
+  if (resp[0]) {
     data = CommonLib.collateArrays("items", resp);
-    
-    data.forEach(artist =>
-    { 
+
+    data.forEach((artist) => {
       // if (ignoreUpperCase.includes(artist.name.toUpperCase())) Log.Debug(`getTopData Ignoring: ${artist.name}`);
-      if (!ignoreUpperCase.includes(artist.name.toUpperCase())) artistsArr.push(artist.name);
+      if (!ignoreUpperCase.includes(artist.name.toUpperCase()))
+        artistsArr.push(artist.name);
     });
-  } else 
-  {
+  } else {
     Logger.log(`getTopData() - No data received (${term})`);
   }
   return artistsArr;
-}
+};

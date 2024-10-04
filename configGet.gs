@@ -10,32 +10,36 @@
 class Config {
   static initialize() {
     const scriptProps = PropertiesService.getScriptProperties();
-    this.SEARCH_TICKETMASTER = scriptProps.getProperty('searchTicketmaster').toLowerCase() === 'true';
-    this.CLIENT_ID_SPOTIFY = scriptProps.getProperty('clientIdSpotify');
-    this.CLIENT_SECRET_SPOTIFY = scriptProps.getProperty('clientSecretSpotify');
-    this.KEY_TM= SCRIPT_PROPS.getProperty(`keyTM`);
-    this.LAT_LONG= SCRIPT_PROPS.getProperty(`latlong`);
-    this.RADIUS= Number(SCRIPT_PROPS.getProperty(`radius`));
-    this.UNIT= SCRIPT_PROPS.getProperty(`unit`);
-  // these booleans get converted into strings by the Properties Service - this will turn them back into booleans
-    this.SEARCH_RA= SCRIPT_PROPS.getProperty(`searchRA`).toLowerCase() === "true";
-    this.REGION_RA= SCRIPT_PROPS.getProperty(`regionRA`);
+    this.SEARCH_TICKETMASTER =
+      scriptProps.getProperty("searchTicketmaster").toLowerCase() === "true";
+    this.CLIENT_ID_SPOTIFY = scriptProps.getProperty("clientIdSpotify");
+    this.CLIENT_SECRET_SPOTIFY = scriptProps.getProperty("clientSecretSpotify");
+    this.KEY_TM = SCRIPT_PROPS.getProperty(`keyTM`);
+    this.LAT_LONG = SCRIPT_PROPS.getProperty(`latlong`);
+    this.RADIUS = Number(SCRIPT_PROPS.getProperty(`radius`));
+    this.UNIT = SCRIPT_PROPS.getProperty(`unit`);
+    // these booleans get converted into strings by the Properties Service - this will turn them back into booleans
+    this.SEARCH_RA =
+      SCRIPT_PROPS.getProperty(`searchRA`).toLowerCase() === "true";
+    this.REGION_RA = SCRIPT_PROPS.getProperty(`regionRA`);
     this.SEARCH_SEAT_GEEK =
-        SCRIPT_PROPS.getProperty(`searchSeatGeek`).toLowerCase() === "true";
+      SCRIPT_PROPS.getProperty(`searchSeatGeek`).toLowerCase() === "true";
     this.SEAT_GEEK_CLIENT_ID = SCRIPT_PROPS.getProperty(`seatGeekClientID`);
-    this.SEAT_GEEK_CLIENT_SECRET = SCRIPT_PROPS.getProperty(`seatGeekClientSecret`);
+    this.SEAT_GEEK_CLIENT_SECRET =
+      SCRIPT_PROPS.getProperty(`seatGeekClientSecret`);
     this.GET_TOP_ARTISTS =
-        SCRIPT_PROPS.getProperty(`getTopArtists`).toLowerCase() === "true";
+      SCRIPT_PROPS.getProperty(`getTopArtists`).toLowerCase() === "true";
     this.GET_FOLLOWING =
-        SCRIPT_PROPS.getProperty(`getFollowing`).toLowerCase() === "true";
+      SCRIPT_PROPS.getProperty(`getFollowing`).toLowerCase() === "true";
     this.GET_ARTISTS_FROM_PLAYLIST =
-        SCRIPT_PROPS.getProperty(`getArtistsFromPlaylist`).toLowerCase() === "true";
+      SCRIPT_PROPS.getProperty(`getArtistsFromPlaylist`).toLowerCase() ===
+      "true";
     this.PLAYLIST_ID = SCRIPT_PROPS.getProperty(`playlistId`);
     this.SEARCH_MANUALLY_ADDED =
-        SCRIPT_PROPS.getProperty(`searchManuallyAdded`).toLowerCase() === "true";
+      SCRIPT_PROPS.getProperty(`searchManuallyAdded`).toLowerCase() === "true";
     this.EMAIL = SCRIPT_PROPS.getProperty(`email`);
     this.CREATE_CALENDAR_EVENTS =
-        SCRIPT_PROPS.getProperty(`createCalendarEvents`).toLowerCase() === "true";
+      SCRIPT_PROPS.getProperty(`createCalendarEvents`).toLowerCase() === "true";
     this.CALENDAR_ID = SCRIPT_PROPS.getProperty(`calendarId`);
     this.DEBUG = SCRIPT_PROPS.getProperty(`debug`).toLowerCase() === "true";
   }
@@ -60,7 +64,7 @@ class Config {
   static latLong() {
     return this.LAT_LONG;
   }
-  
+
   static radius() {
     return this.RADIUS;
   }
@@ -120,7 +124,7 @@ class Config {
   static createCalendarEvents() {
     return this.CREATE_CALENDAR_EVENTS;
   }
-  
+
   static debug() {
     return this.DEBUG;
   }
@@ -131,4 +135,4 @@ Config.initialize();
 const testConfig = () => {
   console.info(`Search manually added: ${Config.searchManuallyAdded()}`);
   console.info(Config.radius());
-}
+};

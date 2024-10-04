@@ -73,7 +73,6 @@ const buildEventsArr = () => {
         let eventDate = Utilities.formatDate(date, "PST", "yyyy/MM/dd HH:mm");
         rowData.date = eventDate;
         events.push(rowData);
-
       }
 
       // Sort by key, which is the date
@@ -106,17 +105,21 @@ const compareArrays = (arr1, arr2) => {
 const createSelectedCalEvents = () => {
   const eventSheet = SHEETS.EVENTS;
   const selectedRange = eventSheet.getActiveRange();
-  const selectedRows = selectedRange.getRow();  // selected row number
+  const selectedRows = selectedRange.getRow(); // selected row number
   const selectedNumRows = selectedRange.getNumRows(); // total number of rows in the selection
   const numColumns = eventSheet.getLastColumn(); // Get total number of columns
 
   // Get all values from the range covering the selected rows and all columns
-  const values = eventSheet.getRange(selectedRows, 1, selectedNumRows, numColumns).getValues();
+  const values = eventSheet
+    .getRange(selectedRows, 1, selectedNumRows, numColumns)
+    .getValues();
   const headers = eventSheet.getRange(1, 1, 1, numColumns).getValues()[0]; // Fetch all headers
-  const events = values.map(row => {
+  const events = values.map((row) => {
     let event = {};
     headers.forEach((header, index) => {
-      const key = Object.keys(HEADERNAMES).find(key => HEADERNAMES[key] === header);
+      const key = Object.keys(HEADERNAMES).find(
+        (key) => HEADERNAMES[key] === header
+      );
       if (key) {
         event[key] = row[index];
       }
@@ -124,10 +127,10 @@ const createSelectedCalEvents = () => {
     return event;
   });
 
-  const names = events.map(event => event.eName);
-  console.info(`Creating calendar event(s) for: ${names.join(', ')}`)
+  const names = events.map((event) => event.eName);
+  console.info(`Creating calendar event(s) for: ${names.join(", ")}`);
   createCalEvents(events);
-}
+};
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
@@ -227,11 +230,11 @@ const filterAddress = (address) => {
       filtered = address.replace(/(Road|Rd[.]?)/g, "Rd");
       return filtered;
     } catch (err0r) {
-      Log.Error(`filterAddress() error: ${err0r}`)
+      Log.Error(`filterAddress() error: ${err0r}`);
     }
   } else {
     Log.Debug("filterAddress() - address is null");
-    return ""
+    return "";
   }
 };
 /**
@@ -249,55 +252,74 @@ const filterDupeEvents = (newArray, existingArray) => {
   try {
     // Ensure inputs are arrays
     if (!Array.isArray(newArray) || !Array.isArray(existingArray)) {
-      throw new Error('Both newArray and existingArray must be arrays.');
+      throw new Error("Both newArray and existingArray must be arrays.");
     }
-  // this filter function tests whether a "very similar" event exists already and returns the filtered array
+    // this filter function tests whether a "very similar" event exists already and returns the filtered array
 
+    let reduced = newArray.filter(
+      (aItem) =>
+        // Check if a very similar event exists in the existingArray
+        !existingArray.find((bItem) => {
+          let aDate, bDate;
+          try {
+            aDate = Utilities.formatDate(
+              new Date(aItem["date"]),
+              "PST",
+              "yyyy/MM/dd"
+            );
+            bDate = Utilities.formatDate(
+              new Date(bItem["date"]),
+              "PST",
+              "yyyy/MM/dd"
+            );
+          } catch (error) {
+            Logger.log(`Error formatting date: ${error.message}`);
+            return false; // Skip this comparison if there's an error with date formatting
+          }
+          let dateScore = aDate === bDate;
 
-    let reduced = newArray.filter((aItem) =>
-      // Check if a very similar event exists in the existingArray
-      !existingArray.find((bItem) => {
-        let aDate, bDate;
-        try {
-          aDate = Utilities.formatDate(new Date(aItem["date"]), "PST", "yyyy/MM/dd");
-          bDate = Utilities.formatDate(new Date(bItem["date"]), "PST", "yyyy/MM/dd");
-        } catch (error) {
-          Logger.log(`Error formatting date: ${error.message}`);
-          return false; // Skip this comparison if there's an error with date formatting
-        }
-        let dateScore = aDate === bDate;
+          // Extract and compare event names
+          let aName = aItem["eName"]
+            ? aItem["eName"].toString().toUpperCase()
+            : "";
+          let bName = bItem["eName"]
+            ? bItem["eName"].toString().toUpperCase()
+            : "";
+          // let nameScore = CommonLib.stringSimilarity(aName, bName) > 0.5;
 
+          // Extract and compare acts
+          let aActs = aItem["acts"]
+            ? CommonLib.sortArrayAlpha(aItem["acts"].split(",")).join()
+            : "";
+          let bActs = bItem["acts"]
+            ? CommonLib.sortArrayAlpha(bItem["acts"].split(",")).join()
+            : "";
 
-        // Extract and compare event names
-        let aName = aItem["eName"] ? aItem["eName"].toString().toUpperCase() : "";
-        let bName = bItem["eName"] ? bItem["eName"].toString().toUpperCase() : "";
-        // let nameScore = CommonLib.stringSimilarity(aName, bName) > 0.5;
+          let actScore = CommonLib.stringSimilarity(aActs, bActs) > 0.66;
 
-        // Extract and compare acts
-        let aActs = aItem["acts"] ? CommonLib.sortArrayAlpha(aItem["acts"].split(',')).join(): "";
-        let bActs = bItem["acts"] ? CommonLib.sortArrayAlpha(bItem["acts"].split(',')).join() : "";
+          // Extract and compare venue names
+          let aVenue = aItem["venue"]
+            ? aItem["venue"].toString().trim().toUpperCase()
+            : "";
+          let bVenue = bItem["venue"]
+            ? bItem["venue"].toString().trim().toUpperCase()
+            : "";
 
-        let actScore = CommonLib.stringSimilarity(aActs, bActs) > 0.66;
+          let venueScore = CommonLib.stringSimilarity(aVenue, bVenue) > 0.5;
 
-        // Extract and compare venue names
-        let aVenue = aItem["venue"] ? aItem["venue"].toString().trim().toUpperCase() : "";
-        let bVenue = bItem["venue"] ? bItem["venue"].toString().trim().toUpperCase() : "";
+          // Extract and compare URLs
+          let aUrl = aItem["url"] ? aItem["url"].toString().toUpperCase() : "";
+          let bUrl = bItem["url"] ? bItem["url"].toString().toUpperCase() : "";
 
-        let venueScore = CommonLib.stringSimilarity(aVenue, bVenue) > 0.5;
+          let urlsEqual = aUrl === bUrl;
 
-        // Extract and compare URLs
-        let aUrl = aItem["url"] ? aItem["url"].toString().toUpperCase() : "";
-        let bUrl = bItem["url"] ? bItem["url"].toString().toUpperCase() : "";
-
-        let urlsEqual = aUrl === bUrl;
-
-        Log.Debug(
-          `new: ${aName}, ex: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actScore}, dateScore: ${dateScore}, venueScore: ${venueScore}`
-        );
-        // Urls match, act lists match, dates are match,
-        // and venue names are very similar (accounting for differences in listing the name)
-        return urlsEqual || (actScore && dateScore && venueScore);
-      })
+          Log.Debug(
+            `new: ${aName}, ex: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actScore}, dateScore: ${dateScore}, venueScore: ${venueScore}`
+          );
+          // Urls match, act lists match, dates are match,
+          // and venue names are very similar (accounting for differences in listing the name)
+          return urlsEqual || (actScore && dateScore && venueScore);
+        })
     );
     Log.Debug("filterDupeEvents() filtered out duplicates", reduced);
     return reduced;
@@ -318,7 +340,7 @@ const filterAltEvents = (newArray, existingArray) => {
     console.info("filterAltEvents() starting");
     // Ensure inputs are arrays
     if (!Array.isArray(newArray) || !Array.isArray(existingArray)) {
-      throw new Error('Both newArray and existingArray must be arrays.');
+      throw new Error("Both newArray and existingArray must be arrays.");
     }
 
     let alternates = newArray.filter((aItem) => {
@@ -329,15 +351,23 @@ const filterAltEvents = (newArray, existingArray) => {
           // console.info('bItem');
           // console.info(bItem);
           // Extract and format dates
-          let aDate = '';
-          let bDate = '';
+          let aDate = "";
+          let bDate = "";
           try {
             aDate = aItem["date"]
-              ? Utilities.formatDate(new Date(aItem["date"]), "PST", "yyyy/MM/dd")
-              : '';
+              ? Utilities.formatDate(
+                  new Date(aItem["date"]),
+                  "PST",
+                  "yyyy/MM/dd"
+                )
+              : "";
             bDate = bItem["date"]
-              ? Utilities.formatDate(new Date(bItem["date"]), "PST", "yyyy/MM/dd")
-              : '';
+              ? Utilities.formatDate(
+                  new Date(bItem["date"]),
+                  "PST",
+                  "yyyy/MM/dd"
+                )
+              : "";
           } catch (error) {
             Logger.log(`Error formatting date: ${error.message}`);
             return false; // Skip comparison if date formatting fails
@@ -347,45 +377,70 @@ const filterAltEvents = (newArray, existingArray) => {
           let aName = aItem["eName"] ? aItem["eName"].toString().trim() : "";
           let bName = bItem["eName"] ? bItem["eName"].toString().trim() : "";
           // Compare acts
-          let aActs = aItem["acts"] ? CommonLib.sortArrayAlpha(aItem["acts"].toString().split(",")).join() : "";
-          let bActs = bItem["acts"] ? CommonLib.sortArrayAlpha(bItem["acts"].toString().split(',')).join() : "";
+          let aActs = aItem["acts"]
+            ? CommonLib.sortArrayAlpha(
+                aItem["acts"].toString().split(",")
+              ).join()
+            : "";
+          let bActs = bItem["acts"]
+            ? CommonLib.sortArrayAlpha(
+                bItem["acts"].toString().split(",")
+              ).join()
+            : "";
           // console.info(`aActs: ${aActs}`);
           // console.info(`bActs: ${bActs}`);
           let actsScore = CommonLib.stringSimilarity(aActs, bActs) > 0.6;
 
           // Compare addresses
-          let aAddress = aItem["address"] ? aItem["address"].toString().trim().toUpperCase() : '';
-          let bAddress = bItem["address"] ? bItem["address"].toString().trim().toUpperCase() : '';
+          let aAddress = aItem["address"]
+            ? aItem["address"].toString().trim().toUpperCase()
+            : "";
+          let bAddress = bItem["address"]
+            ? bItem["address"].toString().trim().toUpperCase()
+            : "";
           let aAddressFiltered = filterAddress(aAddress.split(/[s,s;]+/)[0]);
           let bAddressFiltered = filterAddress(bAddress.split(/[s,s;]+/)[0]);
           // console.info(`aAddress: ${aAddress}`);
           // console.info(`bAddress: ${bAddress}`);
-          let addressScore = CommonLib.stringSimilarity(aAddressFiltered, bAddressFiltered) > 0.5;
+          let addressScore =
+            CommonLib.stringSimilarity(aAddressFiltered, bAddressFiltered) >
+            0.5;
 
           // Compare venue names
-          let aVenue = aItem["venue"] ? aItem["venue"].toString().trim().toUpperCase() : '';
-          let bVenue = bItem["venue"] ? bItem["venue"].toString().trim().toUpperCase() : '';
+          let aVenue = aItem["venue"]
+            ? aItem["venue"].toString().trim().toUpperCase()
+            : "";
+          let bVenue = bItem["venue"]
+            ? bItem["venue"].toString().trim().toUpperCase()
+            : "";
           // console.info(`aVenue: ${aVenue}`);
           // console.info(`bVenue: ${bVenue}`);
           let venueScore = CommonLib.stringSimilarity(aVenue, bVenue) > 0.5;
 
           // Compare URLs
-          let aUrl = aItem["url"] ? aItem["url"].toString().trim().toUpperCase() : '';
-          let bUrl = bItem["url"] ? bItem["url"].toString().trim().toUpperCase() : '';
+          let aUrl = aItem["url"]
+            ? aItem["url"].toString().trim().toUpperCase()
+            : "";
+          let bUrl = bItem["url"]
+            ? bItem["url"].toString().trim().toUpperCase()
+            : "";
           // console.info(`aUrl: ${aUrl}`);
           // console.info(`bUrl: ${bUrl}`);
           let urlsEqual = aUrl === bUrl;
-          // Logger.log(`Comparing events - URLs Equal: ${urlsEqual}, 
-          // Act Score: ${actsScore}, Date Score: ${datesEqual}, 
+          // Logger.log(`Comparing events - URLs Equal: ${urlsEqual},
+          // Act Score: ${actsScore}, Date Score: ${datesEqual},
           // Address Score: ${addressScore}, Venue Score: ${venueScore}`);
           Log.Debug(
             `existing: ${aName}, new: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actsScore}, dateScore: ${datesEqual}, addressScore: ${addressScore}, venueScore: ${venueScore}`
           );
 
           return (
-            !urlsEqual && actsScore && datesEqual && (addressScore || venueScore)
+            !urlsEqual &&
+            actsScore &&
+            datesEqual &&
+            (addressScore || venueScore)
           );
-        })
+        });
       } catch (error) {
         Logger.log(`Error comparing events: ${error.message}`);
         return false; // Skip this item in case of any comparison errors

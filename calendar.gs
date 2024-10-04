@@ -7,25 +7,25 @@
  */
 const createCalEvents = (events) => {
   try {
-  if (!Array.isArray(events) || events.length === 0) {
-    throw new Error ("Array 'events' is empty");
-  }
-  let calendarId = Config.calendarID();
-  let eventCal = CalendarApp.getCalendarById(calendarId);
-  for (const [index, [key]] of Object.entries(Object.entries(events))) {
-    let date = new Date(events[key].date);
-    let endTime = new Date(addHours(events[key].date, 3));
-    eventCal.createEvent(
-      `${events[key].eName} at ${events[key].venue}`,
-      date,
-      endTime,
-      {
-        location: events[key].address,
-        description: `For tickets: ${events[key].url}`,
-      }
-    );
-    Logger.log(`Created calendar event for ${events[key].eName}`);
-  }
+    if (!Array.isArray(events) || events.length === 0) {
+      throw new Error("Array 'events' is empty");
+    }
+    let calendarId = Config.calendarID();
+    let eventCal = CalendarApp.getCalendarById(calendarId);
+    for (const [index, [key]] of Object.entries(Object.entries(events))) {
+      let date = new Date(events[key].date);
+      let endTime = new Date(addHours(events[key].date, 3));
+      eventCal.createEvent(
+        `${events[key].eName} at ${events[key].venue}`,
+        date,
+        endTime,
+        {
+          location: events[key].address,
+          description: `For tickets: ${events[key].url}`,
+        }
+      );
+      Logger.log(`Created calendar event for ${events[key].eName}`);
+    }
   } catch (error) {
     console.warn(`createCalEvents() - error: ${error}`);
   }

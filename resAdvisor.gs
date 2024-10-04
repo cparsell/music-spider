@@ -136,11 +136,19 @@ const searchRA = (artistList) => {
         const shouldAddEvent = acts.some((act) => artistList.includes(act));
         if (shouldAddEvent) {
           const title = listing.title ? listing.title : "";
-          console.warn(`Match for: ${acts.filter(element => artistList.includes(element))}, Event name: ${title}`);
+          console.warn(
+            `Match for: ${acts.filter((element) =>
+              artistList.includes(element)
+            )}, Event name: ${title}`
+          );
           const venue = listing.venue.name ? listing.venue.name : "";
           // let images = listing?.images;
-          const imageUrl = listing.images[0]?.filename ? listing.images[0].filename : "";
-          const contentUrl = listing.contentUrl ? `https://ra.co${listing.contentUrl}` : "";
+          const imageUrl = listing.images[0]?.filename
+            ? listing.images[0].filename
+            : "";
+          const contentUrl = listing.contentUrl
+            ? `https://ra.co${listing.contentUrl}`
+            : "";
           const address = listing.venue.address ? listing.venue.address : "";
 
           let event = {

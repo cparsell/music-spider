@@ -111,9 +111,8 @@ const BarMenu = () => {
     .addItem(`Refresh Artists from Spotify`, `refreshArtists`)
     .addItem(`Refresh Events`, `refreshEvents`)
     .addItem(`Send Email Newsletter`, `sendEmail`)
-    .addItem(`Create Calendar Event for Selected`, 'createSelectedCalEvents')
+    .addItem(`Create Calendar Event for Selected`, "createSelectedCalEvents")
     .addSeparator()
     .addItem(`Clear Blank Rows`, `deleteEmptyRows`)
     .addToUi();
 };
-
