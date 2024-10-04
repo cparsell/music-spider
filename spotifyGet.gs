@@ -13,7 +13,7 @@ const refreshArtists = async () =>
   let playlistArtists = [];
   let followedArtists = [];
   let ignoreUpperCase = ARTISTS_TO_IGNORE.map((x) => { return x.toUpperCase(); })
-  if (Config.GET_TOP_ARTISTS) 
+  if (Config.getTopArtists()) 
   {
     try 
     {
@@ -26,7 +26,7 @@ const refreshArtists = async () =>
       Log.Error(`${err} : getTopArtists failed`);
     }
   }
-  if (Config.GET_ARTISTS_FROM_PLAYLIST) 
+  if (Config.getArtistsFromPlaylist()) 
   {
     try 
     {
@@ -39,7 +39,7 @@ const refreshArtists = async () =>
       Log.Error(`getPlaylistArtists() error - ${err}`);
     }
   }
-  if (Config.GET_FOLLOWING) 
+  if (Config.getFollowing()) 
   { 
     try 
     {
@@ -243,15 +243,15 @@ const getFollowedArtists = async (ignoreUpperCase) =>
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
- * getPlaylsitArtists
+ * getPlaylistArtists
  * Returns an array of artists from a Playlist
- * Playlist ID is supplied in Config.gs
+ * Playlist ID is supplied in Configuration
  * @param {bool} ignoreUpperCase
  */
 const getPlaylistArtists = async (ignoreUpperCase = true) => 
 {
   // If multiple IDs are separated with commas, it will pull from each playlist
-  const playlistId = Config.PLAYLIST_ID.split(',');
+  const playlistId = Config.playlistID().split(',');
   Log.Info('Getting artists from playlists', playlistId);
 
   let artistsArr = new Array;

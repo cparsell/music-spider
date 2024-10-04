@@ -6,7 +6,11 @@
  * @returns {void}
  */
 const createCalEvents = (events) => {
-  let calendarId = Config.CALENDAR_ID;
+  try {
+  if (!Array.isArray(events) || events.length === 0) {
+    throw new Error ("Array 'events' is empty");
+  }
+  let calendarId = Config.calendarID();
   let eventCal = CalendarApp.getCalendarById(calendarId);
   for (const [index, [key]] of Object.entries(Object.entries(events))) {
     let date = new Date(events[key].date);
@@ -21,6 +25,9 @@ const createCalEvents = (events) => {
       }
     );
     Logger.log(`Created calendar event for ${events[key].eName}`);
+  }
+  } catch (error) {
+    console.warn(`createCalEvents() - error: ${error}`);
   }
 };
 

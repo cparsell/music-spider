@@ -7,7 +7,7 @@
  */
 const searchTMLoop = async (artistsArr, existingEvents) => {
 //search each artist in TM
-  let eventsArr = new Array;
+  let eventsArr = [];
   try {
     for (let i=0;i<artistsArr.length;i++) {
       await ticketSearch(artistsArr[i], artistsArr).then((data) => 
@@ -15,15 +15,23 @@ const searchTMLoop = async (artistsArr, existingEvents) => {
       Utilities.sleep(180);
     }
     // get rid of any results that are already on the Events Sheet
-    const newEvents = filterDupeEvents(eventsArr,existingEvents);
-    const altEvents = filterAltEvents(eventsArr,existingEvents);
+    const newEvents = filterDupeEvents(eventsArr, existingEvents);
+    const altEvents = filterAltEvents(eventsArr, existingEvents);
     Log.Debug("searchTMLoop() - filtered Events", newEvents);
 
     // Ticketmaster provides a bunch of different images of different sizes
     // This function will run through the newfound events and select the highest res image
-    const imageFilteredNewEvents = filterTMimages(newEvents);
-    const imageFilteredAltEvents = filterTMimages(altEvents);
-    return {newEvents: imageFilteredNewEvents, altEvents: imageFilteredAltEvents};
+    for (let i = 0; i < newEvents.length; i++) {
+      const largestImage = findLargestImage(newEvents[i].image);
+      console.info('searchTMLoops() largestImage:', largestImage)
+      newEvents[i].image = largestImage;
+    }
+    for (let i = 0; i < altEvents.length; i++) {
+      const largestImage = findLargestImage(altEvents[i].image);
+      console.info('searchTMLoops() largestImage:', largestImage)
+      altEvents[i].image = largestImage;
+    }
+    return {newEvents: newEvents, altEvents: altEvents};
   } catch (e) 
   { 
     Log.Error(`SearchTMLoop() error - ${e}`);
@@ -31,6 +39,39 @@ const searchTMLoop = async (artistsArr, existingEvents) => {
   }
   
 }
+
+const findLargestImage = (imagesObj) => {
+  console.info(imagesObj);
+  if (imagesObj.length < 1) {
+    console.error(
+      `findLargestImage(imageUrls: ${imageUrls}) - imageUrls is empty`
+    )
+    return ''
+  }
+  let largestSize = 0
+  let largestImageUrl = null
+
+  for (const image of imagesObj) {
+    try {
+      const url = image.url
+      const response = UrlFetchApp.fetch(url, { method: 'HEAD' }) // Use HEAD request to get headers only
+      
+      const contentLength = response.getAllHeaders().get('Content-Length')
+      console.info(`Content length: ${contentLength}`);
+
+      if (contentLength && parseInt(contentLength, 10) > largestSize) {
+        largestSize = parseInt(contentLength, 10)
+        // console.debug(`findLargestImage() found largest url: ${url}`)
+        largestImageUrl = url
+      }
+    } catch (error) {
+      console.error(`findLargestImage() Error fetching ${url}: ${error}`)
+    }
+  }
+
+  return largestImageUrl
+}
+
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
@@ -40,7 +81,11 @@ const searchTMLoop = async (artistsArr, existingEvents) => {
  * @returns {object} eventsArr returns the events array with the image limited to the largest one
  */
 const filterTMimages = (eventsArr) => {
-  if (eventsArr.length == 0) return [];
+  if (!Array.isArray(eventsArr) || eventsArr.length == 0) {
+    console.warn("Array eventsArr is empty or not an array");
+    return []
+  };
+  try {
   // loop through all the new events
   for (let i=0; i<eventsArr.length;i++) {
     let item = eventsArr[i];
@@ -48,7 +93,7 @@ const filterTMimages = (eventsArr) => {
 
 
     // Loop through image URLs in JSON response. Find the one with the largest filesize
-    for (let i=0;i<item.image.length;i++)
+    for (let i=0; i < item.image.length; i++)
     {
       // let img = new Images();
       let img = UrlFetchApp.fetch(item.image[i].url).getBlob();
@@ -65,6 +110,9 @@ const filterTMimages = (eventsArr) => {
     eventsArr[i].image = result;
   }
   return eventsArr;
+  } catch (error) {
+    console.error(`filterTMimages() ${error}`);
+  }
 }
 
 
@@ -88,7 +136,7 @@ const ticketSearch = async (keyword, artistsArr) =>
     return;
   }
   // let artist = ARTIST_SHEET.getRange(2,1);
-  let eventsArr = new Array;
+  let eventsArr = [];
 
   try {
     // returns JSON response
@@ -96,27 +144,24 @@ const ticketSearch = async (keyword, artistsArr) =>
       .then(async(data) => {
         Log.Debug(`ticketSearch() - ${data.length} results parsed`);
         // Log.Debug(`ticketSearch() - data received`, data)
-        if (data.length == 0) 
-        {
+        if (data.length == 0) {
           Log.Debug(`ticketSearch() - No results for`, keyword);
           return false;
         }
 
-        data.forEach((item) =>
-        {
-          let attractions = new Array();
-
+        data.forEach((item) => {
+          let attractions = [];
           item?._embedded?.attractions?.forEach((attraction) => 
           {
             attractions.push(attraction.name);
           });
 
-          let isNameInList = attractions.some((attraction) => {
-              return artistsArr.includes(attraction)
-            }
-          );
-          if (isNameInList) {
-            Logger.log(`Found event: ${item.name}`);
+          let shouldAddEvent = attractions.some((attraction) => {
+            return artistsArr.includes(attraction)
+          });
+
+          if (shouldAddEvent) {
+            console.info(`Match for: ${attractions.filter(element => artistsArr.includes(element))},   Event name: ${item.name}`);
             let url = item.url ? item.url : "";
             let image = item.images ? item.images : "";
             let venueName, venueAddress, venueCity, venueState, date, dateFormatted;
@@ -193,19 +238,19 @@ const fetchFromTicketmaster = async (keyword) =>
   
   Log.Debug(`Searching Ticketmaster for ${keyword}`);
   try {
-    let response = await UrlFetchApp.fetch(TICKETMASTER_URL+params, options);
-    let responseCode = response.getResponseCode();
+    const response = await UrlFetchApp.fetch(TICKETMASTER_URL+params, options);
+    const responseCode = response.getResponseCode();
     if (responseCode == 200 || responseCode == 201) 
     {
-      let content = await response.getContentText();
+      const content = await response.getContentText();
       // Log.Info(content);
-      let data = JSON.parse(content);
+      const data = JSON.parse(content);
       // Log.Info("tmSearch() - response", data);  // uncomment this to write raw JSON response to 'Logger' sheet
       
 
-      let totalResults = data?.page?.totalElements;
-      let totalPages = data?.page?.totalPages;
-      let resultPageSize = data?.page?.size;
+      const totalResults = data?.page?.totalElements;
+      const totalPages = data?.page?.totalPages;
+      const resultPageSize = data?.page?.size;
       Log.Debug(`tmSearch () - results: ${totalResults}, according to response`);
       Log.Debug(`tmSearch () - pages: ${totalPages}, according to response`);
       Log.Debug(`tmSearch () - page size: ${resultPageSize}, according to response`);
@@ -216,7 +261,7 @@ const fetchFromTicketmaster = async (keyword) =>
         return [];
       }
       // const newData =  await data?.events;
-      let resultsParsed = data?._embedded?.events;
+      const resultsParsed = data?._embedded?.events;
 
       results.push(...resultsParsed);
       // const pages = Math.ceil(totalResults / pageSize);
@@ -231,7 +276,7 @@ const fetchFromTicketmaster = async (keyword) =>
         page = pg;
         params = returnTMParams(keyword, page, pageSize);
         nextPage = await UrlFetchApp.fetch(TICKETMASTER_URL+params, options).getContentText();
-        let nextPageParsed = await JSON.parse(nextPage)._embedded?.events;
+        const nextPageParsed = await JSON.parse(nextPage)._embedded?.events;
         results.push(...nextPageParsed);
 
       }
@@ -257,12 +302,12 @@ const fetchFromTicketmaster = async (keyword) =>
  * @returns {string} params encoded parameters for Ticketmaster API query
  */
 const returnTMParams = (keyword, page, pageSize) => {
-  let params = `?apikey=${Config.KEY_TM}`;
+  let params = `?apikey=${Config.keyTM()}`;
   // params += `&postalCode=`;  
   // params += `&city=Los+Angeles`;   // seems to negate the radius settings - latlong setting seems to work better
-  params += `&latlong=${Config.LAT_LONG}` 
-  params += `&radius=${Config.RADIUS}`; // radius only seems to work with latlong
-  params += `&unit=${Config.UNIT}`;
+  params += `&latlong=${Config.latLong()}` 
+  params += `&radius=${Config.radius()}`; // radius only seems to work with latlong
+  params += `&unit=${Config.unit()}`;
   params += `&page=${page}`;
   params += `&size=${pageSize}`;
   params += `&keyword=${encodeURIComponent(keyword)}`;

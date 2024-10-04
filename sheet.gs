@@ -33,7 +33,7 @@ const artistsList = () => {
     results.push(artistsArr[i][0]);
   }
   // if searchManuallyAdded = TRUE, include artists in 'Artists (Custom)' sheet in the search
-  if (Config.SEARCH_MANUALLY_ADDED) {
+  if (Config.searchManuallyAdded()) {
     let customArtistRows = CUSTOM_ARTIST_SHEET.getLastRow() - 1;
     let manualArtistsArr = CUSTOM_ARTIST_SHEET.getRange(
       2,
@@ -292,7 +292,7 @@ const filterDupeEvents = (newArray, existingArray) => {
         let urlsEqual = aUrl === bUrl;
 
         Log.Debug(
-          `new: ${aName}, ex: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actScore}, dateScore: ${dateScore}, addressScore: ${addressScore}, venueScore: ${venueScore}`
+          `new: ${aName}, ex: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actScore}, dateScore: ${dateScore}, venueScore: ${venueScore}`
         );
         // Urls match, act lists match, dates are match,
         // and venue names are very similar (accounting for differences in listing the name)

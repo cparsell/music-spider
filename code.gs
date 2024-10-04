@@ -13,7 +13,7 @@
  * - Create a new copy of the template Google Spreadsheet (https://docs.google.com/spreadsheets/d/1H4pvSK4jpRikHO11PtpJGSdycpVmM566XLQzRot4E_g/)
  * - This will copy the Apps Script code with it
  * - From the new sheet, go Extensions > Apps Script
- * - Replace values in Config.example.gs to match your API keys and save.
+ * - Replace values in _config.example.gs to match your API keys and save.
  * - While still in Apps Script, click Deploy > New Deployment > Web app > copy the link.
  * - Go to this link in your browser. This page will give you further instructions to:
  *   1. Navigate to your app via the Spotify App Dashboard (https://developer.spotify.com/dashboard/applications)
@@ -51,10 +51,10 @@ const refreshEvents = async () => {
   // get list of known events from Events Sheet
   let existingEvents = buildEventsArr();
 
-  // If 'searchSeatGeek' is set to TRUE in config.gs then search SeatGeek
+  // If 'searchSeatGeek' is set to TRUE in the Config then search SeatGeek
   // I prefer searching SeatGeek first since it can get all results in one go
   // and they sell tickets that came from other vendors like Ticketmaster, etc.
-  if (Config.SEARCH_SEAT_GEEK) {
+  if (Config.searchSeatGeek()) {
     Log.Info("Searching SeatGeek...");
     const sgEvents = await seatGeekTrigger(artistsArr);
     Log.Info("New SeatGeek events", sgEvents.newEvents);
@@ -63,11 +63,11 @@ const refreshEvents = async () => {
     writeEventsToSheet(sgEvents.newEvents);
     writeAltEventsToSheet(sgEvents.altEvents);
     // Write Calendar Event for new events if configured to
-    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(sgEvents.newEvents);
+    if (Config.createCalendarEvents()) createCalEvents(sgEvents.newEvents);
   }
 
-  // If 'searchRA' is set to TRUE in config.gs then search Resident Advisor
-  if (Config.SEARCH_RA) {
+  // If 'searchRA' is set to TRUE in Config.gs then search Resident Advisor
+  if (Config.searchRA()) {
     Log.Debug("Searching Resident Advisor...");
     const raEvents = searchRAMain(artistsArr);
     Log.Info("New Resident Advisor events", raEvents.newEvents);
@@ -76,16 +76,16 @@ const refreshEvents = async () => {
     writeEventsToSheet(raEvents.newEvents);
     writeAltEventsToSheet(raEvents.altEvents);
     // Write Calendar Event for new events if configured to
-    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(raEvents.newEvents);
+    if (Config.createCalendarEvents()) createCalEvents(raEvents.newEvents);
   }
 
-  // If 'searchTicketmaster' is set to TRUE in config.gs then search Ticketmaster
+  // If 'searchTicketmaster' is set to TRUE in Config.gs then search Ticketmaster
   // Start Ticketmaster search loop
   // Ticketmaster API stops you if we try to get too many pages of data
   // So we can't just get all the events in an area and filter out the artists one likes (less requests)
   // Instead this sends a request for each artist - not very efficient but seems to be
   // the way it has to be done
-  if (Config.SEARCH_TICKETMASTER) {
+  if (Config.searchTicketmaster()) {
     Log.Info("Searching Ticketmaster...");
     const tmEvents = await searchTMLoop(artistsArr, existingEvents);
     Log.Info("New TM events", tmEvents.newEvents);
@@ -94,7 +94,7 @@ const refreshEvents = async () => {
     writeEventsToSheet(tmEvents.newEvents);
     writeAltEventsToSheet(tmEvents.altEvents);
     // Write Calendar Event for new events if configured to
-    if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(tmEvents.newEvents);
+    if (Config.createCalendarEvents()) createCalEvents(tmEvents.newEvents);
   }
 };
 

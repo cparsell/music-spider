@@ -19,14 +19,14 @@ const getSeatGeekData = async () => {
   let results = new Array();
   let page = 1;
   try {
-    if (!Config.SEAT_GEEK_CLIENT_ID)
+    if (!Config.seatGeekClientID())
       throw new Error("No Seat Geek Client ID found in Config.gs file");
-    if (!Config.SEAT_GEEK_CLIENT_SECRET)
+    if (!Config.seatGeekClientSecret())
       throw new Error("No Seat Geek Client Secret found in Config.gs file");
-    if (!Config.LAT_LONG)
+    if (!Config.latLong())
       throw new Error("No Latitude/Longitude found in Config.gs file");
-    const AUTH_STRING = `client_id=${Config.SEAT_GEEK_CLIENT_ID}&client_secret=${Config.SEAT_GEEK_CLIENT_SECRET}&`;
-    // const AUTH_STRINGNO = `client_id=${Config.SEAT_GEEK_CLIENT_ID}&client_secret=${Config.SEAT_GEEK_CLIENT_SECRET}`;
+    const AUTH_STRING = `client_id=${Config.seatGeekClientID()}&client_secret=${Config.seatGeekClientSecret()}&`;
+    // const AUTH_STRINGNO = `client_id=${Config.seatGeekClientID()}&client_secret=${Config.seatGeekClientSecret()}`;
     // const body = {
     //   // 'postal_code': zipCode,
     //   // 'performers.slug': 'new-york-mets'
@@ -46,14 +46,14 @@ const getSeatGeekData = async () => {
       muteHttpExceptions: true,
     };
     let unit = "mi";
-    if (Config.UNIT == "kilometers") unit = "km";
+    if (Config.unit() == "kilometers") unit = "km";
     // latitude and longitude as saved
 
-    const latlong = Config.LAT_LONG.split(",");
+    const latlong = Config.latLong().split(",");
     const lat = latlong[0]; // lat=${encodeURIComponent(lat)}&long=${encodeURIComponent(long)}
-    const long = latlong[1]; //geoip=${Config.MY_IP_ADDRESS}
+    const long = latlong[1]; 
     // let url = `${SEAT_GEEK_EVENTS}?${AUTH_STRING}&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(long)}&range=${Config.RADIUS}${unit}&q=${keyword}&per_page=${pageSize}&page=${page}`;
-    let url = `${SEAT_GEEK_EVENTS}?${AUTH_STRING}&lat=${lat}&lon=${long}&range=${Config.RADIUS}${unit}&per_page=${pageSize}&page=${page}`;
+    let url = `${SEAT_GEEK_EVENTS}?${AUTH_STRING}&lat=${lat}&lon=${long}&range=${Config.radius()}${unit}&per_page=${pageSize}&page=${page}`;
 
     const response = await UrlFetchApp.fetch(url, options);
     const firstPage = await response.getContentText();
@@ -88,7 +88,7 @@ const getSeatGeekData = async () => {
         // url = `${SEAT_GEEK_EVENTS}?${AUTH_STRING}geoip=${Config.MY_IP_ADDRESS}&range=${Config.RADIUS}${unit}&q=${keyword}&per_page=${pageSize}&page=${page}`;
 
         // url = `${SEAT_GEEK_EVENTS}?${AUTH_STRING}geoip=${Config.MY_IP_ADDRESS}&range=${Config.RADIUS}${unit}&per_page=${pageSize}&page=${page}`;
-        url = `${SEAT_GEEK_EVENTS}?${AUTH_STRING}&lat=${lat}&lon=${long}&range=${Config.RADIUS}${unit}&per_page=${pageSize}&page=${page}`;
+        url = `${SEAT_GEEK_EVENTS}?${AUTH_STRING}&lat=${lat}&lon=${long}&range=${Config.radius()}${unit}&per_page=${pageSize}&page=${page}`;
 
         nextPage = await UrlFetchApp.fetch(url, options).getContentText();
         let nextPageParsed = await JSON.parse(nextPage).events;
@@ -250,7 +250,7 @@ const searchSeatGeekLoop = async (artistsArr, existingEvents) => {
  */
 const seatGeekTrigger = async (artistsArr) => {
   let trigger = new Array();
-  if (Config.SEARCH_SEAT_GEEK) {
+  if (Config.searchSeetGeek()) {
     if (!artistsArr) {
       artistsArr = artistsList();
       trigger.push(true);
@@ -270,7 +270,7 @@ const seatGeekTrigger = async (artistsArr) => {
       writeEventsToSheet(results);
 
       // Write Calendar Event for new events
-      if (Config.CREATE_CALENDAR_EVENTS) createCalEvents(results);
+      if (Config.createCalendarEvents()) createCalEvents(results);
     }
 
     return { newEvents: newEvents, altEvents: altEvents };

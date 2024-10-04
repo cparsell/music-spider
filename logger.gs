@@ -73,7 +73,7 @@ class Log {
    * @param {object} obj optional object to be logged as a string
    */
   static Debug(message, obj = null) {
-    if (Config.DEBUG) {
+    if (Config.debug()) {
       try {
         if (obj) message = `${message}: ${JSON.stringify(obj)}`;
         let date = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;

@@ -30,7 +30,7 @@ const sendEmail = () => {
     let message = new CreateMessage({ events: eventsArr });
     new Emailer({
       message: message,
-      email: Config.EMAIL,
+      email: Config.email(),
       subject: msgSubj,
     });
   } catch (err) {

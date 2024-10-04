@@ -116,18 +116,18 @@ const searchRA = (artistList) => {
   let results = new Array();
   try {
     // Fetch all Resident Advisor events in the next 8 months in your region
-    let listings = getRAData(Math.floor(Config.REGION_RA));
+    let listings = getRAData(Math.floor(Config.regionRA()));
     Logger.log("searchRA() - TOTAL events parsed: " + listings.length);
     // Run through each result to see if they match any artists in the Artist Sheet
     for (let i = 0; i < listings.length; i++) {
       let listing = listings[i]?.event;
-      // Log.Debug(listing);
+      // Log.Debug("RA Listing", listing);
 
       if (listing) {
-        let acts = new Array();
+        let acts = [];
         // if there are artists listed, create an array with their names
         // (most of RA events don't seem to have artists listed here though)
-        let artists = listing?.artists;
+        let artists = listing.artists ? listing.artists : [];
         if (artists.length > 0) {
           for (let index = 0; index < artists.length; index++) {
             acts.push(artists[index].name);
@@ -135,10 +135,14 @@ const searchRA = (artistList) => {
         }
         const shouldAddEvent = acts.some((act) => artistList.includes(act));
         if (shouldAddEvent) {
-          let title = listing?.title;
-          let venue = listing?.venue?.name;
-          let images = listing?.images;
-          let imageUrl = listing?.images[0]?.filename;
+          const title = listing.title ? listing.title : "";
+          console.warn(`Match for: ${acts.filter(element => artistList.includes(element))}, Event name: ${title}`);
+          const venue = listing.venue.name ? listing.venue.name : "";
+          // let images = listing?.images;
+          const imageUrl = listing.images[0]?.filename ? listing.images[0].filename : "";
+          const contentUrl = listing.contentUrl ? `https://ra.co${listing.contentUrl}` : "";
+          const address = listing.venue.address ? listing.venue.address : "";
+
           let event = {
             date: Utilities.formatDate(
               new Date(listing.startTime),
@@ -148,25 +152,13 @@ const searchRA = (artistList) => {
             eName: title,
             city: "",
             venue: venue,
-            url: "https://ra.co" + listing.contentUrl,
+            url: contentUrl,
             image: imageUrl,
             acts: acts.toString(),
-            address: listing.venue.address,
+            address: address,
           };
 
           results.push(event);
-          // For each artist in the Artist Sheet, check the result for
-          // for (let j = 0; j < artistList.length; j++) {
-          //   // check artist against list of acts in this result
-          //   acts.forEach(function (res) {
-          //     if (res.toUpperCase() === artistList[j].toString().toUpperCase()) {
-          //       Log.Info(
-          //         `searchRA() - Found a match for artist: ${artistList[j]} in list of acts - title: ${title}`
-          //       );
-          //       results.push(event);
-          //     }
-          //   });
-          // }
         }
       }
     }
@@ -188,7 +180,7 @@ const searchRA = (artistList) => {
 const searchRAMain = (artistsArr) => {
   let newEvents = {};
 
-  if (Config.SEARCH_RA) {
+  if (Config.searchRA()) {
     try {
       // Get list of artists from Artists Sheet
       if (!artistsArr) artistsArr = artistsList();
