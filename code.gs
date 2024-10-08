@@ -63,7 +63,7 @@ const refreshEvents = async () => {
     writeEventsToSheet(sgEvents.newEvents);
     writeAltEventsToSheet(sgEvents.altEvents);
     // Write Calendar Event for new events if configured to
-    if (Config.createCalendarEvents()) createCalEvents(sgEvents.newEvents);
+    if (Config.createCalendarEvents() && sgEvents.newEvents.length > 0) createCalEvents(sgEvents.newEvents);
   }
 
   // If 'searchRA' is set to TRUE in Config.gs then search Resident Advisor
@@ -76,7 +76,7 @@ const refreshEvents = async () => {
     writeEventsToSheet(raEvents.newEvents);
     writeAltEventsToSheet(raEvents.altEvents);
     // Write Calendar Event for new events if configured to
-    if (Config.createCalendarEvents()) createCalEvents(raEvents.newEvents);
+    if (Config.createCalendarEvents() && raEvents.newEvents.length > 0) createCalEvents(raEvents.newEvents);
   }
 
   // If 'searchTicketmaster' is set to TRUE in Config.gs then search Ticketmaster
@@ -94,7 +94,7 @@ const refreshEvents = async () => {
     writeEventsToSheet(tmEvents.newEvents);
     writeAltEventsToSheet(tmEvents.altEvents);
     // Write Calendar Event for new events if configured to
-    if (Config.createCalendarEvents()) createCalEvents(tmEvents.newEvents);
+    if (Config.createCalendarEvents() && tmEvents.newEvents.length > 0) createCalEvents(tmEvents.newEvents);
   }
 };
 

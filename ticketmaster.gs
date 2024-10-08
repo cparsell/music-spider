@@ -17,7 +17,7 @@ const searchTMLoop = async (artistsArr, existingEvents) => {
     // get rid of any results that are already on the Events Sheet
     const newEvents = filterDupeEvents(eventsArr, existingEvents);
     const altEvents = filterAltEvents(eventsArr, existingEvents);
-    Log.Debug("searchTMLoop() - filtered Events", newEvents);
+    Log.Info("searchTMLoop() - filtered Events", newEvents);
 
     // Ticketmaster provides a bunch of different images of different sizes
     // This function will run through the newfound events and select the highest res image
@@ -38,8 +38,45 @@ const searchTMLoop = async (artistsArr, existingEvents) => {
   }
 };
 
-const findLargestImage = (imagesObj) => {
-  console.info(imagesObj);
+/**
+ * Finds the URL of the largest image from a JSON response object.
+ * @param {Array} images - Array of objects, each with "width", "height", and "url".
+ * @returns {string} The URL of the largest image.
+ */
+function findLargestImage(images) {
+  if (!images || images.length === 0) {
+    return null;
+  }
+
+  // Initialize variables to store the largest image details.
+  let largestImage = images[0];
+  let maxArea = largestImage.width * largestImage.height;
+
+  // Iterate over the array of images to find the one with the largest area.
+  for (let i = 1; i < images.length; i++) {
+    const currentImage = images[i];
+    const currentArea = currentImage.width * currentImage.height;
+
+    // Update the largest image if the current one has a larger area.
+    if (currentArea > maxArea) {
+      largestImage = currentImage;
+      maxArea = currentArea;
+    }
+  }
+
+  // Return the URL of the largest image.
+  return largestImage.url;
+}
+
+/**
+ * Compares the size of each image in an array of image URLs.
+ * Returns just the headers to get the value in Content-Length for the image
+ * @param {Array} images - Array of objects, each with "url".
+ * @returns {string} The URL of the largest image.
+ */
+const findLargestImageBySize = (imagesObj) => {
+  console.info("findLargestImage() starting")
+  console.info(imagesObj)
   if (imagesObj.length < 1) {
     console.error(
       `findLargestImage(imageUrls: ${imageUrls}) - imageUrls is empty`
@@ -49,24 +86,26 @@ const findLargestImage = (imagesObj) => {
   let largestSize = 0;
   let largestImageUrl = null;
 
-  for (const image of imagesObj) {
+  for (let image of imagesObj) {
     try {
-      const url = image.url;
-      const response = UrlFetchApp.fetch(url, { method: "HEAD" }); // Use HEAD request to get headers only
+      const url = image.url ? image.url : "";
+      if (url != "") {
+        const response = UrlFetchApp.fetch(url, { method: "HEAD" }); // Use HEAD request to get headers only
 
-      const contentLength = response.getAllHeaders().get("Content-Length");
-      console.info(`Content length: ${contentLength}`);
+        const contentLength = response.getAllHeaders().get("Content-Length");
+        console.info(`Content length: ${contentLength}`);
 
-      if (contentLength && parseInt(contentLength, 10) > largestSize) {
-        largestSize = parseInt(contentLength, 10);
-        // console.debug(`findLargestImage() found largest url: ${url}`)
-        largestImageUrl = url;
+        if (contentLength && parseInt(contentLength, 10) > largestSize) {
+          largestSize = parseInt(contentLength, 10);
+          // console.debug(`findLargestImage() found largest url: ${url}`)
+          largestImageUrl = url;
+        }
       }
     } catch (error) {
       console.error(`findLargestImage() Error fetching ${url}: ${error}`);
     }
   }
-
+  console.log(`findLargestImage() returning ${largestImageUrl}`);
   return largestImageUrl;
 };
 

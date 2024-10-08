@@ -15,8 +15,8 @@ const refreshArtists = async () => {
     try {
       // Get Top Artists from Spotify
       topArtists = await getTopArtists(ignoreUpperCase);
-      Logger.log(`${topArtists.length} Top Artists`);
-      Log.Debug(`Top Artists: ${topArtists}`);
+      Log.Info(`Top Artists found: ${topArtists.length}`);
+      Log.Debug(`Top Artists list: ${topArtists}`);
     } catch (err) {
       Log.Error(`${err} : getTopArtists failed`);
     }
@@ -25,8 +25,8 @@ const refreshArtists = async () => {
     try {
       // Get Artists from a playlist on Spotify
       playlistArtists = await getPlaylistArtists(ignoreUpperCase);
-      Logger.log(`${playlistArtists.length} Playlist Artists`);
-      Log.Debug(`plastlistArtists: ${playlistArtists}`);
+      Log.Info(`Artists from playlists: ${playlistArtists.length}`);
+      Log.Debug(`Artists from playlists: ${playlistArtists}`);
     } catch (err) {
       Log.Error(`getPlaylistArtists() error - ${err}`);
     }
@@ -35,15 +35,15 @@ const refreshArtists = async () => {
     try {
       // Get Artists you follow
       followedArtists = await getFollowedArtists(ignoreUpperCase);
-      Logger.log(`${followedArtists.length} Followed Artists`);
-      Log.Debug(`followedArtists: ${followedArtists}`);
+      Log.Info(`Artists followed: ${followedArtists.length}`);
+      Log.Debug(`Artists followed list: ${followedArtists}`);
     } catch (err) {
       Log.Error(`${err} : getFollowing failed`);
     }
   }
   // Combine arrays
   let combined = topArtists.concat(playlistArtists).concat(followedArtists);
-  Log.Debug(`Artists combined: ${combined}`);
+  
   // Remove duplicates
   let artistsArr = CommonLib.arrayRemoveDupes(combined);
   if (artistsArr.length == 0) {
@@ -52,7 +52,7 @@ const refreshArtists = async () => {
     );
     return;
   }
-  Log.Info(`${artistsArr.length} artists total added`);
+  Log.Info(`Total artists found: ${artistsArr.length}`);
   if (artistsArr.length > 0) {
     // Clear previous artist list
     CommonLib.clearSheetData(ARTIST_SHEET, 2);
@@ -95,7 +95,7 @@ let getSpotifyData = async (url, getAllPages = false) => {
     let response = await UrlFetchApp.fetch(url, options);
     let firstPage = await response.getContentText();
     let responseCode = await response.getResponseCode();
-    Log.Info(
+    Log.Debug(
       `getSpotifyData() - Response Code ${responseCode} - ${RESPONSECODES[responseCode]}`
     );
     if (responseCode == 200 || responseCode == 201) {
@@ -234,13 +234,13 @@ const getFollowedArtists = async (ignoreUpperCase) => {
 const getPlaylistArtists = async (ignoreUpperCase = true) => {
   // If multiple IDs are separated with commas, it will pull from each playlist
   const playlistId = Config.playlistID().split(",");
-  Log.Info("Getting artists from playlists", playlistId);
+  Log.Debug("Getting artists from playlists", playlistId);
 
   let artistsArr = new Array();
 
   for (let i = 0; i < playlistId.length; i++) {
     // Retrieve data
-    Log.Debug(`Pulling from playlist ${playlistId[i]}`);
+    Log.Debug(`Getting artists from playlist: ${playlistId[i]}`);
     let params = "?playlist_id=" + playlistId[i];
     params += `&limit=50`;
 
@@ -273,7 +273,7 @@ const getPlaylistArtists = async (ignoreUpperCase = true) => {
 
   // Remove any duplicates before we finish
   artistsArr = CommonLib.arrayRemoveDupes(artistsArr);
-  Logger.log(artistsArr);
+
   return artistsArr;
 };
 

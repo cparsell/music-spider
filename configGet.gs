@@ -14,34 +14,34 @@ class Config {
       scriptProps.getProperty("searchTicketmaster").toLowerCase() === "true";
     this.CLIENT_ID_SPOTIFY = scriptProps.getProperty("clientIdSpotify");
     this.CLIENT_SECRET_SPOTIFY = scriptProps.getProperty("clientSecretSpotify");
-    this.KEY_TM = SCRIPT_PROPS.getProperty(`keyTM`);
-    this.LAT_LONG = SCRIPT_PROPS.getProperty(`latlong`);
-    this.RADIUS = Number(SCRIPT_PROPS.getProperty(`radius`));
-    this.UNIT = SCRIPT_PROPS.getProperty(`unit`);
+    this.KEY_TM = scriptProps.getProperty(`keyTM`);
+    this.LAT_LONG = scriptProps.getProperty(`latlong`);
+    this.RADIUS = Number(scriptProps.getProperty(`radius`));
+    this.UNIT = scriptProps.getProperty(`unit`);
     // these booleans get converted into strings by the Properties Service - this will turn them back into booleans
     this.SEARCH_RA =
-      SCRIPT_PROPS.getProperty(`searchRA`).toLowerCase() === "true";
-    this.REGION_RA = SCRIPT_PROPS.getProperty(`regionRA`);
+      scriptProps.getProperty(`searchRA`).toLowerCase() === "true";
+    this.REGION_RA = scriptProps.getProperty(`regionRA`);
     this.SEARCH_SEAT_GEEK =
-      SCRIPT_PROPS.getProperty(`searchSeatGeek`).toLowerCase() === "true";
-    this.SEAT_GEEK_CLIENT_ID = SCRIPT_PROPS.getProperty(`seatGeekClientID`);
+      scriptProps.getProperty(`searchSeatGeek`).toLowerCase() === "true";
+    this.SEAT_GEEK_CLIENT_ID = scriptProps.getProperty(`seatGeekClientID`);
     this.SEAT_GEEK_CLIENT_SECRET =
-      SCRIPT_PROPS.getProperty(`seatGeekClientSecret`);
+      scriptProps.getProperty(`seatGeekClientSecret`);
     this.GET_TOP_ARTISTS =
-      SCRIPT_PROPS.getProperty(`getTopArtists`).toLowerCase() === "true";
+      scriptProps.getProperty(`getTopArtists`).toLowerCase() === "true";
     this.GET_FOLLOWING =
-      SCRIPT_PROPS.getProperty(`getFollowing`).toLowerCase() === "true";
+      scriptProps.getProperty(`getFollowing`).toLowerCase() === "true";
     this.GET_ARTISTS_FROM_PLAYLIST =
-      SCRIPT_PROPS.getProperty(`getArtistsFromPlaylist`).toLowerCase() ===
+      scriptProps.getProperty(`getArtistsFromPlaylist`).toLowerCase() ===
       "true";
-    this.PLAYLIST_ID = SCRIPT_PROPS.getProperty(`playlistId`);
+    this.PLAYLIST_ID = scriptProps.getProperty(`playlistId`);
     this.SEARCH_MANUALLY_ADDED =
-      SCRIPT_PROPS.getProperty(`searchManuallyAdded`).toLowerCase() === "true";
-    this.EMAIL = SCRIPT_PROPS.getProperty(`email`);
+      scriptProps.getProperty(`searchManuallyAdded`).toLowerCase() === "true";
+    this.EMAIL = scriptProps.getProperty(`email`);
     this.CREATE_CALENDAR_EVENTS =
-      SCRIPT_PROPS.getProperty(`createCalendarEvents`).toLowerCase() === "true";
-    this.CALENDAR_ID = SCRIPT_PROPS.getProperty(`calendarId`);
-    this.DEBUG = SCRIPT_PROPS.getProperty(`debug`).toLowerCase() === "true";
+      scriptProps.getProperty(`createCalendarEvents`).toLowerCase() === "true";
+    this.CALENDAR_ID = scriptProps.getProperty(`calendarId`);
+    this.DEBUG = scriptProps.getProperty(`debug`).toLowerCase() === "true";
   }
 
   // You can add methods to return specific properties if necessary

@@ -729,7 +729,7 @@ const showMessage = (message, title) => {
  * @param {array} eventsArr [{name, date, city, venue, url, image, acts}]
  */
 const writeAltEventsToSheet = async (altEvents) => {
-  const sheet = EVENT_SHEET;
+  const sheet = SHEETS.EVENTS;
   try {
     // Get sheet data
     const data = sheet.getDataRange().getValues();
