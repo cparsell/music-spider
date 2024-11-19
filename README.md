@@ -11,6 +11,7 @@ Developed by [cparsell](https://github.com/cparsell)
 Made for [Google Apps Script](https://developers.google.com/apps-script/)
   
 ## Recent Changes
+- Nov 19, 2024: I included instructions for how to add the CommonLib library.
 - Feb 2024: Added a second URL column and the ability to save a second ticket URL. If the first result comes from Ticketmaster, then a second result on SeatGeek will be added to the 'Alt URL' column.
 - Sept 2023: Added ability to search results from **Resident Advisor**'s API. One has to specify the region to search with a code(e.g. 218 is the Bay Area, 8 is New York...) so that's not well integrated but it works.
 
@@ -35,10 +36,11 @@ Then it sends an email (e.g. weekly) listing these events.
 
 ## Setup Outline
 1. Copy [template Google Spreadsheet](https://docs.google.com/spreadsheets/d/1H4pvSK4jpRikHO11PtpJGSdycpVmM566XLQzRot4E_g/edit?usp=sharing) to your drive
-2. Set up API keys for ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/)). Put keys in `config.gs` file. In the config file, you can also change settings to your liking.
-3. **Deploy as web app**.
-4. Run the deployed webapp in browser. 
-5. Copy URI **given IN BOLD in web app** into Spotiy App settings under Redirect URI (STEP 3) NOTE: Do NOT use URL! It is different for me at least. Save.
+2. Add [CommonLibrary](https://github.com/cparsell/gas-commonlib) to the project (renaming it CommonLib) using the ID: **1JtiVtuS5lQtj_u-EJkdjcRLMjMyu_Bqsch7fWvtFEDG6I4tZ3qM7vRKM**
+3. Set up API keys for ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/)). Put keys in `config.gs` file. In the config file, you can also change settings to your liking.
+4. **Deploy as web app**.
+5. Run the deployed webapp in browser. 
+6. Copy URI **given IN BOLD in web app** into Spotiy App settings under Redirect URI (STEP 3) NOTE: Do NOT use URL! It is different for me at least. Save.
 3. Set up triggers in Apps Script
 
 ## Setup, step by step
