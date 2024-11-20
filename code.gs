@@ -110,6 +110,7 @@ const BarMenu = () => {
     // .addItem(`Configure`, `configSidebar`)
     .addItem(`Refresh Artists from Spotify`, `refreshArtists`)
     .addItem(`Refresh Events`, `refreshEvents`)
+    .addItem(`Ignore Selected Artist`, `addIgnoredArtists`)
     .addItem(`Send Email Newsletter`, `sendEmail`)
     .addItem(`Create Calendar Event for Selected`, "createSelectedCalEvents")
     .addSeparator()

@@ -25,17 +25,17 @@ const addArrayToSheet = (sheet, column, values) => {
  */
 const artistsList = () => {
   let results = [];
-  const artistRows = ARTIST_SHEET.getLastRow() - 1;
+  let artistRows = SHEETS.ARTISTS.getLastRow() - 1;
   if (artistRows == 0) artistRows = 1;
-  const artistsArr = ARTIST_SHEET.getRange(2, 1, artistRows, 1).getValues();
+  const artistsArr = SHEETS.ARTISTS.getRange(2, 1, artistRows, 1).getValues();
 
   for (let i = 0; i < artistsArr.length; i++) {
     results.push(artistsArr[i][0]);
   }
   // if searchManuallyAdded = TRUE, include artists in 'Artists (Custom)' sheet in the search
   if (Config.searchManuallyAdded()) {
-    let customArtistRows = CUSTOM_ARTIST_SHEET.getLastRow() - 1;
-    let manualArtistsArr = CUSTOM_ARTIST_SHEET.getRange(
+    let customArtistRows = SHEETS.CUSTOM_ARTIST.getLastRow() - 1;
+    let manualArtistsArr = SHEETS.CUSTOM_ARTIST.getRange(
       2,
       1,
       customArtistRows,
@@ -61,12 +61,12 @@ const artistsList = () => {
  */
 const buildEventsArr = () => {
   try {
-    const lastRow = EVENT_SHEET.getLastRow();
+    const lastRow = SHEETS.EVENTS.getLastRow();
     let events = [];
 
     if (lastRow > 1) {
       for (i = 1; i < lastRow; i++) {
-        let rowData = CommonLib.getRowData(EVENT_SHEET, HEADERNAMES, i + 1);
+        let rowData = CommonLib.getRowData(SHEETS.EVENTS, HEADERNAMES, i + 1);
         let { date } = rowData;
         date = new Date(date);
         // let formattedDate = Utilities.formatDate(newDate, `PST`,`MM-dd-yyyy hh:mm a`);
@@ -131,6 +131,63 @@ const createSelectedCalEvents = () => {
   console.info(`Creating calendar event(s) for: ${names.join(", ")}`);
   createCalEvents(events);
 };
+
+const testIgnored = () => {
+  console.log(getIgnoredArtists());
+}
+
+const getIgnoredArtists = () => {
+  let ignored = [];
+  try {
+    let artistRows = SHEETS.IGNORED.getLastRow() - 1;
+    if (artistRows <= 0) {
+      Log.Warning(`getIgnoredArtists() No Ignored Artists found in "Ignored Artists" sheet`);
+      return [];
+    }
+    const sheetVals = SHEETS.IGNORED.getRange(2, 1, artistRows, 1).getValues();
+
+    for (let i = 0; i < sheetVals.length; i++) {
+      ignored.push(sheetVals[i][0]);
+    }
+    return ignored;
+  } catch (error) {
+    console.error (`getIgnoredArtists() error: ${error}`);
+    return ignored;
+  }
+}
+
+const addIgnoredArtists = () => {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getActiveSheet();
+  if (sheet.getSheetName() == "Ignored Artists") {
+    console.warn("User is trying to add an ignored artist to the Ignored Artists - Skipping...");
+    return;
+  }
+  const ignoredSheetName = "Ignored Artists";
+  let ignoredSheet = SHEETS.IGNORED;
+
+  // Create the "Ignored Artists" sheet if it doesn't exist.
+  if (!ignoredSheet) {
+    ignoredSheet = ss.insertSheet(ignoredSheetName);
+    ignoredSheet.appendRow(['Artist']); // Add a header row.
+  }
+
+  // Get selected range in the active sheet.
+  const range = sheet.getActiveRange();
+  const selectedValues = range.getValues().flat(); // Flatten in case of multiple rows.
+
+  // Get the existing ignored artists as a set for faster lookup.
+  const ignoredArtists = new Set(getIgnoredArtists());
+
+  // Append each selected artist to the "Ignored Artists" sheet if not already ignored.
+  selectedValues.forEach(artist => {
+    if (artist && !ignoredArtists.has(artist)) {
+      ignoredSheet.appendRow([artist]);
+    }
+  });
+
+  Logger.log(`${selectedValues.length} artist(s) checked and added to "${ignoredSheetName}" if not already present.`);
+}
 
 /**
  * ----------------------------------------------------------------------------------------------------------------

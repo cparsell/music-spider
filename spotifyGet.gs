@@ -8,13 +8,11 @@ const refreshArtists = async () => {
   let topArtists = [];
   let playlistArtists = [];
   let followedArtists = [];
-  let ignoreUpperCase = ARTISTS_TO_IGNORE.map((x) => {
-    return x.toUpperCase();
-  });
+
   if (Config.getTopArtists()) {
     try {
       // Get Top Artists from Spotify
-      topArtists = await getTopArtists(ignoreUpperCase);
+      topArtists = await getTopArtists();
       Log.Info(`Top Artists found: ${topArtists.length}`);
       Log.Debug(`Top Artists list: ${topArtists}`);
     } catch (err) {
@@ -24,7 +22,7 @@ const refreshArtists = async () => {
   if (Config.getArtistsFromPlaylist()) {
     try {
       // Get Artists from a playlist on Spotify
-      playlistArtists = await getPlaylistArtists(ignoreUpperCase);
+      playlistArtists = await getPlaylistArtists();
       Log.Info(`Artists from playlists: ${playlistArtists.length}`);
       Log.Debug(`Artists from playlists: ${playlistArtists}`);
     } catch (err) {
@@ -34,7 +32,7 @@ const refreshArtists = async () => {
   if (Config.getFollowing()) {
     try {
       // Get Artists you follow
-      followedArtists = await getFollowedArtists(ignoreUpperCase);
+      followedArtists = await getFollowedArtists();
       Log.Info(`Artists followed: ${followedArtists.length}`);
       Log.Debug(`Artists followed list: ${followedArtists}`);
     } catch (err) {
@@ -45,7 +43,8 @@ const refreshArtists = async () => {
   let combined = topArtists.concat(playlistArtists).concat(followedArtists);
   
   // Remove duplicates
-  let artistsArr = CommonLib.arrayRemoveDupes(combined);
+  let removeDupes = CommonLib.arrayRemoveDupes(combined);
+  let artistsArr = removeDupes.filter(artist => !getIgnoredArtists().includes(artist));
   if (artistsArr.length == 0) {
     Log.Warning(
       `Unable to retrieve a list of artists from Spotify playlist - check playlist ID, Spotify client ID, or client secret`
@@ -56,7 +55,7 @@ const refreshArtists = async () => {
   if (artistsArr.length > 0) {
     // Clear previous artist list
     CommonLib.clearSheetData(ARTIST_SHEET, 2);
-    // clearSheetData(ARTIST_SHEET);
+
     // Write new artists to sheet
     CommonLib.writeArrayToColumn(artistsArr, ARTIST_SHEET, 1);
     Log.Debug(`Total Artists, duplicates removed: ${artistsArr}`);
@@ -148,9 +147,8 @@ let getSpotifyData = async (url, getAllPages = false) => {
  * Caution: will return ALL artists from Saved Tracks. If you have
  * a lot of Saved Tracks, it may be artists you aren't that
  * interested in seeing live ;)
- * @param {bool} ignoreUpperCase
  */
-const getSavedTracksArtists = async (ignoreUpperCase) => {
+const getSavedTracksArtists = async () => {
   const sheet = ARTIST_SHEET;
   // Retrieve auth
 
@@ -167,9 +165,7 @@ const getSavedTracksArtists = async (ignoreUpperCase) => {
     let artistsArr = [];
     data.forEach((track) => {
       track.track?.artists.forEach((artist) => {
-        // if (ignoreUpperCase.includes(artist.name.toUpperCase())) Log.Debug(`getSaveTracksArtists Ignoring: ${artist.name}`);
-        if (!ignoreUpperCase.includes(artist.name.toUpperCase()))
-          artistsArr.push(artist.name);
+        artistsArr.push(artist.name);
       });
     });
 
@@ -190,9 +186,8 @@ const getSavedTracksArtists = async (ignoreUpperCase) => {
  * ----------------------------------------------------------------------------------------------------------------
  * getFollowedArtists
  * Returns an array of all artists followed on Spotify
- * @param {bool} ignoreUpperCase
  */
-const getFollowedArtists = async (ignoreUpperCase) => {
+const getFollowedArtists = async () => {
   // API reference: https://developer.spotify.com/documentation/web-api/reference/get-followed
   let params = "?type=artist&limit=50";
 
@@ -215,10 +210,7 @@ const getFollowedArtists = async (ignoreUpperCase) => {
   });
   let artistsArr = new Array();
   data.forEach((artist) => {
-    // if (ignoreUpperCase.includes(artist.name.toUpperCase())) Log.Debug(`getFollowedArtists Ignoring: ${artist.name}`);
-    if (!ignoreUpperCase.includes(artist.name.toUpperCase()))
-      artistsArr.push(artist.name);
-    // artistsArr.push(JSON.stringify(artist.name));
+    artistsArr.push(artist.name);
   });
   Log.Debug(`artistsArr ${artistsArr}`);
   return artistsArr;
@@ -229,9 +221,8 @@ const getFollowedArtists = async (ignoreUpperCase) => {
  * getPlaylistArtists
  * Returns an array of artists from a Playlist
  * Playlist ID is supplied in Configuration
- * @param {bool} ignoreUpperCase
  */
-const getPlaylistArtists = async (ignoreUpperCase = true) => {
+const getPlaylistArtists = async () => {
   // If multiple IDs are separated with commas, it will pull from each playlist
   const playlistId = Config.playlistID().split(",");
   Log.Debug("Getting artists from playlists", playlistId);
@@ -257,8 +248,6 @@ const getPlaylistArtists = async (ignoreUpperCase = true) => {
       items.forEach((item) => {
         let artists = item?.track?.album?.artists;
         artists.forEach((artist) => {
-          // if (ignoreUpperCase.includes(artist.name.toUpperCase())) Log.Debug(`getPlayListArtists Ignoring: ${artist.name}`);
-          // if (!ignoreUpperCase.includes(artist.name.toUpperCase())) artistsArr.push(artist.name);
           artistsArr.push(artist.name);
         });
       });
@@ -282,29 +271,28 @@ const getPlaylistArtists = async (ignoreUpperCase = true) => {
  * getTopArtists
  * Returns an array of Top Artists as gathered by Spotify
  * This searches "long term", "medium term", and "short term"
- * @param {bool} ignoreUpperCase
  */
-const getTopArtists = async (ignoreUpperCase) => {
+const getTopArtists = async () => {
   let artistsArr = new Array();
   // Request for LONG TERM top artists
   try {
     artistsArr = artistsArr.concat(
-      await getTopData("long_term", 0, ignoreUpperCase)
+      await getTopData("long_term", 0)
     );
 
     // Request for LONG TERM top artists OFFSET +48
     artistsArr = artistsArr.concat(
-      await getTopData("long_term", 48, ignoreUpperCase)
+      await getTopData("long_term", 48)
     );
 
     // Re-request for MEDIUM TERM top artists
     artistsArr = artistsArr.concat(
-      await getTopData("medium_term", 0, ignoreUpperCase)
+      await getTopData("medium_term", 0)
     );
 
     // Re-request for SHORT TERM top artists
     artistsArr = artistsArr.concat(
-      await getTopData("short_term", 0, ignoreUpperCase)
+      await getTopData("short_term", 0)
     );
 
     let final = new Array();
@@ -326,9 +314,8 @@ const getTopArtists = async (ignoreUpperCase) => {
  * This searches "long term", "medium term", and "short term"
  * @param {string} term expects "long_term", "medium_term", or "short_term"
  * @param {integer} offset
- * @param {bool} ignoreUpperCase Uppercase array of artists
  */
-const getTopData = async (term, offset, ignoreUpperCase) => {
+const getTopData = async (term, offset) => {
   // Retrieve auth
   const accessToken = await retrieveAuth();
   Log.Debug(`Access token: ${JSON.stringify(accessToken)}`);
@@ -349,9 +336,7 @@ const getTopData = async (term, offset, ignoreUpperCase) => {
     data = CommonLib.collateArrays("items", resp);
 
     data.forEach((artist) => {
-      // if (ignoreUpperCase.includes(artist.name.toUpperCase())) Log.Debug(`getTopData Ignoring: ${artist.name}`);
-      if (!ignoreUpperCase.includes(artist.name.toUpperCase()))
-        artistsArr.push(artist.name);
+      artistsArr.push(artist.name);
     });
   } else {
     Logger.log(`getTopData() - No data received (${term})`);

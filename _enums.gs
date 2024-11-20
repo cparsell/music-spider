@@ -12,11 +12,11 @@ const SHEETS = Object.freeze({
   ARTISTS : SPREADSHEET.getSheetByName("Artists (Spotify)"),
   EVENTS : SPREADSHEET.getSheetByName("Events"),
   LOGGER : SPREADSHEET.getSheetByName("Logger"),
-  CUSTOM_ARTIST : SPREADSHEET.getSheetByName("Artists (Custom)")  
+  CUSTOM_ARTIST : SPREADSHEET.getSheetByName("Artists (Custom)"),
+  IGNORED : SPREADSHEET.getSheetByName("Ignored Artists")
 });
 
 const SERVICE_NAME = `Music Spider`;
-const SUPPORT_ALIAS = GmailApp.getAliases()[0];
 
 // SEAT GEEK
 const SEAT_GEEK_URL = "https://api.seatgeek.com/2";

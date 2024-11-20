@@ -75,7 +75,6 @@ class Emailer {
       console.info(`Sending  email to ${this.email}.`);
       GmailApp.sendEmail(this.email, this.subject, "", {
         htmlBody: this.message.defaultMessage,
-        from: SUPPORT_ALIAS,
         name: SERVICE_NAME,
         noReply: true,
       });
