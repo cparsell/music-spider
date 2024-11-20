@@ -100,11 +100,11 @@ const refreshEvents = async () => {
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
- * BarMenu
+ * Create Bar Menu
  * Trigger - Create menu when spreadsheet is opened
  * @returns {void}
  */
-const BarMenu = () => {
+const onOpen = () => {
   SpreadsheetApp.getUi()
     .createMenu(`Music Spider`)
     // .addItem(`Configure`, `configSidebar`)
