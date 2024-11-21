@@ -11,6 +11,7 @@ Developed by [cparsell](https://github.com/cparsell)
 Made for [Google Apps Script](https://developers.google.com/apps-script/)
   
 ## Recent Changes
+- Nove 20, 2024: Limited the scope needed. It was requiring general GMail access which is not necessary. I limited the scope to just be able to send email, have calendar event access, and access to the Music Spider spreadsheet.
 - Nov 19, 2024: I included instructions for how to add the [CommonLib library](https://github.com/cparsell/gas-commonlib).
 - Feb 2024: Added a second URL column and the ability to save a second ticket URL. If the first result comes from Ticketmaster, then a second result on SeatGeek will be added to the 'Alt URL' column.
 - Sept 2023: Added ability to search results from **Resident Advisor**'s API. One has to specify the region to search with a code(e.g. 218 is the Bay Area, 8 is New York...) so that's not well integrated but it works.
@@ -47,7 +48,7 @@ Then it sends an email (e.g. weekly) listing these events.
 
 ### 1. Configuration
 
-- A sample configuration file is included: `_config.example.gs`. You can replace the values with your own API keys and preferences.
+- A sample configuration file is included: `_config.example.gs`. Replace the values with your own API keys and preferences.
 - Paste your API keys from ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/)) accordingly
 - Paste your `latlong` to coordinates of your rough location using (latlong.net)[https://www.latlong.net/]
 - If you want to get artists from your listening history (the artists you most listen to), leave `getTopArtists` set to `true`. Otherwise change it to `false`.
