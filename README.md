@@ -35,8 +35,8 @@ Then it sends an email (e.g. weekly) listing these events.
 
 
 ## Setup Outline
-1. Copy [template Google Spreadsheet](https://docs.google.com/spreadsheets/d/1H4pvSK4jpRikHO11PtpJGSdycpVmM566XLQzRot4E_g/edit?usp=sharing) to your drive
-2. Add [CommonLibrary](https://github.com/cparsell/gas-commonlib) to the project (renaming it CommonLib) using the ID: **1JtiVtuS5lQtj_u-EJkdjcRLMjMyu_Bqsch7fWvtFEDG6I4tZ3qM7vRKM**
+1. Copy [template Google Spreadsheet](https://docs.google.com/spreadsheets/d/1H4pvSK4jpRikHO11PtpJGSdycpVmM566XLQzRot4E_g/edit?usp=sharing) to your Google Drive
+2. Add [CommonLibrary](https://github.com/cparsell/gas-commonlib) to the project (**renaming it CommonLib**) using the ID: **1JtiVtuS5lQtj_u-EJkdjcRLMjMyu_Bqsch7fWvtFEDG6I4tZ3qM7vRKM**
 3. Set up API keys for ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/)). Put keys in `config.gs` file. In the config file, you can also change settings to your liking.
 4. **Deploy as web app**.
 5. Run the deployed webapp in browser. 
@@ -46,19 +46,15 @@ Then it sends an email (e.g. weekly) listing these events.
 ## Setup, step by step
 
 ### 1. Configuration
-- In the Apps Script project, go to **Triggers** on the left sidebar
-  - Click **Add Trigger**
-  - Function to run: **barMenu**    (adds a menu in the spreadsheet)
-  - Event source: **From Spreadsheet**
-  - Event type: **On Open**
-  - Save and then reload the spreadsheet.
-- Under **Music Spider** menu, select **Configure**
+
+- A sample configuration file is included: `_config.example.gs`. You can replace  the
 - Paste your API keys from ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/)) accordingly
 - Paste your `latlong` to coordinates of your rough location using (latlong.net)[https://www.latlong.net/]
 - If you want to get artists from your listening history (the artists you most listen to), leave `getTopArtists` set to `true`. Otherwise change it to `false`.
 - If you want to use artists that you follow, leave `getFollowing` set to `true`. Otherwise change it to `false`.
-- If want to get artist names from a Spotify playlist, leave `getArtistsFromPlaylist` set to `true` and get a share link from Spotify to find the ID. If the link looks like `https://open.spotify.com/playlist/2323bn4n2324nb224b2442?si=3568n535n85685685n` then the ID is `2323bn4n2324nb224b2442`. Past this into the value for `playlistId` in `config.gs`.
-- If you want to save events it finds as a Google Calendar event, set `createCalendarEvents` to `true` and provide the calendar ID. This usually looks something like `xxxxxxxxxxxxxxxxxxxxxxxxxxxx@group.calendar.google.com`
+- To collect artist names from a Spotify playlist, leave `getArtistsFromPlaylist` set to `true`.
+  - To get the playlist ID, get a share link from Spotify. If the link looks like `https://open.spotify.com/playlist/2323bn4n2324nb224b2442?si=3568n535n85685685n` then the ID is `2323bn4n2324nb224b2442`. Past this into the value for `playlistId`.
+- To save events as a Google Calendar event, set `createCalendarEvents` to `true` and provide the calendar ID. This usually looks something like `xxxxxxxxxxxxxxxxxxxxxxxxxxxx@group.calendar.google.com`
 
 ### 2. Spotify Authorization:
 - Go to Apps Script from the sheet (**Extensions > Apps Script**)
@@ -76,7 +72,11 @@ This will set up Apps Script to regularly update artists, events, and send you a
 
 - In the Apps Script project, go to **Triggers** on the left sidebar
 
-### Gathers artist history
+#### On Open (bar menu) trigger
+- No trigger needs to be created for this. This runs automatically when the spreadsheet is opened. For this reason, it will probably ask for authorization to run the script when the spreadsheet is opened.
+
+#### Refresh Artists Trigger
+This will refresh your top artists and, optionally, gather artist names from any playlists you provide.
 - Click **Add Trigger**
   - Function to run: **refreshArtists**   (the function that updates your Spotify artists)
   - Event source: **Time-driven**
@@ -85,7 +85,8 @@ This will set up Apps Script to regularly update artists, events, and send you a
   - **2am to 3am**
   - Save.
 
-### Event refresh trigger
+#### Event refresh trigger
+This searches for new future events.
 - Click **Add Trigger**
   - Function to run: **refreshEvents**   (the function that looks for new events on Ticketmaster)
   - Event source: **Time-driven**
@@ -93,7 +94,8 @@ This will set up Apps Script to regularly update artists, events, and send you a
   - **4am to 5am**
   - Save.
     
-### Email Trigger
+#### Send Email Trigger
+This sends an email listing all known future events.
 - Click **Add Trigger**
   - Function to run: **sendEmail**    (send out a regular email with events)
   - Event source: **Time-driven**
