@@ -47,7 +47,7 @@ Then it sends an email (e.g. weekly) listing these events.
 
 ### 1. Configuration
 
-- A sample configuration file is included: `_config.example.gs`. You can replace  the
+- A sample configuration file is included: `_config.example.gs`. You can replace the values with your own API keys and preferences.
 - Paste your API keys from ([Spotify API](https://developer.spotify.com/dashboard/applications), [Ticketmaster](https://developer.ticketmaster.com/)) accordingly
 - Paste your `latlong` to coordinates of your rough location using (latlong.net)[https://www.latlong.net/]
 - If you want to get artists from your listening history (the artists you most listen to), leave `getTopArtists` set to `true`. Otherwise change it to `false`.
