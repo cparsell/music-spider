@@ -27,7 +27,7 @@ const createCalEvents = (events) => {
       Logger.log(`Created calendar event for ${events[key].eName}`);
     }
   } catch (error) {
-    console.warn(`createCalEvents() - error: ${error}`);
+    console.warn(`createCalEvents() error:  ${error}`);
   }
 };
 

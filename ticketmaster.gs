@@ -23,12 +23,10 @@ const searchTMLoop = async (artistsArr, existingEvents) => {
     // This function will run through the newfound events and select the highest res image
     for (let i = 0; i < newEvents.length; i++) {
       const largestImage = findLargestImage(newEvents[i].image);
-      console.info("searchTMLoops() largestImage:", largestImage);
       newEvents[i].image = largestImage;
     }
     for (let i = 0; i < altEvents.length; i++) {
       const largestImage = findLargestImage(altEvents[i].image);
-      console.info("searchTMLoops() largestImage:", largestImage);
       altEvents[i].image = largestImage;
     }
     return { newEvents: newEvents, altEvents: altEvents };
