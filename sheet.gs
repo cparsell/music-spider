@@ -204,26 +204,28 @@ const removeExpiredEntries = (sheet) => {
     let data = sheet.getDataRange().getValues();
     let lastRow = sheet.getLastRow() - 1; //subtract header
     if (lastRow < 1) return 1;
-    let col = data[0].indexOf(dateHeaderName);
-    let range = sheet.getRange(2, col + 1, lastRow, 1).getValues();
+
+    const col = data[0].indexOf(dateHeaderName);
     if (col == -1) {
       throw new Error(`Matching data by header failed...`);
     }
+
+    let range = sheet.getRange(2, col + 1, lastRow, 1).getValues();
     let rowsToDel = [];
+
     for (let i = 0; i < range.length; i++) {
       let date = new Date(range[i][0]);
       if (date <= today) {
         rowsToDel.push(i + 2);
       }
     }
-    for (let i = 0; i < rowsToDel.length; i++) {
-      Log.Info(
-        `Removing expired event: ${data[i + 1][0]}, Date: ${
-          range[rowsToDel[i] - 2]
-        }`
-      );
-      sheet.deleteRow(rowsToDel[i]);
-    }
+
+    // Delete from bottom to top to prevent changing indices
+    rowsToDel.reverse().forEach(rowNum => {
+      Log.Info(`Removing expired event: ${data[rowNum - 1][0]}, Date: ${range[rowNum - 2]}`);
+      console.info(`Deleting row ${rowNum}`);
+      sheet.deleteRow(rowNum);
+    });
     return 0;
   } catch (err) {
     console.error(
