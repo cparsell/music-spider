@@ -285,7 +285,7 @@ const fetchFromTicketmaster = async (keyword) => {
       // Log.Info("tmSearch() - response", data);  // uncomment this to write raw JSON response to 'Logger' sheet
 
       const totalResults = data?.page?.totalElements;
-      const totalPages = data?.page?.totalPages;
+      const totalPages = Math.min(data?.page?.totalPages, 50);
       const resultPageSize = data?.page?.size;
       Log.Debug(
         `tmSearch () - results: ${totalResults}, according to response`
