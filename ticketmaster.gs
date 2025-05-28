@@ -14,35 +14,37 @@ class TM {
    * Any events returned that contain the artist's name are added to the sheet
    */
   async searchTMLoop() {
-    //search each artist in API
-    if (!this.artistsList) this.artistsList = this.listService.getArtists();
+    if (!Array.isArray(this.artistsList) || this.artistsList.length === 0) {
+      this.artistsList = this.listService.getArtists() || [];
+    }
+
     let eventsArr = [];
     try {
-      for (let i = 0; i < this.artistsList.length; i++) {
-        await this.ticketSearch(this.artistsList[i]).then((data) =>
-          data.forEach((event) => eventsArr.push(event))
-        );
+      for (const artist of this.artistsList) {
+        const data = await this.ticketSearch(artist);
+          if (Array.isArray(data)) {
+            eventsArr.push(...data);
+          }
         Utilities.sleep(180);
       }
       // get rid of any results that are already on the Events Sheet
-      const newEvents = filterDupeEvents(eventsArr, this.existingEvents);
-      const altEvents = filterAltEvents(eventsArr, this.existingEvents);
+      const newEvents = filterDupeEvents(eventsArr, this.existingEvents || []);
+      const altEvents = filterAltEvents(eventsArr, this.existingEvents || []);
       Log.Info("searchTMLoop() - filtered Events", newEvents);
 
       // Ticket API provides a bunch of different images of different sizes
       // This function will run through the newfound events and select the highest res image
-      for (let i = 0; i < newEvents.length; i++) {
-        const largestImage = findLargestImage(newEvents[i].image);
-        newEvents[i].image = largestImage;
+      for (const event of newEvents) {
+        event.image = findLargestImage(event.image);
       }
-      for (let i = 0; i < altEvents.length; i++) {
-        const largestImage = findLargestImage(altEvents[i].image);
-        altEvents[i].image = largestImage;
+      for (const event of altEvents) {
+        event.image = findLargestImage(event.image);
       }
-      return { newEvents: newEvents, altEvents: altEvents };
+
+      return { newEvents , altEvents };
     } catch (e) {
       Log.Error(`SearchTMLoop() error - ${e}`);
-      return [];
+      return { newEvents: [], altEvents: [] };
     }
   };
 
@@ -62,18 +64,19 @@ class TM {
 
     // Iterate over the array of images to find the one with the largest area.
     for (let i = 1; i < images.length; i++) {
-      const currentImage = images[i];
-      const currentArea = currentImage.width * currentImage.height;
+      const img = images[i];
+      if (!img?.width || !img?.height) continue;
 
       // Update the largest image if the current one has a larger area.
-      if (currentArea > maxArea) {
-        largestImage = currentImage;
-        maxArea = currentArea;
+      const area = img.width * img.height;
+      if (area > maxArea) {
+        largest = img;
+        maxArea = area;
       }
     }
 
     // Return the URL of the largest image.
-    return largestImage.url;
+    return largest.url || null;
   }
 
   /**
@@ -166,92 +169,49 @@ class TM {
    */
   async ticketSearch(keyword) {
     // keyword = "The Books" // for debugging
-    if (keyword == undefined) {
-      Logger.log("ticketSearch() - No keyword provided");
-      return;
-    }
+    if (!keyword) {
+    Log.Warn("ticketSearch() - No keyword provided");
+    return [];
+  }
 
-    // let artist = ARTIST_SHEET.getRange(2,1);
     let eventsArr = [];
 
     try {
-      // returns JSON response
       Log.Info(`Searching for ${keyword}`);
-      const data = await this.fetchFromTicketAPI(keyword).then(async (data) => {
-        Log.Debug(`ticketSearch() - ${data.length} results parsed`);
-        // Log.Debug(`ticketSearch() - data received`, data)
-        if (data.length == 0) {
-          Log.Debug(`ticketSearch() - No results for`, keyword);
-          return false;
-        }
+      const data = await this.fetchFromTicketAPI(keyword);
 
-        data.forEach((item) => {
-          let attractions = [];
-          item?._embedded?.attractions?.forEach((attraction) => {
-            attractions.push(attraction.name);
-          });
+      Log.Debug(`ticketSearch() - ${data.length} results parsed`);
+      if (!Array.isArray(data) || data.length === 0) {
+        Log.Debug(`No results found for ${keyword}`);
+        return [];
+      }
 
-          let shouldAddEvent = attractions.some((attraction) => {
-            return this.artistsList.includes(attraction);
-          });
+      for (const item of data) {
+        const attractions = item?._embedded?.attractions?.map(a => a.name) || [];
+        const matched = attractions.filter(name => this.artistsList.includes(name));
+        if (matched.length === 0) continue;
+        console.info(
+          `Match for: ${attractions.filter((element) =>
+            this.artistsList.includes(element)
+          )},   Event name: ${item.name}`
+        );
+        const venue = item?._embedded?.venues?.[0] || {};
+        const dateObj = item?.dates?.start;
+        const date = dateObj?.dateTime || dateObj?.localDate || null;
+        const formattedDate = date ? Utilities.formatDate(new Date(date), "PST", "yyyy/MM/dd HH:mm") : "";
 
-          if (shouldAddEvent) {
-            console.info(
-              `Match for: ${attractions.filter((element) =>
-                this.artistsList.includes(element)
-              )},   Event name: ${item.name}`
-            );
-            let url = item.url ? item.url : "";
-            let image = item.images ? item.images : "";
-            let venueName,
-              venueAddress,
-              venueCity,
-              venueState,
-              date,
-              dateFormatted;
-            item?._embedded?.venues?.forEach((venue) => {
-              venueName = venue.name ? venue.name : "";
-              venueAddress = venue.address.line1 ? venue.address.line1 : "";
-              venueCity = venue.city.name ? venue.city.name : "";
-              venueState = venue.state.name ? venue.state.name : "";
-              try {
-                if (item.dates.start.dateTime) {
-                  date = new Date(item.dates.start.dateTime);
-                }
-                // some list timeTBA = true, or noSpecificTime = true. if so, use localDate value
-                if (item.dates.start.timeTBA || item.dates.start.noSpecificTime) {
-                  date = new Date(item.dates.start.localDate);
-                }
-
-                dateFormatted = Utilities.formatDate(
-                  date,
-                  "PST",
-                  "yyyy/MM/dd HH:mm"
-                );
-              } catch (error) {
-                Logger.log(
-                  `ticketSearch() Error formatting date: ${error.message}`
-                );
-              }
-            });
-            eventsArr.push({
-              eName: item.name,
-              acts: attractions.join(),
-              venue: venueName,
-              city: venueCity,
-              date: dateFormatted,
-              url: url,
-              image: image,
-              address: `${venueAddress}, ${venueCity}, ${venueState}`,
-            });
-          }
+        eventsArr.push({
+          eName: item.name || "",
+          acts: attractions.join(", "),
+          venue: venue.name || "",
+          city: venue.city?.name || "",
+          date: formattedDate,
+          url: item.url || "",
+          image: item.images || [],
+          address: [venue.address?.line1, venue.city?.name, venue.state?.name].filter(Boolean).join(", "),
         });
-        if (eventsArr.length == 0) {
-          Log.Debug(`ticketSearch() - No events found for ${keyword}`);
-          return;
-        }
-        Log.Debug(`ticketSearch() - eventsArr: ${eventsArr}`);
-      });
+      }
+      Log.Debug(`ticketSearch() - eventsArr: ${eventsArr}`);
       Log.Debug(`ticketSearch() - ${eventsArr.length} events found`);
       return eventsArr;
     } catch (err) {
@@ -286,10 +246,7 @@ class TM {
       const responseCode = response.getResponseCode();
       if (responseCode == 200 || responseCode == 201) {
         const content = response.getContentText();
-        // Log.Info(content);
         const data = JSON.parse(content);
-        // Log.Info("tmSearch() - response", data);  // uncomment this to write raw JSON response to 'Logger' sheet
-
         const totalResults = data?.page?.totalElements;
         const totalPages = Math.min(data?.page?.totalPages, 50);
         const resultPageSize = data?.page?.size;
@@ -305,7 +262,6 @@ class TM {
           Log.Debug(`tmSearch() - No Ticket Results`);
           return [];
         }
-        // const newData =  data?.events;
         const resultsParsed = data?._embedded?.events;
 
         results.push(...resultsParsed);
@@ -314,7 +270,6 @@ class TM {
         for (let pg = 1; pg < totalPages; pg++) {
           Utilities.sleep(180);
           Logger.log("getting page " + pg);
-          // let pgSize = pageSize;
           page = pg;
           params = this.returnTMParams(keyword, page, pageSize);
           const nextPage = await UrlFetchApp.fetch(
@@ -358,7 +313,6 @@ class TM {
     params += `&keyword=${encodeURIComponent(keyword)}`;
     return params;
   };
-
 }
 
 const test_ticket = () => {

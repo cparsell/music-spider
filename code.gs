@@ -91,7 +91,7 @@ const refreshEvents = async () => {
   if (Config.searchTicketmaster()) {
     Log.Info("Searching Ticketmaster...");
     const tm = new TM(artistsList, existingEvents);
-    const tmEvents = tm.searchTMLoop();
+    const tmEvents = await tm.searchTMLoop();
     Log.Info("New TM events", tmEvents.newEvents);
     Log.Info("Existing events, alt listing", tmEvents.altEvents);
     // Write new events to events sheet

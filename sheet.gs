@@ -716,7 +716,7 @@ const showMessage = (message, title) => {
  */
 const writeAltEventsToSheet = async (altEvents) => {
   const sheet = SHEETS.EVENTS;
-  try {
+  // try {
     // Get sheet data
     const data = sheet.getDataRange().getValues();
     // Get column numbers for Name, Date, Venue, and Address
@@ -806,10 +806,10 @@ const writeAltEventsToSheet = async (altEvents) => {
         }
       }
     }
-  } catch (err) {
-    Logger.log(`writeAltEventsToSheet() error: ${err}`);
-    console.error(`writeAltEventsToSheet() error: ${err}`);
-  }
+  // } catch (err) {
+  //   Logger.log(`writeAltEventsToSheet() error: ${err}`);
+  //   console.error(`writeAltEventsToSheet() error: ${err}`);
+  // }
 };
 
 /**
