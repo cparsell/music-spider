@@ -2,10 +2,10 @@
 // reference: https://developer.ticketmaster.com/products-and-docs/apis/discovery-api/v2/#search-events-v2
 
 class TM {
-  constructor() {
+  constructor(artistsList, existingEvents) {
     this.listService = new ListService();
-    this.artistsArr = this.listService.getArtists();
-    this.existingEvents = this.listService.getEvents();
+    this.artistsList = artistsList;
+    this.existingEvents = existingEvents;
   }
   /**
    * ----------------------------------------------------------------------------------------------------------------
@@ -15,11 +15,11 @@ class TM {
    */
   async searchTMLoop() {
     //search each artist in API
-
+    if (!this.artistsList) this.artistsList = this.listService.getArtists();
     let eventsArr = [];
     try {
-      for (let i = 0; i < this.artistsArr.length; i++) {
-        await this.ticketSearch(this.artistsArr[i]).then((data) =>
+      for (let i = 0; i < this.artistsList.length; i++) {
+        await this.ticketSearch(this.artistsList[i]).then((data) =>
           data.forEach((event) => eventsArr.push(event))
         );
         Utilities.sleep(180);
@@ -192,13 +192,13 @@ class TM {
           });
 
           let shouldAddEvent = attractions.some((attraction) => {
-            return this.artistsArr.includes(attraction);
+            return this.artistsList.includes(attraction);
           });
 
           if (shouldAddEvent) {
             console.info(
               `Match for: ${attractions.filter((element) =>
-                this.artistsArr.includes(element)
+                this.artistsList.includes(element)
               )},   Event name: ${item.name}`
             );
             let url = item.url ? item.url : "";

@@ -46,17 +46,18 @@ const refreshEvents = async () => {
 
   Log.Debug("Building Artist Array and Events Array");
   // Get current list of artists from Artist Sheets
-  let artistsArr = ListService.artistsList();
+  const listService = new ListService();
+  let artistsList = listService.getArtists();
 
   // get list of known events from Events Sheet
-  let existingEvents = ListService.eventsList();
+  let existingEvents = listService.getEvents();
 
   // If 'searchSeatGeek' is set to TRUE in the Config then search SeatGeek
   // I prefer searching SeatGeek first since it can get all results in one go
   // and they sell tickets that came from other vendors like Ticketmaster, etc.
   if (Config.searchSeatGeek()) {
     Log.Info("Searching SeatGeek...");
-    const sg = new SG();
+    const sg = new SG(artistsList, existingEvents);
     const sgEvents = await sg.sgTrigger();
     Log.Info("New SeatGeek events", sgEvents.newEvents);
     Log.Info("Existing events, alt listing", sgEvents.altEvents);
@@ -70,7 +71,8 @@ const refreshEvents = async () => {
   // If 'searchRA' is set to TRUE in Config.gs then search Resident Advisor
   if (Config.searchRA()) {
     Log.Debug("Searching Resident Advisor...");
-    const raEvents = searchRAMain(artistsArr);
+    const ra = new RA(artistsList, existingEvents);
+    const raEvents = ra.searchRAMain();
     Log.Info("New Resident Advisor events", raEvents.newEvents);
     Log.Info("Existing events, alt listing", raEvents.altEvents);
     // Write new events to events sheet
@@ -88,7 +90,7 @@ const refreshEvents = async () => {
   // the way it has to be done
   if (Config.searchTicketmaster()) {
     Log.Info("Searching Ticketmaster...");
-    const tm = new TM();
+    const tm = new TM(artistsList, existingEvents);
     const tmEvents = tm.searchTMLoop();
     Log.Info("New TM events", tmEvents.newEvents);
     Log.Info("Existing events, alt listing", tmEvents.altEvents);

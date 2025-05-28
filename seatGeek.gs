@@ -8,10 +8,10 @@ const test_seatGeek = async () => {
 
 
 class SG {
-  constructor() {
+  constructor(artistsList, existingEvents) {
     this.listService = new ListService();
-    this.artistsList = this.listService.getArtists();
-    this.existingEvents = this.listService.getEvents();
+    this.artistsList = artistsList;
+    this.existingEvents = existingEvents;
   }
 
   /**
@@ -255,7 +255,7 @@ class SG {
     let trigger = new Array();
     if (Config.searchSeetGeek()) {
       if (!this.artistsList) {
-        this.artistsList = this.listService.artistsList();
+        this.artistsList = this.listService.getArtists();
         trigger.push(true);
       }
 
