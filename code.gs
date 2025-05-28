@@ -46,10 +46,10 @@ const refreshEvents = async () => {
 
   Log.Debug("Building Artist Array and Events Array");
   // Get current list of artists from Artist Sheets
-  let artistsArr = artistsList();
+  let artistsArr = ListService.artistsList();
 
   // get list of known events from Events Sheet
-  let existingEvents = buildEventsArr();
+  let existingEvents = ListService.eventsList();
 
   // If 'searchSeatGeek' is set to TRUE in the Config then search SeatGeek
   // I prefer searching SeatGeek first since it can get all results in one go
@@ -87,7 +87,8 @@ const refreshEvents = async () => {
   // the way it has to be done
   if (Config.searchTicketmaster()) {
     Log.Info("Searching Ticketmaster...");
-    const tmEvents = await searchTMLoop(artistsArr, existingEvents);
+    const tm = new TM();
+    const tmEvents = tm.searchTMLoop();
     Log.Info("New TM events", tmEvents.newEvents);
     Log.Info("Existing events, alt listing", tmEvents.altEvents);
     // Write new events to events sheet

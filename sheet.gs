@@ -15,81 +15,8 @@ const addArrayToSheet = (sheet, column, values) => {
   sheet.getRange(range).setValues(values.map(fn));
 };
 
-/**
- * ----------------------------------------------------------------------------------------------------------------
- * Build array of artists
- * Gets artist names from Artists (Spotify) sheet
- * and 'Artists (Custom)' sheet if searchManuallyAdded = TRUE
- * in the config.gs file
- * @returns {array} filtered array of artists
- */
-const artistsList = () => {
-  let results = [];
-  let artistRows = SHEETS.ARTISTS.getLastRow() - 1;
-  if (artistRows == 0) artistRows = 1;
-  const artistsArr = SHEETS.ARTISTS.getRange(2, 1, artistRows, 1).getValues();
 
-  for (let i = 0; i < artistsArr.length; i++) {
-    results.push(artistsArr[i][0]);
-  }
-  // if searchManuallyAdded = TRUE, include artists in 'Artists (Custom)' sheet in the search
-  if (Config.searchManuallyAdded()) {
-    let customArtistRows = SHEETS.CUSTOM_ARTIST.getLastRow() - 1;
-    let manualArtistsArr = SHEETS.CUSTOM_ARTIST.getRange(
-      2,
-      1,
-      customArtistRows,
-      1
-    ).getValues();
-    for (let i = 0; i < manualArtistsArr.length; i++) {
-      results.push(manualArtistsArr[i][0]);
-    }
-    // artistsArr.push(...manualArtistsArr);
-  }
 
-  // let filtered = artistsArr.filter(n => n); // removes blank strings
-  let filtered = CommonLib.arrayRemoveDupes(results, true); // remove duplicates and blank strings
-  return filtered;
-};
-
-/**
- * ----------------------------------------------------------------------------------------------------------------
- * Build Events Array
- * Remove duplicates from an array
- * @param {array} array
- * @returns {array} array
- */
-const buildEventsArr = () => {
-  try {
-    const lastRow = SHEETS.EVENTS.getLastRow();
-    let events = [];
-
-    if (lastRow > 1) {
-      for (i = 1; i < lastRow; i++) {
-        let rowData = CommonLib.getRowData(SHEETS.EVENTS, HEADERNAMES, i + 1);
-        let { date } = rowData;
-        date = new Date(date);
-        // let formattedDate = Utilities.formatDate(newDate, `PST`,`MM-dd-yyyy hh:mm a`);
-        let eventDate = Utilities.formatDate(date, "PST", "yyyy/MM/dd HH:mm");
-        rowData.date = eventDate;
-        events.push(rowData);
-      }
-
-      // Sort by key, which is the date
-      const ordered = events.sort(function (a, b) {
-        return a.date < b.date ? -1 : a.date > b.date ? 1 : 0;
-      });
-
-      return ordered;
-    } else {
-      console.warn("No events found- unable to build array of Events");
-    }
-
-    return [];
-  } catch (err) {
-    console.error(`buildEventsArr() error - ${err}`);
-  }
-};
 
 const compareArrays = (arr1, arr2) => {
   compare = (a1, a2) => arr1.reduce((a, c) => a + arr2.includes(c), 0);

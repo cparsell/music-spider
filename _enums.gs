@@ -67,7 +67,7 @@ const DAY_NAMES = Object.freeze([
   "Sat",
 ]);
 
-const TICKETMASTER_URL =
+const TM_URL =
   "https://app.ticketmaster.com/discovery/v2/events.json";
 
 /**

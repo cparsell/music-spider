@@ -252,7 +252,7 @@ const seatGeekTrigger = async (artistsArr) => {
   let trigger = new Array();
   if (Config.searchSeetGeek()) {
     if (!artistsArr) {
-      artistsArr = artistsList();
+      artistsArr = ListService.artistsList();
       trigger.push(true);
     }
     let existingEvents = buildEventsArr();
