@@ -56,7 +56,8 @@ const refreshEvents = async () => {
   // and they sell tickets that came from other vendors like Ticketmaster, etc.
   if (Config.searchSeatGeek()) {
     Log.Info("Searching SeatGeek...");
-    const sgEvents = await seatGeekTrigger(artistsArr);
+    const sg = new SG();
+    const sgEvents = await sg.sgTrigger();
     Log.Info("New SeatGeek events", sgEvents.newEvents);
     Log.Info("Existing events, alt listing", sgEvents.altEvents);
     // Write new events to events sheet
