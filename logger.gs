@@ -30,7 +30,7 @@ class Log {
    * @param {string} message
    * @param {object} obj optional object to be logged as a string
    */
-  static Warning(message, obj = null) {
+  static Warn(message, obj = null) {
     try {
       if (obj) message = `${message}: ${JSON.stringify(obj)}`;
       let date = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
@@ -116,7 +116,7 @@ class Log {
 const _testWrite = () => {
   for (let i = 0; i < 2; i++) {
     Log.Info(`${i} Some Info...`);
-    Log.Warning(`${i} Some Warning....`);
+    Log.Warn(`${i} Some Warning....`);
     Log.Error(`${i} Some Error....`);
     Log.Debug(`${i} Some Debug....`);
   }

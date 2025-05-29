@@ -46,7 +46,7 @@ const refreshArtists = async () => {
   let removeDupes = CommonLib.arrayRemoveDupes(combined);
   let artistsArr = removeDupes.filter(artist => !getIgnoredArtists().includes(artist));
   if (artistsArr.length == 0) {
-    Log.Warning(
+    Log.Warn(
       `Unable to retrieve a list of artists from Spotify playlist - check playlist ID, Spotify client ID, or client secret`
     );
     return;
@@ -176,7 +176,7 @@ const getSavedTracksArtists = async () => {
     // if (artistsArr.length > 0) writeArrayToColumn(artistsArr, sheet, 1);
     return artistsArr;
   } else {
-    Log.Warning(
+    Log.Warn(
       "getSavedTracksArtists() Unable to get artists from saved tracks"
     );
   }

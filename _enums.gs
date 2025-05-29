@@ -1,12 +1,9 @@
 
-
 const SPREADSHEET = SpreadsheetApp.getActiveSpreadsheet();
 const ARTIST_SHEET = SPREADSHEET.getSheetByName("Artists (Spotify)");
 const EVENT_SHEET = SPREADSHEET.getSheetByName("Events");
 const LOGGER_SHEET = SPREADSHEET.getSheetByName("Logger");
 const CUSTOM_ARTIST_SHEET = SPREADSHEET.getSheetByName("Artists (Custom)");
-
-
 
 const SHEETS = Object.freeze({
   ARTISTS : SPREADSHEET.getSheetByName("Artists (Spotify)"),
@@ -37,7 +34,7 @@ const SAVED_EPISODERS_URL = SPOTIFY_BASE_URL + "/me/episodes";
 const TOP_ARTISTS_URL = SPOTIFY_BASE_URL + "/me/top/artists";
 const PLAYLISTS_URL = SPOTIFY_BASE_URL + "/me/playlists";
 
-
+const RA_URL = `https://ra.co/graphql`;
 
 /**
  * MONTH_NAMES object

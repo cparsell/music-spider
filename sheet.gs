@@ -68,7 +68,7 @@ const getIgnoredArtists = () => {
   try {
     let artistRows = SHEETS.IGNORED.getLastRow() - 1;
     if (artistRows <= 0) {
-      Log.Warning(`getIgnoredArtists() No Ignored Artists found in "Ignored Artists" sheet`);
+      Log.Warn(`getIgnoredArtists() No Ignored Artists found in "Ignored Artists" sheet`);
       return [];
     }
     const sheetVals = SHEETS.IGNORED.getRange(2, 1, artistRows, 1).getValues();
@@ -819,8 +819,12 @@ const writeAltEventsToSheet = async (altEvents) => {
  * @param {array} eventsArr [{name, date, city, venue, url, image, acts}]
  */
 const writeEventsToSheet = async (eventsArr) => {
-  for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
-    CommonLib.setRowData(EVENT_SHEET, HEADERNAMES, eventsArr[key]);
+  try {
+    for (const [index, [key]] of Object.entries(Object.entries(eventsArr))) {
+      CommonLib.setRowData(EVENT_SHEET, HEADERNAMES, eventsArr[key]);
+    }
+  } catch (err) {
+    console.error (`writeEventsToSheet() error: ${err.message}`);
   }
 };
 

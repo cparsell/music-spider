@@ -7,31 +7,48 @@
  */
 const sendEmail = () => {
   try {
-    let eventsArr = buildEventsArr(); // get the events from the sheet
-    let msgSubjRaw = []; // array of artists to be listed in subject line
-    let msgSubj = `${SERVICE_NAME} - `;
+    const listService = new ListService();
+    let eventsArr = listService.getEvents(); 
+    
+    if (!Array.isArray(eventsArr) || eventsArr.length === 0) {
+      console.warn("sendEmail() - No events found to include in email.");
+      return;
+    }
+
+    const subjectActs = [];
+
     if (eventsArr.length === 0) {
       console.warn("No events to add to email.");
       return;
     }
-    // for (const [index, [key]] of Object.entries(Object.entries(eventsArr)))
-    for (let key = 0; key < eventsArr.length; key++) {
-      if (eventsArr[key].acts == "") {
-        msgSubjRaw.push(eventsArr[key].eName);
-        continue;
+
+    for (const event of eventsArr) {
+      if (!event) continue;
+
+      const { acts, eName } = event;
+
+      if (typeof acts === "string" && acts.trim()) {
+        const firstAct = acts.split(",")[0].trim();
+        if (firstAct) subjectActs.push(firstAct);
+      } else if (typeof eName === "string" && eName.trim()) {
+        subjectActs.push(eName.trim());
       }
-      let actsArr = eventsArr[key].acts.split(",");
-      msgSubjRaw.push(actsArr[0]);
     }
     // remove duplicates from list of acts
-    let uniq = [...new Set(msgSubjRaw)];
-    msgSubj += uniq.join(", ");
+    const uniqueActs = [...new Set(subjectActs)];
+    const subject = `${SERVICE_NAME} - ${uniqueActs.join(", ")}`;
+
+    // Validate config email
+    const recipientEmail = Config.email();
+    if (!recipientEmail || !recipientEmail.includes("@")) {
+      throw new Error("Invalid or missing recipient email address.");
+    }
 
     let message = new CreateMessage({ events: eventsArr });
     new Emailer({
       message: message,
-      email: Config.email(),
-      subject: msgSubj,
+      email: recipientEmail,
+      subject: subject,
     });
   } catch (err) {
     console.error(`sendEmail() error - ${err}`);
@@ -90,19 +107,13 @@ class Emailer {
  * Properties accessed via `this.receivedMessage` or `this.failedMessage`
  */
 class CreateMessage {
-  constructor({ events: events }) {
-    /**
-     * @property {object} events {{name: name, venue: venue...}{name: name,venue: venue...}}
-     */
-    this.events = events;
+  constructor({ events }) {
+    this.events = events || [];
   }
 
-  /**
-   * @property {Function} defaultMessage format the message
-   * @returns {string} message HTML contents of message
-   */
   get defaultMessage() {
-    let message = `<style type="text/css">
+    let message = `<!-- Begin HTML Email -->`;
+    message +=`<style type="text/css">
       .tg {
         border-collapse:collapse;
         border-spacing:0;
@@ -148,61 +159,43 @@ class CreateMessage {
     // iterate through list of events
     // for (const [index, [key]] of Object.entries(Object.entries(this.events)))
     for (let key = 0; key < this.events.length; key++) {
-      const { date, city, venue, url, url2, image, eName, acts } =
-        this.events[key];
-      let actsArr = new Array();
-      let actsB = new Array();
-      //turn text into array
-      if (acts != undefined) actsArr = acts.split(",");
-      // look for acts' names in event name - if name is in event name, dont list it again
-      for (let i = 0; i < actsArr.length; i++) {
-        if (!eName.match(actsArr[i])) {
-          actsB.push(actsArr[i]);
-        }
-      }
-      let eDate = new Date(this.events[key].date);
-      let eventDay = eDate.getDay();
-      let eventDayNum = eDate.getDate();
-      let eventMonth = eDate.getMonth();
-      let eventYear = eDate.getFullYear();
-      let eventTime = Utilities.formatDate(eDate, "PST", "h a");
-      // Start a new table row every even event
-      if (CommonLib.isEven(key)) {
-        message += `<tr>`;
-      }
+      const { date, city, venue, url, url2, image, eName, acts } = this.events[key];
+      const actsArr = (acts || '').split(',').filter(Boolean);
+      const actsB = actsArr.filter(a => !eName.includes(a));
+
+      const eDate = new Date(date);
+      const eventTime = Utilities.formatDate(eDate, "PST", "h a");
+      const eventDay = DAY_NAMES[eDate.getDay()];
+      const eventMonth = MONTH_NAMES[eDate.getMonth()];
+      const eventDayNum = eDate.getDate();
+      const eventYear = eDate.getFullYear();
+
+      if (CommonLib.isEven(key)) message += `<tr>`;
+
       message += `<td class="tg-0lax" style="height:300px;vertical-align:top;"><div style="text-align: left;margin-left: 10px;">`;
       message += `<div class="" style=""><a href='${url}'>`;
       message += `<img src='${image}' class="" style="width:90%;float:center;object-position:top;width:350px;height:200px;object-fit:cover;"/></div>`;
       message += `<span style="font-family: Averta,Helvetica Neue,Helvetica,Arial,sans-serif;">`;
       message += `<a href='${url}' style="text-decoration:none;"><span style="color:#44494c;font-size:20px;"><strong>${eName}</strong></span></a><br/>`;
-      let actsUpper = actsB.map(function (x) {
-        return x.toUpperCase();
-      });
-      if (actsUpper.length > 1 || !eName.toUpperCase().match(actsUpper[0])) {
-        actsB.forEach((act, index) => {
-          if (index == 0) message += `with `;
-          if (!eName.toUpperCase().match(act.toUpperCase()) && index < 6) {
-            message += index == actsB.length - 1 ? `${act}` : `${act}, `;
-          }
-          if (index == 6) message += `...`; // truncate list if longer than 5
-        });
+
+      if (actsB.length && !eName.toUpperCase().includes(actsB[0].toUpperCase())) {
+        message += `with ${actsB.slice(0, 6).join(", ")}`;
+        if (actsB.length > 6) message += `...`;
         message += `<br/>`;
       }
+
       message += `<span style="color:#696969;font-size:12px;font-family:georgia,times,times new roman,serif;">at ${venue}, ${city}<br/> `;
-      message += `<strong>${DAY_NAMES[eventDay]}, ${MONTH_NAMES[eventMonth]} ${eventDayNum} ${eventYear}</strong> ${eventTime}</span></span>`;
-      if (url2)
-        message += `<br>
-        <span style=''>
-          <a href='${url2}' style='text-decoration:none;color:#696969;font-size:11px;font-family:georgia,times,times new roman,serif;'>
-            Tickets also available here
-          </a>
-        </span></br>`;
+      message += `<strong>${eventDay}, ${eventMonth} ${eventDayNum} ${eventYear}</strong> ${eventTime}</span></span>`;
+      
+      if (url2) {
+        message += `<br><span style=''><a href='${url2}' style='text-decoration:none;color:#696969;font-size:11px;font-family:georgia,times,times new roman,serif;'>Tickets also available here</a></span></br>`;
+      }
+
       message += `</div><br/></td>`;
 
-      if (!CommonLib.isEven(key)) message += `</tr><br/>`; // End table row every odd event
+      if (!CommonLib.isEven(key)) message += `</tr><br/>`; 
     }
-    message += `<br/></tbody></table>`;
-    message += `</td></tr></tbody></table>`;
+    message += `<br/></tbody></table></td></tr></tbody></table>`;
     return message;
   }
 }

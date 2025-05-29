@@ -4,8 +4,9 @@
 class TM {
   constructor(artistsList, existingEvents) {
     this.listService = new ListService();
-    this.artistsList = artistsList;
-    this.existingEvents = existingEvents;
+    this.artistsList = artistsList || this.listService.getArtists();
+    this.existingEvents = existingEvents || this.listService.getEvents();
+    
   }
   /**
    * ----------------------------------------------------------------------------------------------------------------
@@ -14,111 +15,33 @@ class TM {
    * Any events returned that contain the artist's name are added to the sheet
    */
   async searchTMLoop() {
-    if (!Array.isArray(this.artistsList) || this.artistsList.length === 0) {
-      this.artistsList = this.listService.getArtists() || [];
-    }
+    console.info(`TM Searching ${this.artistsList.length} artists`);
+    const eventsArr = [];
 
-    let eventsArr = [];
     try {
       for (const artist of this.artistsList) {
         const data = await this.ticketSearch(artist);
-          if (Array.isArray(data)) {
-            eventsArr.push(...data);
-          }
-        Utilities.sleep(180);
-      }
-      // get rid of any results that are already on the Events Sheet
-      const newEvents = filterDupeEvents(eventsArr, this.existingEvents || []);
-      const altEvents = filterAltEvents(eventsArr, this.existingEvents || []);
-      Log.Info("searchTMLoop() - filtered Events", newEvents);
-
-      // Ticket API provides a bunch of different images of different sizes
-      // This function will run through the newfound events and select the highest res image
-      for (const event of newEvents) {
-        event.image = findLargestImage(event.image);
-      }
-      for (const event of altEvents) {
-        event.image = findLargestImage(event.image);
+        if (Array.isArray(data)) eventsArr.push(...data);
+        Utilities.sleep(170); // Respect Ticketmaster's rate limit
       }
 
-      return { newEvents , altEvents };
+      const newEvents = filterDupeEvents(eventsArr, this.existingEvents);
+      const altEvents = filterAltEvents(eventsArr, this.existingEvents);
+
+      newEvents.forEach(event => {
+        event.image = this.findLargestImage(event.image);
+      });
+
+      altEvents.forEach(event => {
+        event.image = this.findLargestImage(event.image);
+      });
+
+      return { newEvents, altEvents };
     } catch (e) {
       Log.Error(`SearchTMLoop() error - ${e}`);
       return { newEvents: [], altEvents: [] };
     }
-  };
-
-  /**
-   * Finds the URL of the largest image from a JSON response object.
-   * @param {Array} images - Array of objects, each with "width", "height", and "url".
-   * @returns {string} The URL of the largest image.
-   */
-  findLargestImage(images) {
-    if (!images || images.length === 0) {
-      return null;
-    }
-
-    // Initialize variables to store the largest image details.
-    let largestImage = images[0];
-    let maxArea = largestImage.width * largestImage.height;
-
-    // Iterate over the array of images to find the one with the largest area.
-    for (let i = 1; i < images.length; i++) {
-      const img = images[i];
-      if (!img?.width || !img?.height) continue;
-
-      // Update the largest image if the current one has a larger area.
-      const area = img.width * img.height;
-      if (area > maxArea) {
-        largest = img;
-        maxArea = area;
-      }
-    }
-
-    // Return the URL of the largest image.
-    return largest.url || null;
   }
-
-  /**
-   * Compares the size of each image in an array of image URLs.
-   * Returns just the headers to get the value in Content-Length for the image
-   * @param {Array} images - Array of objects, each with "url".
-   * @returns {string} The URL of the largest image.
-   */
-  async findLargestImageBySize (imagesObj) {
-    console.info("findLargestImage() starting")
-    console.info(imagesObj)
-    if (imagesObj.length < 1) {
-      console.error(
-        `findLargestImage(imageUrls: ${imageUrls}) - imageUrls is empty`
-      );
-      return "";
-    }
-    let largestSize = 0;
-    let largestImageUrl = null;
-
-    for (let image of imagesObj) {
-      try {
-        const url = image.url ? image.url : "";
-        if (url != "") {
-          const response = await UrlFetchApp.fetch(url, { method: "HEAD" }); // Use HEAD request to get headers only
-
-          const contentLength = response.getAllHeaders().get("Content-Length");
-          console.info(`Content length: ${contentLength}`);
-
-          if (contentLength && parseInt(contentLength, 10) > largestSize) {
-            largestSize = parseInt(contentLength, 10);
-            // console.debug(`findLargestImage() found largest url: ${url}`)
-            largestImageUrl = url;
-          }
-        }
-      } catch (error) {
-        console.error(`findLargestImage() Error fetching ${url}: ${error}`);
-      }
-    }
-    console.log(`findLargestImage() returning ${largestImageUrl}`);
-    return largestImageUrl;
-  };
 
   /**
    * ----------------------------------------------------------------------------------------------------------------
@@ -168,33 +91,26 @@ class TM {
    * @returns {object} eventsArr
    */
   async ticketSearch(keyword) {
-    // keyword = "The Books" // for debugging
     if (!keyword) {
-    Log.Warn("ticketSearch() - No keyword provided");
-    return [];
-  }
-
-    let eventsArr = [];
+      Log.Warn("ticketSearch() - No keyword provided");
+      return [];
+    }
 
     try {
       Log.Info(`Searching for ${keyword}`);
       const data = await this.fetchFromTicketAPI(keyword);
 
-      Log.Debug(`ticketSearch() - ${data.length} results parsed`);
       if (!Array.isArray(data) || data.length === 0) {
         Log.Debug(`No results found for ${keyword}`);
         return [];
       }
 
+      const eventsArr = [];
       for (const item of data) {
         const attractions = item?._embedded?.attractions?.map(a => a.name) || [];
         const matched = attractions.filter(name => this.artistsList.includes(name));
         if (matched.length === 0) continue;
-        console.info(
-          `Match for: ${attractions.filter((element) =>
-            this.artistsList.includes(element)
-          )},   Event name: ${item.name}`
-        );
+
         const venue = item?._embedded?.venues?.[0] || {};
         const dateObj = item?.dates?.start;
         const date = dateObj?.dateTime || dateObj?.localDate || null;
@@ -208,16 +124,16 @@ class TM {
           date: formattedDate,
           url: item.url || "",
           image: item.images || [],
-          address: [venue.address?.line1, venue.city?.name, venue.state?.name].filter(Boolean).join(", "),
+          address: [venue.address?.line1, venue.city?.name, venue.state?.name].filter(Boolean).join(", ")
         });
       }
-      Log.Debug(`ticketSearch() - eventsArr: ${eventsArr}`);
-      Log.Debug(`ticketSearch() - ${eventsArr.length} events found`);
+
       return eventsArr;
     } catch (err) {
-      Log.Error(`ticketSearch failed - ${err}`);
+      Log.Error(`ticketSearch() failed for ${keyword}: ${err.message}`);
+      return [];
     }
-  };
+  }
 
   /**
    * ----------------------------------------------------------------------------------------------------------------
@@ -227,70 +143,70 @@ class TM {
    * @returns {object} results
    */
   async fetchFromTicketAPI(keyword) {
-    let page = 0;
+    if (!keyword || typeof keyword !== 'string') {
+      Log.Error("fetchFromTicketAPI() - Invalid keyword");
+      return [];
+    }
     const pageSize = 20;
-    let results = new Array();
+    const maxPages = 50;
+    let results = [];
     const options = {
       method: "GET",
-      async: true,
       contentType: "application/json",
     };
-    let params = this.returnTMParams(keyword, page, pageSize);
 
-    Log.Debug(`Searching Ticket API for ${keyword}`);
+    // Log.Debug(`Searching Ticket API for ${keyword}`);
     try {
-      const response = UrlFetchApp.fetch(
-        TM_URL + params,
+      const firstPageParams = this.returnTMParams(keyword, 0, pageSize);
+      const firstResponse = UrlFetchApp.fetch(
+        TM_URL + firstPageParams,
         options
       );
-      const responseCode = response.getResponseCode();
-      if (responseCode == 200 || responseCode == 201) {
-        const content = response.getContentText();
-        const data = JSON.parse(content);
-        const totalResults = data?.page?.totalElements;
-        const totalPages = Math.min(data?.page?.totalPages, 50);
-        const resultPageSize = data?.page?.size;
-        Log.Debug(
-          `tmSearch () - results: ${totalResults}, according to response`
-        );
-        Log.Debug(`tmSearch () - pages: ${totalPages}, according to response`);
-        Log.Debug(
-          `tmSearch () - page size: ${resultPageSize}, according to response`
-        );
+      const responseCode = firstResponse.getResponseCode();
 
-        if (totalResults == 0) {
-          Log.Debug(`tmSearch() - No Ticket Results`);
-          return [];
-        }
-        const resultsParsed = data?._embedded?.events;
-
-        results.push(...resultsParsed);
-        // const pages = Math.ceil(totalResults / pageSize);
-
-        for (let pg = 1; pg < totalPages; pg++) {
-          Utilities.sleep(180);
-          Logger.log("getting page " + pg);
-          page = pg;
-          params = this.returnTMParams(keyword, page, pageSize);
-          const nextPage = await UrlFetchApp.fetch(
-            TM_URL + params,
-            options
-          ).getContentText();
-          const nextPageParsed = JSON.parse(nextPage)._embedded?.events;
-          results.push(...nextPageParsed);
-        }
-        // Log.Info("tmSearch() results", results);
-        return results;
-      } else {
-        Log.Error(
-          `tmSearch() error - Response Code ${responseCode} - ${RESPONSECODES[responseCode]}`
-        );
-        return false;
+      if (responseCode !== 200 && responseCode !== 201) {
+        Log.Error(`fetchFromTicketAPI() - Response Code ${responseCode} - ${RESPONSECODES?.[responseCode] || 'Unknown error'}`);
+        return [];
       }
+      const parsed = await JSON.parse(firstResponse.getContentText());
+      const totalPages = Math.min(parsed?.page?.totalPages || 0, maxPages);
+      const events = parsed?._embedded?.events || [];
+
+      // const resultPageSize = data?.page?.size;
+      // Log.Debug(`fetchFromTicketAPI() - ${keyword} - ${totalResults} results across ${totalPages} pages`);
+
+      results.push(...events);
+
+      if (totalPages > 1) Logger.log(`fetchFromTicketAPI() - ${keyword} - ${totalPages} pages`);
+
+      for (let page = 1; page < totalPages; page++) {
+        console.info("Getting page " + page)
+        Utilities.sleep(180); // API Rate Limit
+      
+        const params = this.returnTMParams(keyword, page, pageSize);
+        try {
+          const response = UrlFetchApp.fetch(TM_URL + params, options);
+          const text = response.getContentText();
+          const parsedPage = JSON.parse(text);
+          const eventsPage = parsedPage?._embedded?.events;
+          if (Array.isArray(eventsPage)) {
+            results.push(...eventsPage);
+          } else {
+            Log.Warn(`Page ${page} returned no events for ${keyword}`);
+          }
+        
+        } catch (pageErr) {
+          Log.Warn(`Page ${page} returned no events for ${keyword}`);
+        }
+      }
+
+      return results;
     } catch (err) {
-      Log.Error(`tmSearch() error: ${err}`);
-      return {};
+      Log.Error(`fetchFromTicketAPI() - Fatal error fetching events for ${keyword}: ${err.message}`);
+      return [];
     }
+
+    
   };
 
   /**
@@ -313,18 +229,104 @@ class TM {
     params += `&keyword=${encodeURIComponent(keyword)}`;
     return params;
   };
+
+  findLargestImage(images) {
+    if (!Array.isArray(images) || images.length === 0) return null;
+
+    return images.reduce((largest, img) => {
+      const largestArea = (largest?.width || 0) * (largest?.height || 0);
+      const currentArea = (img?.width || 0) * (img?.height || 0);
+      return currentArea > largestArea ? img : largest;
+    }, images[0])?.url || null;
+  }
 }
 
-const test_ticket = () => {
+const test_ticket = async () => {
+  try {
   const tm = new TM();
-  const result = tm.searchTMLoop();
-  Logger.log(result);
+  const result = await tm.searchTMLoop();
+  console.info(result);
   const filteredEventsArr = filterNewEvents(result, buildEventsArr());
   // Log.Debug("searchTMLoop() - filtered Events", filteredEventsArr);
 
   // select which image is highest resolution and use only this
   const imageFilteredEvents = filterTMimages(filteredEventsArr);
   Logger.log(imageFilteredEvents);
-  return imageFilteredEvents;
+  } catch (err) {
+    console.error(`test_ticket() error: ${err.message}`);
+  }
+
 };
 
+
+/**
+ * Compares the size of each image in an array of image URLs.
+ * Returns just the headers to get the value in Content-Length for the image
+ * @param {Array} images - Array of objects, each with "url".
+ * @returns {string} The URL of the largest image.
+ */
+const findLargestImageBySize = async (imagesObj) => {
+  console.info("findLargestImage() starting")
+  console.info(imagesObj)
+  if (imagesObj.length < 1) {
+    console.error(
+      `findLargestImage(imageUrls: ${imageUrls}) - imageUrls is empty`
+    );
+    return "";
+  }
+  let largestSize = 0;
+  let largestImageUrl = null;
+
+  for (let image of imagesObj) {
+    try {
+      const url = image.url ? image.url : "";
+      if (url != "") {
+        const response = await UrlFetchApp.fetch(url, { method: "HEAD" }); // Use HEAD request to get headers only
+
+        const contentLength = response.getAllHeaders().get("Content-Length");
+        console.info(`Content length: ${contentLength}`);
+
+        if (contentLength && parseInt(contentLength, 10) > largestSize) {
+          largestSize = parseInt(contentLength, 10);
+          // console.debug(`findLargestImageBySize() found largest url: ${url}`)
+          largestImageUrl = url;
+        }
+      }
+    } catch (error) {
+      console.error(`findLargestImageBySize() Error fetching ${url}: ${error}`);
+    }
+  }
+  console.log(`findLargestImageBySize() returning ${largestImageUrl}`);
+  return largestImageUrl;
+};
+
+/**
+ * Finds the URL of the largest image from a JSON response object.
+ * @param {Array} images - Array of objects, each with "width", "height", and "url".
+ * @returns {string} The URL of the largest image.
+ */
+function findLargestImage(images) {
+  if (!images || images.length === 0) {
+    return null;
+  }
+
+  // Initialize variables to store the largest image details.
+  let largestImage = images[0];
+  let maxArea = largestImage.width * largestImage.height;
+
+  // Iterate over the array of images to find the one with the largest area.
+  for (let i = 1; i < images.length; i++) {
+    const img = images[i];
+    if (!img?.width || !img?.height) continue;
+
+    // Update the largest image if the current one has a larger area.
+    const area = img.width * img.height;
+    if (area > maxArea) {
+      largest = img;
+      maxArea = area;
+    }
+  }
+
+  // Return the URL of the largest image.
+  return largest.url || null;
+}

@@ -4,9 +4,10 @@ const STUBHUB_SEARCH_EVENTS = STUBHUB_BASE_URL + "/search/catalog/events/v2";
 const STUBHUB_LOGIN = STUBHUB_BASE_URL + "/login";
 const STUBHUB_SEARCH_INVENTORY = STUBHUB_BASE_URL + "/search/inventory/v1";
 // https://github.com/jmickela/python-stubhub/blob/master/stubhub/client.py
-// https://developer.stubhub.com/
-// https://developer.viagogo.net/docs/overview/introduction
-
+// StubHub API Doc: https://developer.stubhub.com/
+// Says to email: affiliates@stubhub.com for API access
+// I think they mostly only want to partner with those bringing more business to it
+// StubHub API Intro: https://developer.stubhub.com/docs/overview/introduction/
 
 // NOT IMPLEMENTED CURRENTLY
 // StubHub seems to be only partially public
