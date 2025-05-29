@@ -8,8 +8,8 @@
 const sendEmail = () => {
   try {
     const listService = new ListService();
-    let eventsArr = listService.getEvents(); 
-    
+    let eventsArr = listService.getEvents();
+
     if (!Array.isArray(eventsArr) || eventsArr.length === 0) {
       console.warn("sendEmail() - No events found to include in email.");
       return;
@@ -113,7 +113,7 @@ class CreateMessage {
 
   get defaultMessage() {
     let message = `<!-- Begin HTML Email -->`;
-    message +=`<style type="text/css">
+    message += `<style type="text/css">
       .tg {
         border-collapse:collapse;
         border-spacing:0;
@@ -159,9 +159,10 @@ class CreateMessage {
     // iterate through list of events
     // for (const [index, [key]] of Object.entries(Object.entries(this.events)))
     for (let key = 0; key < this.events.length; key++) {
-      const { date, city, venue, url, url2, image, eName, acts } = this.events[key];
-      const actsArr = (acts || '').split(',').filter(Boolean);
-      const actsB = actsArr.filter(a => !eName.includes(a));
+      const { date, city, venue, url, url2, image, eName, acts } =
+        this.events[key];
+      const actsArr = (acts || "").split(",").filter(Boolean);
+      const actsB = actsArr.filter((a) => !eName.includes(a));
 
       const eDate = new Date(date);
       const eventTime = Utilities.formatDate(eDate, "PST", "h a");
@@ -178,7 +179,10 @@ class CreateMessage {
       message += `<span style="font-family: Averta,Helvetica Neue,Helvetica,Arial,sans-serif;">`;
       message += `<a href='${url}' style="text-decoration:none;"><span style="color:#44494c;font-size:20px;"><strong>${eName}</strong></span></a><br/>`;
 
-      if (actsB.length && !eName.toUpperCase().includes(actsB[0].toUpperCase())) {
+      if (
+        actsB.length &&
+        !eName.toUpperCase().includes(actsB[0].toUpperCase())
+      ) {
         message += `with ${actsB.slice(0, 6).join(", ")}`;
         if (actsB.length > 6) message += `...`;
         message += `<br/>`;
@@ -186,14 +190,14 @@ class CreateMessage {
 
       message += `<span style="color:#696969;font-size:12px;font-family:georgia,times,times new roman,serif;">at ${venue}, ${city}<br/> `;
       message += `<strong>${eventDay}, ${eventMonth} ${eventDayNum} ${eventYear}</strong> ${eventTime}</span></span>`;
-      
+
       if (url2) {
         message += `<br><span style=''><a href='${url2}' style='text-decoration:none;color:#696969;font-size:11px;font-family:georgia,times,times new roman,serif;'>Tickets also available here</a></span></br>`;
       }
 
       message += `</div><br/></td>`;
 
-      if (!CommonLib.isEven(key)) message += `</tr><br/>`; 
+      if (!CommonLib.isEven(key)) message += `</tr><br/>`;
     }
     message += `<br/></tbody></table></td></tr></tbody></table>`;
     return message;

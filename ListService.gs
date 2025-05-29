@@ -29,7 +29,12 @@ class ListService {
     try {
       let artistRows = SHEETS.ARTISTS.getLastRow() - 1;
       if (artistRows == 0) artistRows = 1;
-      const artistsArr = SHEETS.ARTISTS.getRange(2, 1, artistRows, 1).getValues();
+      const artistsArr = SHEETS.ARTISTS.getRange(
+        2,
+        1,
+        artistRows,
+        1
+      ).getValues();
 
       for (let i = 0; i < artistsArr.length; i++) {
         results.push(artistsArr[i][0]);
@@ -55,7 +60,7 @@ class ListService {
     } catch (err) {
       console.error(`buildArtistsList() error - ${err}`);
     }
-  };
+  }
 
   /**
    * ----------------------------------------------------------------------------------------------------------------
@@ -91,6 +96,5 @@ class ListService {
     } catch (err) {
       console.error(`buildEventsList() error - ${err}`);
     }
-  };
-
+  }
 }

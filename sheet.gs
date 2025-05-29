@@ -15,9 +15,6 @@ const addArrayToSheet = (sheet, column, values) => {
   sheet.getRange(range).setValues(values.map(fn));
 };
 
-
-
-
 const compareArrays = (arr1, arr2) => {
   compare = (a1, a2) => arr1.reduce((a, c) => a + arr2.includes(c), 0);
 
@@ -61,14 +58,16 @@ const createSelectedCalEvents = () => {
 
 const testIgnored = () => {
   console.log(getIgnoredArtists());
-}
+};
 
 const getIgnoredArtists = () => {
   let ignored = [];
   try {
     let artistRows = SHEETS.IGNORED.getLastRow() - 1;
     if (artistRows <= 0) {
-      Log.Warn(`getIgnoredArtists() No Ignored Artists found in "Ignored Artists" sheet`);
+      Log.Warn(
+        `getIgnoredArtists() No Ignored Artists found in "Ignored Artists" sheet`
+      );
       return [];
     }
     const sheetVals = SHEETS.IGNORED.getRange(2, 1, artistRows, 1).getValues();
@@ -78,16 +77,18 @@ const getIgnoredArtists = () => {
     }
     return ignored;
   } catch (error) {
-    console.error (`getIgnoredArtists() error: ${error}`);
+    console.error(`getIgnoredArtists() error: ${error}`);
     return ignored;
   }
-}
+};
 
 const addIgnoredArtists = () => {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getActiveSheet();
   if (sheet.getSheetName() == "Ignored Artists") {
-    console.warn("User is trying to add an ignored artist to the Ignored Artists - Skipping...");
+    console.warn(
+      "User is trying to add an ignored artist to the Ignored Artists - Skipping..."
+    );
     return;
   }
   const ignoredSheetName = "Ignored Artists";
@@ -96,7 +97,7 @@ const addIgnoredArtists = () => {
   // Create the "Ignored Artists" sheet if it doesn't exist.
   if (!ignoredSheet) {
     ignoredSheet = ss.insertSheet(ignoredSheetName);
-    ignoredSheet.appendRow(['Artist']); // Add a header row.
+    ignoredSheet.appendRow(["Artist"]); // Add a header row.
   }
 
   // Get selected range in the active sheet.
@@ -107,14 +108,16 @@ const addIgnoredArtists = () => {
   const ignoredArtists = new Set(getIgnoredArtists());
 
   // Append each selected artist to the "Ignored Artists" sheet if not already ignored.
-  selectedValues.forEach(artist => {
+  selectedValues.forEach((artist) => {
     if (artist && !ignoredArtists.has(artist)) {
       ignoredSheet.appendRow([artist]);
     }
   });
 
-  Logger.log(`${selectedValues.length} artist(s) checked and added to "${ignoredSheetName}" if not already present.`);
-}
+  Logger.log(
+    `${selectedValues.length} artist(s) checked and added to "${ignoredSheetName}" if not already present.`
+  );
+};
 
 /**
  * ----------------------------------------------------------------------------------------------------------------
@@ -148,8 +151,12 @@ const removeExpiredEntries = (sheet) => {
     }
 
     // Delete from bottom to top to prevent changing indices
-    rowsToDel.reverse().forEach(rowNum => {
-      Log.Info(`Removing expired event: ${data[rowNum - 1][0]}, Date: ${range[rowNum - 2]}`);
+    rowsToDel.reverse().forEach((rowNum) => {
+      Log.Info(
+        `Removing expired event: ${data[rowNum - 1][0]}, Date: ${
+          range[rowNum - 2]
+        }`
+      );
       console.info(`Deleting row ${rowNum}`);
       sheet.deleteRow(rowNum);
     });
@@ -717,95 +724,94 @@ const showMessage = (message, title) => {
 const writeAltEventsToSheet = async (altEvents) => {
   const sheet = SHEETS.EVENTS;
   // try {
-    // Get sheet data
-    const data = sheet.getDataRange().getValues();
-    // Get column numbers for Name, Date, Venue, and Address
-    const colDate = data[0].indexOf(HEADERNAMES.date);
-    const colName = data[0].indexOf(HEADERNAMES.eName);
-    const colVenue = data[0].indexOf(HEADERNAMES.venue);
-    const colAddress = data[0].indexOf(HEADERNAMES.address);
-    const colActs = data[0].indexOf(HEADERNAMES.acts);
-    const colUrl = data[0].indexOf(HEADERNAMES.url);
-    const colAlt = data[0].indexOf(HEADERNAMES.url2);
-    if (colDate == -1 || colName == -1 || colVenue == -1 || colAddress == -1) {
-      // sheet.getRange(row, col).setValue(val);
-      throw new Error(
-        "Unable to locate column names that should be on the Events Sheet"
-      );
-    }
-    const activeRange = sheet.getRange(
-      2,
-      1,
-      sheet.getLastRow() - 1,
-      sheet.getLastColumn()
+  // Get sheet data
+  const data = sheet.getDataRange().getValues();
+  // Get column numbers for Name, Date, Venue, and Address
+  const colDate = data[0].indexOf(HEADERNAMES.date);
+  const colName = data[0].indexOf(HEADERNAMES.eName);
+  const colVenue = data[0].indexOf(HEADERNAMES.venue);
+  const colAddress = data[0].indexOf(HEADERNAMES.address);
+  const colActs = data[0].indexOf(HEADERNAMES.acts);
+  const colUrl = data[0].indexOf(HEADERNAMES.url);
+  const colAlt = data[0].indexOf(HEADERNAMES.url2);
+  if (colDate == -1 || colName == -1 || colVenue == -1 || colAddress == -1) {
+    // sheet.getRange(row, col).setValue(val);
+    throw new Error(
+      "Unable to locate column names that should be on the Events Sheet"
     );
-    const lastRow = sheet.getLastRow() - 1; //subtract header
-    if (lastRow < 1) throw new Error("No events found on Events Sheet");
-    const existing = activeRange.getValues();
-    let row = 0;
-    // Loop through existing events
-    for (let i = 0; i < existing.length; i++) {
-      let aItem = existing[i];
+  }
+  const activeRange = sheet.getRange(
+    2,
+    1,
+    sheet.getLastRow() - 1,
+    sheet.getLastColumn()
+  );
+  const lastRow = sheet.getLastRow() - 1; //subtract header
+  if (lastRow < 1) throw new Error("No events found on Events Sheet");
+  const existing = activeRange.getValues();
+  let row = 0;
+  // Loop through existing events
+  for (let i = 0; i < existing.length; i++) {
+    let aItem = existing[i];
 
-      let aUrl = aItem[colUrl];
-      row = i + 2;
-      // Logger.log(`AltEvents length: ${altEvents.length}`);
-      let altUrl = aItem[colAlt];
-      // Only search for a second URL if one doesn't already exist
-      if (altUrl == "") {
-        let aDate = Utilities.formatDate(
-          new Date(aItem[colDate]),
+    let aUrl = aItem[colUrl];
+    row = i + 2;
+    // Logger.log(`AltEvents length: ${altEvents.length}`);
+    let altUrl = aItem[colAlt];
+    // Only search for a second URL if one doesn't already exist
+    if (altUrl == "") {
+      let aDate = Utilities.formatDate(
+        new Date(aItem[colDate]),
+        "PST",
+        "yyyy/MM/dd"
+      );
+      let aName = aItem[colName];
+      let aAddress = aItem[colAddress].toUpperCase();
+      let aAddressFiltered = filterAddress(aAddress.split(/[s,s;]+/)[0]);
+      let aVenue = aItem[colVenue];
+      let aActs = aItem[colActs];
+      // Loop through new results
+      for (let j = 0; j < altEvents.length; j++) {
+        let bItem = altEvents[j];
+        let bDate = Utilities.formatDate(
+          new Date(bItem["date"]),
           "PST",
           "yyyy/MM/dd"
         );
-        let aName = aItem[colName];
-        let aAddress = aItem[colAddress].toUpperCase();
-        let aAddressFiltered = filterAddress(aAddress.split(/[s,s;]+/)[0]);
-        let aVenue = aItem[colVenue];
-        let aActs = aItem[colActs];
-        // Loop through new results
-        for (let j = 0; j < altEvents.length; j++) {
-          let bItem = altEvents[j];
-          let bDate = Utilities.formatDate(
-            new Date(bItem["date"]),
-            "PST",
-            "yyyy/MM/dd"
-          );
-          let bName = bItem["eName"];
-          // Logger.log(`writeAlt() ex:${aName}, new: ${bName}`);
-          let bAddress = bItem["address"];
-          let bAddressFiltered = filterAddress(bAddress.split(/[s,s;]+/)[0]);
-          let bVenue = bItem["venue"];
-          let bUrl = bItem["url"];
-          let bActs = bItem["acts"];
-          // Conditionals
-          let datesEqual = aDate == bDate;
-          let nameScore = CommonLib.stringSimilarity(aName, bName) > 0.5;
-          let addressScore =
-            CommonLib.stringSimilarity(aAddressFiltered, bAddressFiltered) >
-            0.5;
-          let venueScore = CommonLib.stringSimilarity(aVenue, bVenue) > 0.5;
-          let urlScore = CommonLib.stringSimilarity(aUrl, bUrl) > 0.7; // URLs are very similar
-          let actScore = CommonLib.stringSimilarity(aActs, bActs) > 0.6;
-          // Logger.log(
-          //   `ex: ${aName}, new: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actScore}, dateScore: ${datesEqual}, addressScore: ${addressScore}, venueScore: ${venueScore}`
-          // );
+        let bName = bItem["eName"];
+        // Logger.log(`writeAlt() ex:${aName}, new: ${bName}`);
+        let bAddress = bItem["address"];
+        let bAddressFiltered = filterAddress(bAddress.split(/[s,s;]+/)[0]);
+        let bVenue = bItem["venue"];
+        let bUrl = bItem["url"];
+        let bActs = bItem["acts"];
+        // Conditionals
+        let datesEqual = aDate == bDate;
+        let nameScore = CommonLib.stringSimilarity(aName, bName) > 0.5;
+        let addressScore =
+          CommonLib.stringSimilarity(aAddressFiltered, bAddressFiltered) > 0.5;
+        let venueScore = CommonLib.stringSimilarity(aVenue, bVenue) > 0.5;
+        let urlScore = CommonLib.stringSimilarity(aUrl, bUrl) > 0.7; // URLs are very similar
+        let actScore = CommonLib.stringSimilarity(aActs, bActs) > 0.6;
+        // Logger.log(
+        //   `ex: ${aName}, new: ${bName}, urlsEqual: ${urlsEqual}, actScore: ${actScore}, dateScore: ${datesEqual}, addressScore: ${addressScore}, venueScore: ${venueScore}`
+        // );
 
-          // if the existing event matches event name, date, and venue, and address of the result & URLS are not "very similar"
-          if (
-            !urlScore &&
-            actScore &&
-            datesEqual &&
-            (addressScore || venueScore)
-          ) {
-            Log.Info(
-              `writeAltEventsToSheet() - Writing alt URL for event '${aName}' in row: ${row}`
-            );
-            CommonLib.setByHeader(EVENT_SHEET, HEADERNAMES.url2, row, bUrl);
-          }
+        // if the existing event matches event name, date, and venue, and address of the result & URLS are not "very similar"
+        if (
+          !urlScore &&
+          actScore &&
+          datesEqual &&
+          (addressScore || venueScore)
+        ) {
+          Log.Info(
+            `writeAltEventsToSheet() - Writing alt URL for event '${aName}' in row: ${row}`
+          );
+          CommonLib.setByHeader(EVENT_SHEET, HEADERNAMES.url2, row, bUrl);
         }
       }
     }
+  }
   // } catch (err) {
   //   Logger.log(`writeAltEventsToSheet() error: ${err}`);
   //   console.error(`writeAltEventsToSheet() error: ${err}`);
@@ -824,7 +830,7 @@ const writeEventsToSheet = async (eventsArr) => {
       CommonLib.setRowData(EVENT_SHEET, HEADERNAMES, eventsArr[key]);
     }
   } catch (err) {
-    console.error (`writeEventsToSheet() error: ${err.message}`);
+    console.error(`writeEventsToSheet() error: ${err.message}`);
   }
 };
 

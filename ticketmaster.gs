@@ -6,7 +6,6 @@ class TM {
     this.listService = new ListService();
     this.artistsList = artistsList || this.listService.getArtists();
     this.existingEvents = existingEvents || this.listService.getEvents();
-    
   }
   /**
    * ----------------------------------------------------------------------------------------------------------------
@@ -28,11 +27,11 @@ class TM {
       const newEvents = filterDupeEvents(eventsArr, this.existingEvents);
       const altEvents = filterAltEvents(eventsArr, this.existingEvents);
 
-      newEvents.forEach(event => {
+      newEvents.forEach((event) => {
         event.image = this.findLargestImage(event.image);
       });
 
-      altEvents.forEach(event => {
+      altEvents.forEach((event) => {
         event.image = this.findLargestImage(event.image);
       });
 
@@ -81,7 +80,7 @@ class TM {
     } catch (error) {
       console.error(`filterTMimages() ${error}`);
     }
-  };
+  }
 
   /**
    * ----------------------------------------------------------------------------------------------------------------
@@ -107,14 +106,19 @@ class TM {
 
       const eventsArr = [];
       for (const item of data) {
-        const attractions = item?._embedded?.attractions?.map(a => a.name) || [];
-        const matched = attractions.filter(name => this.artistsList.includes(name));
+        const attractions =
+          item?._embedded?.attractions?.map((a) => a.name) || [];
+        const matched = attractions.filter((name) =>
+          this.artistsList.includes(name)
+        );
         if (matched.length === 0) continue;
 
         const venue = item?._embedded?.venues?.[0] || {};
         const dateObj = item?.dates?.start;
         const date = dateObj?.dateTime || dateObj?.localDate || null;
-        const formattedDate = date ? Utilities.formatDate(new Date(date), "PST", "yyyy/MM/dd HH:mm") : "";
+        const formattedDate = date
+          ? Utilities.formatDate(new Date(date), "PST", "yyyy/MM/dd HH:mm")
+          : "";
 
         eventsArr.push({
           eName: item.name || "",
@@ -124,7 +128,9 @@ class TM {
           date: formattedDate,
           url: item.url || "",
           image: item.images || [],
-          address: [venue.address?.line1, venue.city?.name, venue.state?.name].filter(Boolean).join(", ")
+          address: [venue.address?.line1, venue.city?.name, venue.state?.name]
+            .filter(Boolean)
+            .join(", "),
         });
       }
 
@@ -143,7 +149,7 @@ class TM {
    * @returns {object} results
    */
   async fetchFromTicketAPI(keyword) {
-    if (!keyword || typeof keyword !== 'string') {
+    if (!keyword || typeof keyword !== "string") {
       Log.Error("fetchFromTicketAPI() - Invalid keyword");
       return [];
     }
@@ -165,7 +171,11 @@ class TM {
       const responseCode = firstResponse.getResponseCode();
 
       if (responseCode !== 200 && responseCode !== 201) {
-        Log.Error(`fetchFromTicketAPI() - Response Code ${responseCode} - ${RESPONSECODES?.[responseCode] || 'Unknown error'}`);
+        Log.Error(
+          `fetchFromTicketAPI() - Response Code ${responseCode} - ${
+            RESPONSECODES?.[responseCode] || "Unknown error"
+          }`
+        );
         return [];
       }
       const parsed = await JSON.parse(firstResponse.getContentText());
@@ -177,12 +187,13 @@ class TM {
 
       results.push(...events);
 
-      if (totalPages > 1) Logger.log(`fetchFromTicketAPI() - ${keyword} - ${totalPages} pages`);
+      if (totalPages > 1)
+        Logger.log(`fetchFromTicketAPI() - ${keyword} - ${totalPages} pages`);
 
       for (let page = 1; page < totalPages; page++) {
-        console.info("Getting page " + page)
+        console.info("Getting page " + page);
         Utilities.sleep(180); // API Rate Limit
-      
+
         const params = this.returnTMParams(keyword, page, pageSize);
         try {
           const response = UrlFetchApp.fetch(TM_URL + params, options);
@@ -194,7 +205,6 @@ class TM {
           } else {
             Log.Warn(`Page ${page} returned no events for ${keyword}`);
           }
-        
         } catch (pageErr) {
           Log.Warn(`Page ${page} returned no events for ${keyword}`);
         }
@@ -202,12 +212,12 @@ class TM {
 
       return results;
     } catch (err) {
-      Log.Error(`fetchFromTicketAPI() - Fatal error fetching events for ${keyword}: ${err.message}`);
+      Log.Error(
+        `fetchFromTicketAPI() - Fatal error fetching events for ${keyword}: ${err.message}`
+      );
       return [];
     }
-
-    
-  };
+  }
 
   /**
    * ----------------------------------------------------------------------------------------------------------------
@@ -228,36 +238,36 @@ class TM {
     params += `&size=${pageSize}`;
     params += `&keyword=${encodeURIComponent(keyword)}`;
     return params;
-  };
+  }
 
   findLargestImage(images) {
     if (!Array.isArray(images) || images.length === 0) return null;
 
-    return images.reduce((largest, img) => {
-      const largestArea = (largest?.width || 0) * (largest?.height || 0);
-      const currentArea = (img?.width || 0) * (img?.height || 0);
-      return currentArea > largestArea ? img : largest;
-    }, images[0])?.url || null;
+    return (
+      images.reduce((largest, img) => {
+        const largestArea = (largest?.width || 0) * (largest?.height || 0);
+        const currentArea = (img?.width || 0) * (img?.height || 0);
+        return currentArea > largestArea ? img : largest;
+      }, images[0])?.url || null
+    );
   }
 }
 
 const test_ticket = async () => {
   try {
-  const tm = new TM();
-  const result = await tm.searchTMLoop();
-  console.info(result);
-  const filteredEventsArr = filterNewEvents(result, buildEventsArr());
-  // Log.Debug("searchTMLoop() - filtered Events", filteredEventsArr);
+    const tm = new TM();
+    const result = await tm.searchTMLoop();
+    console.info(result);
+    const filteredEventsArr = filterNewEvents(result, buildEventsArr());
+    // Log.Debug("searchTMLoop() - filtered Events", filteredEventsArr);
 
-  // select which image is highest resolution and use only this
-  const imageFilteredEvents = filterTMimages(filteredEventsArr);
-  Logger.log(imageFilteredEvents);
+    // select which image is highest resolution and use only this
+    const imageFilteredEvents = filterTMimages(filteredEventsArr);
+    Logger.log(imageFilteredEvents);
   } catch (err) {
     console.error(`test_ticket() error: ${err.message}`);
   }
-
 };
-
 
 /**
  * Compares the size of each image in an array of image URLs.
@@ -266,8 +276,8 @@ const test_ticket = async () => {
  * @returns {string} The URL of the largest image.
  */
 const findLargestImageBySize = async (imagesObj) => {
-  console.info("findLargestImage() starting")
-  console.info(imagesObj)
+  console.info("findLargestImage() starting");
+  console.info(imagesObj);
   if (imagesObj.length < 1) {
     console.error(
       `findLargestImage(imageUrls: ${imageUrls}) - imageUrls is empty`

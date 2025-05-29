@@ -11,7 +11,7 @@ class RA {
    * Reaches out to RA API to get results,
    * @param {array} artistsArr the array of artists in the Artists List sheet
    */
-  searchRAMain () {
+  searchRAMain() {
     if (!Config.searchRA()) {
       Log.Info("searchRAMain() skipped: Config.searchRA() is false");
       return { newEvents: [], altEvents: [] };
@@ -28,50 +28,53 @@ class RA {
       return { newEvents, altEvents };
     } catch (err) {
       Log.Error(`searchRAMain () error - ${err}`);
-      return { newEvents: [], altEvents: [] };;
+      return { newEvents: [], altEvents: [] };
     }
-  };
-  
+  }
+
   /**
    * ----------------------------------------------------------------------------------------------------------------
    * Searches the results to return only events that match artists in your list
    */
-  searchRA () {
+  searchRA() {
     let results = [];
     try {
-      
       // Return ALL Resident Advisor events in your area
       let listings = this.getRAData(Math.floor(Config.regionRA()));
       Logger.log("searchRA() - TOTAL events parsed: " + listings.length);
 
       // Run through each result to see if they match any artists in the Artist Sheet
-       for (const item of listings) {
+      for (const item of listings) {
         let listing = item?.event;
         if (!listing) continue;
 
-        const acts = (listing.artists || []).map(a => a.name);
-        if (!acts.some(name => this.artistsList.includes(name))) continue;
+        const acts = (listing.artists || []).map((a) => a.name);
+        if (!acts.some((name) => this.artistsList.includes(name))) continue;
 
         const event = {
-          date: Utilities.formatDate(new Date(listing.startTime), "PST", "yyyy/MM/dd HH:mm"),
+          date: Utilities.formatDate(
+            new Date(listing.startTime),
+            "PST",
+            "yyyy/MM/dd HH:mm"
+          ),
           eName: listing.title || "",
           city: "",
           venue: listing.venue?.name || "",
           url: listing.contentUrl ? `https://ra.co${listing.contentUrl}` : "",
           image: listing.images?.[0]?.filename || "",
           acts: acts.join(", "),
-          address: listing.venue?.address || ""
+          address: listing.venue?.address || "",
         };
 
         results.push(event);
       }
- 
+
       return CommonLib.arrayRemoveDupes(results);
     } catch (err) {
       Log.Error(`searchRA() error - ${err}`);
       return [];
     }
-  };
+  }
 
   /**
    * ----------------------------------------------------------------------------------------------------------------
@@ -81,7 +84,7 @@ class RA {
    * @param {boolean} getAllPages if false will only return 1 page (18 results max)
    * @returns {array} results [{eventdata}, {eventdata}...]
    */
-  getRAData (area = 218, getAllPages = true) {
+  getRAData(area = 218, getAllPages = true) {
     const pageSize = 18; // 18 is teh max number of results RA will send in one page
     let results = [];
 
@@ -95,9 +98,11 @@ class RA {
         let options = this.returnRAOptions(page, area, queryRAEventListings);
         let response = UrlFetchApp.fetch(RA_URL, options);
         let responseCode = response.getResponseCode();
-        
+
         if (![200, 201].includes(responseCode)) {
-          throw new Error(`Response code ${responseCode} - ${RESPONSECODES[responseCode]}`);
+          throw new Error(
+            `Response code ${responseCode} - ${RESPONSECODES[responseCode]}`
+          );
         }
 
         let json = JSON.parse(response.getContentText());
@@ -108,16 +113,16 @@ class RA {
           totalPages = Math.ceil(data.totalResults / pageSize);
           Logger.log(`getRAData() - Total results: ${data.totalResults}`);
         }
-        page++
+        page++;
       } while (getAllPages && page <= totalPages);
-      
+
       Log.Debug("results", results);
       return results;
     } catch (err) {
       Log.Error(`getRAData() - Failed to get data from ${url} - ${err}`);
       return [];
     }
-  };
+  }
 
   /**
    * ----------------------------------------------------------------------------------------------------------------
@@ -127,17 +132,17 @@ class RA {
    * @param {string} theQuery optional, defaults to queryRAEventListings if not provided
    * @returns {object} options {filters:{...}, pageSize, page}
    */
-  returnRAOptions (page, area, theQuery = queryRAEventListings) {
+  returnRAOptions(page, area, theQuery = queryRAEventListings) {
     let today = new Date();
     const futureDate = new Date(today);
     futureDate.setMonth(futureDate.getMonth() + 8);
     let variables = {
       filters: {
         areas: { eq: area },
-        listingDate: { 
+        listingDate: {
           gte: Utilities.formatDate(today, "PST", "yyyy/MM/dd"),
-          lte: Utilities.formatDate(futureDate, "PST", "yyyy/MM/dd")
-         },
+          lte: Utilities.formatDate(futureDate, "PST", "yyyy/MM/dd"),
+        },
         listingPosition: { eq: 1 },
         // "id": 1731004,
         // "addressRegion":"San Francisco/Oakland",
@@ -159,13 +164,13 @@ class RA {
         // "referer": "https://ra.co/events/us/bayarea",
       },
       payload: JSON.stringify({ query: theQuery, variables }),
-      method: "POST"
+      method: "POST",
     };
-  };
+  }
 }
 
 const testRA = () => {
-  ra = new RA()
+  ra = new RA();
   res = ra.searchRAMain();
   console.log(res);
-}
+};
